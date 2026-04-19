@@ -972,7 +972,7 @@
       var R_CYL  = 320;    // virtual cylinder radius
       var FOCAL  = 700;    // perspective focal length
       var BASE_F = 26;     // base font size (px)
-      var ROT_SPD = 0.00055; // radians per frame (~2 deg/sec)
+      var ROT_SPD = 0.00085; // radians per frame (~3 deg/sec)
       var GAP    = Math.PI / 2; // 90 deg between phrase centers
 
       var phrases = [
@@ -1024,8 +1024,8 @@
       function drawRoom() {
         ctx.clearRect(0, 0, W, H);
 
-        // Deep void base
-        ctx.fillStyle = '#030710';
+        // Deep void base — matches body background #060c18
+        ctx.fillStyle = '#060c18';
         ctx.fillRect(0, 0, W, H);
 
         var midY  = H / 2;
@@ -1068,31 +1068,31 @@
         ctx.fillStyle = gg;
         ctx.fillRect(0, midY - 48, W, 96);
 
-        // Top vignette
-        var tv = ctx.createLinearGradient(0, 0, 0, H * 0.22);
-        tv.addColorStop(0, 'rgba(3,7,16,0.94)');
-        tv.addColorStop(1, 'rgba(3,7,16,0)');
+        // Top vignette — fades to exact body background #060c18
+        var tv = ctx.createLinearGradient(0, 0, 0, H * 0.28);
+        tv.addColorStop(0, 'rgba(6,12,24,1)');
+        tv.addColorStop(1, 'rgba(6,12,24,0)');
         ctx.fillStyle = tv;
-        ctx.fillRect(0, 0, W, H * 0.22);
+        ctx.fillRect(0, 0, W, H * 0.28);
 
-        // Bottom vignette
-        var bv = ctx.createLinearGradient(0, H, 0, H * 0.78);
-        bv.addColorStop(0, 'rgba(3,7,16,0.94)');
-        bv.addColorStop(1, 'rgba(3,7,16,0)');
+        // Bottom vignette — fades to exact body background #060c18
+        var bv = ctx.createLinearGradient(0, H, 0, H * 0.72);
+        bv.addColorStop(0, 'rgba(6,12,24,1)');
+        bv.addColorStop(1, 'rgba(6,12,24,0)');
         ctx.fillStyle = bv;
-        ctx.fillRect(0, H * 0.78, W, H * 0.22);
+        ctx.fillRect(0, H * 0.72, W, H * 0.28);
 
         // Side darkness — wall rounding into shadow
         var sd = W * 0.14;
         var sl = ctx.createLinearGradient(0, 0, sd, 0);
-        sl.addColorStop(0, 'rgba(0,1,10,0.82)');
-        sl.addColorStop(1, 'rgba(0,1,10,0)');
+        sl.addColorStop(0, 'rgba(6,12,24,0.80)');
+        sl.addColorStop(1, 'rgba(6,12,24,0)');
         ctx.fillStyle = sl;
         ctx.fillRect(0, 0, sd, H);
 
         var sr = ctx.createLinearGradient(W, 0, W - sd, 0);
-        sr.addColorStop(0, 'rgba(0,1,10,0.82)');
-        sr.addColorStop(1, 'rgba(0,1,10,0)');
+        sr.addColorStop(0, 'rgba(6,12,24,0.80)');
+        sr.addColorStop(1, 'rgba(6,12,24,0)');
         ctx.fillStyle = sr;
         ctx.fillRect(W - sd, 0, sd, H);
       }
