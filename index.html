@@ -178,162 +178,21 @@
       animation: heroFadeIn 2s cubic-bezier(0.22, 1, 0.36, 1) 0.85s forwards;
     }
 
-    /* ── Vision / Room section ──────────────────────────── */
-    #vision {
-      padding: 80px 0 0;
-    }
-
-    .vision-header {
-      font-family: 'Inter', sans-serif;
-      font-size: clamp(0.85rem, 1.5vw, 1rem);
-      font-weight: 300;
-      color: rgba(255,255,255,0.48);
-      letter-spacing: 0.1em;
-      text-align: center;
-      max-width: 700px;
-      margin: 0 auto 56px;
-      line-height: 1.8;
-    }
-
-    #room-stage {
+    /* ── Circular Room ───────────────────────────────────── */
+    #circular-room {
       position: relative;
       width: 100%;
-      height: 70vh;
-      min-height: 420px;
+      height: 75vh;
+      min-height: 440px;
       overflow: hidden;
     }
 
-    #room-particles {
+    #room-canvas {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
-      pointer-events: none;
-      z-index: 5;
-    }
-
-    #room-perspective {
-      position: absolute;
-      inset: 0;
-      perspective-origin: 50% 50%;
-    }
-
-    #room-carousel {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      transform-style: preserve-3d;
-      transition: transform 1.7s cubic-bezier(0.55, 0.06, 0.22, 1);
-      will-change: transform;
-    }
-
-    .room-wall {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0 14%;
-      backface-visibility: hidden;
-      -webkit-backface-visibility: hidden;
-      background:
-        radial-gradient(ellipse 40% 60% at 50% 0%,
-          rgba(120,175,240,0.10) 0%,
-          rgba(80,140,210,0.04) 55%,
-          transparent 82%
-        ),
-        linear-gradient(180deg,
-          rgba(9,15,28,0.98)  0%,
-          rgba(5,9,18,1)      55%,
-          rgba(4,7,16,1)     100%
-        );
-      box-shadow:
-        inset 2px  0 50px rgba(90,155,225,0.12),
-        inset -2px 0 50px rgba(90,155,225,0.12),
-        inset 0    2px 70px rgba(130,185,240,0.08);
-    }
-
-    /* floor glow warm wash */
-    .room-wall::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse 65% 28% at 50% 92%,
-        rgba(253,207,124,0.09) 0%,
-        transparent 70%
-      );
-      pointer-events: none;
-    }
-
-    .room-wall p {
-      position: relative;
-      font-family: 'Syne', sans-serif;
-      font-size: clamp(1.15rem, 2.3vw, 1.8rem);
-      font-weight: 400;
-      color: rgba(255,255,255,0.82);
-      text-align: center;
-      line-height: 1.7;
-      max-width: 680px;
-      letter-spacing: 0.01em;
-      z-index: 1;
-    }
-
-    .room-wall-featured {
-      font-size: clamp(1.5rem, 3.2vw, 2.4rem) !important;
-      font-weight: 300 !important;
-      color: rgba(255,255,255,0.95) !important;
-      line-height: 1.55 !important;
-      letter-spacing: 0.02em !important;
-    }
-
-    @media (max-width: 1024px) {
-      .room-wall p {
-        font-size: clamp(1.25rem, 3.2vw, 1.6rem);
-        line-height: 1.72;
-      }
-    }
-
-    @media (max-width: 640px) {
-      .room-wall p {
-        font-size: clamp(1.2rem, 4.8vw, 1.5rem);
-        line-height: 1.75;
-        max-width: 88%;
-      }
-    }
-
-    /* top/bottom gradient masks — room dissolves into page */
-    .room-fade {
-      position: absolute;
-      left: 0; right: 0;
-      height: 32%;
-      pointer-events: none;
-      z-index: 9;
-    }
-
-    .room-fade-top {
-      top: 0;
-      background: linear-gradient(to bottom, #111d2c 0%, rgba(17,29,44,0) 100%);
-    }
-
-    .room-fade-bottom {
-      bottom: 0;
-      background: linear-gradient(to top, #111d2c 0%, rgba(17,29,44,0) 100%);
-    }
-
-    .room-fade-left {
-      top: 0; bottom: 0; left: 0;
-      right: auto;
-      width: 18%;
-      height: 100%;
-      background: linear-gradient(to right, #111d2c 0%, rgba(17,29,44,0) 100%);
-    }
-
-    .room-fade-right {
-      top: 0; bottom: 0; right: 0;
-      left: auto;
-      width: 18%;
-      height: 100%;
-      background: linear-gradient(to left, #111d2c 0%, rgba(17,29,44,0) 100%);
+      display: block;
     }
 
     @keyframes heroFadeIn {
@@ -812,42 +671,9 @@
     </div>
   </section>
 
-  <!-- ── VISION / ROOM ────────────────────────────────── -->
-  <section id="vision">
-    <div class="container">
-      <p class="vision-header reveal">Innerverse is a spatial web platform where communities gather inside immersive, navigable environments built for presence.</p>
-    </div>
-
-    <div id="room-stage">
-      <canvas id="room-particles" aria-hidden="true"></canvas>
-
-      <div id="room-perspective">
-        <div id="room-carousel">
-
-          <div class="room-wall">
-            <p class="room-wall-featured">Currently in development, with first environments launching mid-2025.</p>
-          </div>
-
-          <div class="room-wall">
-            <p>Designed for mastermind hosts, cohort facilitators, and creative community leaders who understand that the space you gather in elevates the experience and how your work is perceived.</p>
-          </div>
-
-          <div class="room-wall">
-            <p>Built to feel like a sanctuary rather than a tool, each environment is a premium venue that transforms how your community shows up.</p>
-          </div>
-
-          <div class="room-wall">
-            <p>Founding Partners are the first to step inside, shape how the environment is customised to serve their goals, and define how their brand is experienced.</p>
-          </div>
-
-        </div>
-      </div>
-
-      <div class="room-fade room-fade-top"></div>
-      <div class="room-fade room-fade-bottom"></div>
-      <div class="room-fade room-fade-left"></div>
-      <div class="room-fade room-fade-right"></div>
-    </div>
+  <!-- ── CIRCULAR ROOM ───────────────────────────────── -->
+  <section id="circular-room">
+    <canvas id="room-canvas" aria-hidden="true"></canvas>
   </section>
 
   <div class="container"><div class="divider reveal"></div></div>
@@ -1136,105 +962,186 @@
     tick();
 
 
-    // ── 3D Room carousel ─────────────────────────────────
+    // ── Circular Room — cylinder interior with orbiting text ─
     (function () {
-      const roomPerspective = document.getElementById('room-perspective');
-      const roomCarousel    = document.getElementById('room-carousel');
-      const roomWalls       = roomCarousel.querySelectorAll('.room-wall');
-      let roomAngle = 0;
+      var section = document.getElementById('circular-room');
+      var canvas  = document.getElementById('room-canvas');
+      var ctx     = canvas.getContext('2d');
 
-      function setupRoom() {
-        const vw = window.innerWidth;
-        const R  = Math.round(vw * 0.52);
-        roomPerspective.style.perspective = Math.round(vw * 1.4) + 'px';
-        roomWalls.forEach(function (wall, i) {
-          wall.style.transform = 'rotateY(' + (i * 90) + 'deg) translateZ(' + (-R) + 'px)';
+      // Cylinder geometry & rendering constants
+      var R_CYL  = 320;    // virtual cylinder radius
+      var FOCAL  = 700;    // perspective focal length
+      var BASE_F = 26;     // base font size (px)
+      var ROT_SPD = 0.00055; // radians per frame (~2 deg/sec)
+      var GAP    = Math.PI / 2; // 90 deg between phrase centers
+
+      var phrases = [
+        'Your inner world.',
+        'Orchestrated by you.',
+        'Entered by you.',
+        'Yours to return to.'
+      ];
+
+      var W = 0, H = 0, t = 0, rotation = 0;
+
+      // Offscreen canvas for text measurement
+      var mc   = document.createElement('canvas');
+      var mctx = mc.getContext('2d');
+      var phraseData = [];
+
+      function setFont(c) {
+        c.font = '300 ' + BASE_F + "px 'Inter', sans-serif";
+      }
+
+      function resize() {
+        W = canvas.width  = section.offsetWidth  || window.innerWidth;
+        H = canvas.height = section.offsetHeight || window.innerHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      // Build per-character angle offsets from each phrase's center
+      function buildPhrases() {
+        setFont(mctx);
+        phraseData = phrases.map(function (phrase) {
+          var chars  = phrase.split('');
+          var widths = chars.map(function (ch) { return mctx.measureText(ch).width; });
+          var total  = widths.reduce(function (a, b) { return a + b; }, 0);
+          var x = -total / 2;
+          return chars.map(function (ch, i) {
+            var cx = x + widths[i] / 2;
+            x += widths[i];
+            // atan2 maps wall-arc position → angle from phrase center
+            return { ch: ch, ao: Math.atan2(cx, R_CYL) };
+          });
         });
       }
 
-      setupRoom();
-      window.addEventListener('resize', setupRoom);
+      document.fonts.ready.then(buildPhrases);
+      buildPhrases(); // immediate fallback before fonts event
 
-      // Auto-rotate every 4 seconds, always rightward
-      setInterval(function () {
-        roomAngle -= 90;
-        roomCarousel.style.transform = 'rotateY(' + roomAngle + 'deg)';
-      }, 6000);
-    }());
+      // ── Room background ──────────────────────────────────
+      function drawRoom() {
+        ctx.clearRect(0, 0, W, H);
 
+        // Deep void base
+        ctx.fillStyle = '#030710';
+        ctx.fillRect(0, 0, W, H);
 
-    // ── Room dust particles ───────────────────────────────
-    (function () {
-      const rc  = document.getElementById('room-particles');
-      const rctx = rc.getContext('2d');
+        var midY  = H / 2;
+        // Slow breathing pulse for wall glow
+        var pulse = 0.055 + 0.022 * Math.sin(t * 0.007);
 
-      function resizeRoomCanvas() {
-        rc.width  = rc.offsetWidth  || rc.parentElement.offsetWidth;
-        rc.height = rc.offsetHeight || rc.parentElement.offsetHeight;
-      }
-      resizeRoomCanvas();
-      window.addEventListener('resize', resizeRoomCanvas);
+        // Equatorial blue band — ambient wall glow
+        var bh   = H * 0.72;
+        var band = ctx.createLinearGradient(0, midY - bh / 2, 0, midY + bh / 2);
+        band.addColorStop(0,    'rgba(0,194,255,0)');
+        band.addColorStop(0.28, 'rgba(0,194,255,' + (pulse * 0.55).toFixed(4) + ')');
+        band.addColorStop(0.5,  'rgba(0,194,255,' + pulse.toFixed(4) + ')');
+        band.addColorStop(0.72, 'rgba(0,194,255,' + (pulse * 0.55).toFixed(4) + ')');
+        band.addColorStop(1,    'rgba(0,194,255,0)');
+        ctx.fillStyle = band;
+        ctx.fillRect(0, midY - bh / 2, W, bh);
 
-      const DUST_COLS = [
-        [255,210,100],[248,190,70],[253,207,124],[255,230,140],[240,175,55]
-      ];
+        // Side wall glows — wall curves away into the periphery
+        var sw = W * 0.30;
+        var lg = ctx.createLinearGradient(0, 0, sw, 0);
+        lg.addColorStop(0,   'rgba(0,194,255,' + (pulse * 1.4).toFixed(4) + ')');
+        lg.addColorStop(0.6, 'rgba(0,194,255,' + (pulse * 0.22).toFixed(4) + ')');
+        lg.addColorStop(1,   'rgba(0,194,255,0)');
+        ctx.fillStyle = lg;
+        ctx.fillRect(0, 0, sw, H);
 
-      function rnd(a, b) { return Math.random() * (b - a) + a; }
+        var rg = ctx.createLinearGradient(W, 0, W - sw, 0);
+        rg.addColorStop(0,   'rgba(0,194,255,' + (pulse * 1.4).toFixed(4) + ')');
+        rg.addColorStop(0.6, 'rgba(0,194,255,' + (pulse * 0.22).toFixed(4) + ')');
+        rg.addColorStop(1,   'rgba(0,194,255,0)');
+        ctx.fillStyle = rg;
+        ctx.fillRect(W - sw, 0, sw, H);
 
-      function spawnDust() {
-        const col = DUST_COLS[Math.floor(Math.random() * DUST_COLS.length)];
-        return {
-          x:     rnd(rc.width * 0.08, rc.width * 0.92),
-          y:     rnd(-20, rc.height * 0.55),
-          r:     rnd(0.35, 2.4),
-          vy:    rnd(0.07, 0.32),
-          vx:    rnd(-0.05, 0.05),
-          alpha: rnd(0.20, 0.78),
-          fade:  rnd(0.0005, 0.0016),
-          life:  1.0,
-          col,
-        };
-      }
+        // Faint gold equator accent
+        var ga = 0.028 + 0.014 * Math.sin(t * 0.005 + 1.2);
+        var gg = ctx.createLinearGradient(0, midY - 48, 0, midY + 48);
+        gg.addColorStop(0,   'rgba(253,207,124,0)');
+        gg.addColorStop(0.5, 'rgba(253,207,124,' + ga.toFixed(4) + ')');
+        gg.addColorStop(1,   'rgba(253,207,124,0)');
+        ctx.fillStyle = gg;
+        ctx.fillRect(0, midY - 48, W, 96);
 
-      // Pre-scatter across full height so it doesn't all start at top
-      let dust = Array.from({ length: 90 }, function () {
-        const d = spawnDust();
-        d.y    = rnd(0, rc.height);
-        d.life = rnd(0.2, 1.0);
-        return d;
-      });
+        // Top vignette
+        var tv = ctx.createLinearGradient(0, 0, 0, H * 0.22);
+        tv.addColorStop(0, 'rgba(3,7,16,0.94)');
+        tv.addColorStop(1, 'rgba(3,7,16,0)');
+        ctx.fillStyle = tv;
+        ctx.fillRect(0, 0, W, H * 0.22);
 
-      function tickDust() {
-        rctx.clearRect(0, 0, rc.width, rc.height);
+        // Bottom vignette
+        var bv = ctx.createLinearGradient(0, H, 0, H * 0.78);
+        bv.addColorStop(0, 'rgba(3,7,16,0.94)');
+        bv.addColorStop(1, 'rgba(3,7,16,0)');
+        ctx.fillStyle = bv;
+        ctx.fillRect(0, H * 0.78, W, H * 0.22);
 
-        for (let i = 0; i < dust.length; i++) {
-          const d = dust[i];
-          d.x += d.vx;
-          d.y += d.vy;
-          d.life -= d.fade;
+        // Side darkness — wall rounding into shadow
+        var sd = W * 0.14;
+        var sl = ctx.createLinearGradient(0, 0, sd, 0);
+        sl.addColorStop(0, 'rgba(0,1,10,0.82)');
+        sl.addColorStop(1, 'rgba(0,1,10,0)');
+        ctx.fillStyle = sl;
+        ctx.fillRect(0, 0, sd, H);
 
-          const a = d.alpha * d.life;
-          if (a > 0.01) {
-            const [r, g, b] = d.col;
-            rctx.save();
-            rctx.shadowColor = 'rgba(' + r + ',' + g + ',' + b + ',' + (a * 0.55) + ')';
-            rctx.shadowBlur  = d.r * 4;
-            rctx.fillStyle   = 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
-            rctx.beginPath();
-            rctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
-            rctx.fill();
-            rctx.restore();
-          }
-
-          if (d.life <= 0 || d.y > rc.height + 10) {
-            dust[i] = spawnDust();
-          }
-        }
-
-        requestAnimationFrame(tickDust);
+        var sr = ctx.createLinearGradient(W, 0, W - sd, 0);
+        sr.addColorStop(0, 'rgba(0,1,10,0.82)');
+        sr.addColorStop(1, 'rgba(0,1,10,0)');
+        ctx.fillStyle = sr;
+        ctx.fillRect(W - sd, 0, sd, H);
       }
 
-      tickDust();
+      // ── Orbiting text ────────────────────────────────────
+      function drawText() {
+        if (!phraseData.length) return;
+        setFont(ctx);
+        ctx.textAlign    = 'center';
+        ctx.textBaseline = 'middle';
+        var midY = H / 2;
+
+        phraseData.forEach(function (chars, pi) {
+          // Base angle for this phrase, advancing left-to-right
+          var base = pi * GAP - rotation;
+
+          chars.forEach(function (item) {
+            var theta = base + item.ao;
+            var cosT  = Math.cos(theta);
+            // Cull anything behind or at extreme sides
+            if (cosT <= 0.06) return;
+
+            // Perspective projection onto screen
+            var sx = W / 2 + (R_CYL * Math.sin(theta) / (R_CYL * cosT)) * FOCAL;
+            if (sx < -80 || sx > W + 80) return;
+
+            // Smooth fade as characters round the cylinder edge
+            var edgeFade = Math.min(1, (cosT - 0.06) / 0.40);
+
+            ctx.save();
+            ctx.translate(sx, midY);
+            ctx.scale(cosT, 1);   // horizontal foreshortening — curved wall effect
+            ctx.globalAlpha = 0.88 * edgeFade;
+            ctx.fillStyle   = '#ffffff';
+            ctx.fillText(item.ch, 0, 0);
+            ctx.restore();
+          });
+        });
+      }
+
+      function tick() {
+        t++;
+        rotation += ROT_SPD;
+        drawRoom();
+        drawText();
+        requestAnimationFrame(tick);
+      }
+
+      tick();
     }());
   </script>
 
