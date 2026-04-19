@@ -187,12 +187,44 @@
       overflow: hidden;
     }
 
+    /* Steel-blue aurora glow bleeds in from top and bottom edges */
+    #circular-room::before,
+    #circular-room::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0;
+      height: 42%;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    #circular-room::before {
+      top: 0;
+      background: linear-gradient(to bottom,
+        rgba(130,185,240,0.45) 0%,
+        rgba(90,155,225,0.22)  22%,
+        rgba(0,194,255,0.08)   50%,
+        transparent            100%
+      );
+    }
+
+    #circular-room::after {
+      bottom: 0;
+      background: linear-gradient(to top,
+        rgba(130,185,240,0.45) 0%,
+        rgba(90,155,225,0.22)  22%,
+        rgba(0,194,255,0.08)   50%,
+        transparent            100%
+      );
+    }
+
     #room-canvas {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
       display: block;
+      z-index: 1;
     }
 
     @keyframes heroFadeIn {
@@ -1024,13 +1056,21 @@
       function drawRoom() {
         ctx.clearRect(0, 0, W, H);
 
-        // Deep void base — matches body background #060c18
-        ctx.fillStyle = '#060c18';
-        ctx.fillRect(0, 0, W, H);
-
         var midY  = H / 2;
         // Slow breathing pulse for wall glow
         var pulse = 0.055 + 0.022 * Math.sin(t * 0.007);
+
+        // Solid base matching body background — no visible canvas border
+        ctx.fillStyle = '#060c18';
+        ctx.fillRect(0, 0, W, H);
+
+        // Radial center-darkening — slightly deeper in the room interior
+        var ctr = ctx.createRadialGradient(W / 2, midY, H * 0.04, W / 2, midY, Math.max(W, H) * 0.65);
+        ctr.addColorStop(0,    'rgba(2,5,14,0.55)');
+        ctr.addColorStop(0.60, 'rgba(2,5,14,0.20)');
+        ctr.addColorStop(1,    'rgba(2,5,14,0)');
+        ctx.fillStyle = ctr;
+        ctx.fillRect(0, 0, W, H);
 
         // Equatorial blue band — ambient wall glow
         var bh   = H * 0.72;
@@ -1068,30 +1108,16 @@
         ctx.fillStyle = gg;
         ctx.fillRect(0, midY - 48, W, 96);
 
-        // Top vignette — fades to exact body background #060c18
-        var tv = ctx.createLinearGradient(0, 0, 0, H * 0.28);
-        tv.addColorStop(0, 'rgba(6,12,24,1)');
-        tv.addColorStop(1, 'rgba(6,12,24,0)');
-        ctx.fillStyle = tv;
-        ctx.fillRect(0, 0, W, H * 0.28);
-
-        // Bottom vignette — fades to exact body background #060c18
-        var bv = ctx.createLinearGradient(0, H, 0, H * 0.72);
-        bv.addColorStop(0, 'rgba(6,12,24,1)');
-        bv.addColorStop(1, 'rgba(6,12,24,0)');
-        ctx.fillStyle = bv;
-        ctx.fillRect(0, H * 0.72, W, H * 0.28);
-
-        // Side darkness — wall rounding into shadow
-        var sd = W * 0.14;
+        // Side darkness — wall curves away (blends to body bg, no hard edge)
+        var sd = W * 0.16;
         var sl = ctx.createLinearGradient(0, 0, sd, 0);
-        sl.addColorStop(0, 'rgba(6,12,24,0.80)');
+        sl.addColorStop(0, 'rgba(6,12,24,0.85)');
         sl.addColorStop(1, 'rgba(6,12,24,0)');
         ctx.fillStyle = sl;
         ctx.fillRect(0, 0, sd, H);
 
         var sr = ctx.createLinearGradient(W, 0, W - sd, 0);
-        sr.addColorStop(0, 'rgba(6,12,24,0.80)');
+        sr.addColorStop(0, 'rgba(6,12,24,0.85)');
         sr.addColorStop(1, 'rgba(6,12,24,0)');
         ctx.fillStyle = sr;
         ctx.fillRect(W - sd, 0, sd, H);
