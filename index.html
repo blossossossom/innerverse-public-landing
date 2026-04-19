@@ -677,6 +677,91 @@
       .benefit-item:nth-child(2),
       .benefit-item:nth-child(3) { margin-top: 32px; }
     }
+
+
+    /* ── Aurora Hero ─────────────────────────────────────── */
+    #aurora-hero {
+      position: relative;
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    #aurora-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 2;
+      mix-blend-mode: screen;
+    }
+
+    #aurora-content {
+      position: relative;
+      z-index: 1;
+      max-width: 660px;
+      width: 100%;
+      padding: 100px 32px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2.2em;
+    }
+
+    .aurora-line {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(1.05rem, 2.2vw, 1.32rem);
+      font-weight: 300;
+      color: rgba(255, 255, 255, 0.88);
+      line-height: 1.8;
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 1.4s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 1.4s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .aurora-line-highlight {
+      font-size: clamp(1.15rem, 2.6vw, 1.5rem);
+      font-weight: 400;
+      color: rgba(255, 255, 255, 1);
+    }
+
+    .aurora-line.a-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    #aurora-reveal {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      padding-top: 0.6em;
+    }
+
+    #aurora-wordmark {
+      opacity: 0;
+      transition: opacity 1.2s ease;
+    }
+
+    #aurora-subline {
+      font-size: clamp(0.95rem, 2vw, 1.1rem);
+      font-weight: 300;
+      color: rgba(255, 255, 255, 0.88);
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+
+    #aurora-cta {
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+
   </style>
 </head>
 
@@ -698,13 +783,32 @@
   <!-- ── HERO ──────────────────────────────────────────── -->
   <section id="hero">
     <div class="container">
-      <p class="hero-eyebrow">Founding Partners</p>
+      <p class="hero-eyebrow">founding members</p>
       <h1 class="hero-headline">
-        Building the future of<br><em>immersive community spaces</em>
+        Human experience & memory,<br><em>made spatial</em>
       </h1>
       <p class="hero-subheadline">
-        An invitation for the hosts who want to define what intentional digital gathering looks like.
+        Early access opening to first community of 100.
       </p>
+    </div>
+  </section>
+
+  <!-- ── AURORA HERO ───────────────────────────────────── -->
+  <section id="aurora-hero">
+    <canvas id="aurora-canvas" aria-hidden="true"></canvas>
+    <div id="aurora-content">
+      <p class="aurora-line">Technology was never meant to disorient you.</p>
+      <p class="aurora-line">You leave pieces of yourself in different places: your notes app, camera roll, voice memos, texts. Imprints and ideas, scattered and drowned out in endless digital noise.</p>
+      <p class="aurora-line">Over time, they become harder to return to. The digital world starts to feel shallow. Fleeting.</p>
+      <p class="aurora-line aurora-line-highlight">Your inner life is multidimensional, but fragmented.</p>
+      <p class="aurora-line">Innerverse brings those fragments together, and gives you a place to return to yourself, anytime.</p>
+      <div id="aurora-reveal">
+        <div class="iv-wordmark" id="aurora-wordmark">INNERVERSE</div>
+        <p id="aurora-subline">Early access opening to a small first community.</p>
+        <div id="aurora-cta">
+          <a class="cta-button" href="#connect"><span>Enter the waitlist</span></a>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -752,31 +856,28 @@
   <section id="benefits">
     <div class="container">
       <p class="section-label reveal">For those who build with intention</p>
-      <h2 class="section-title reveal delay-1">How it works</h2>
+      <h2 class="section-title reveal delay-1">Platform Philosophy</h2>
 
       <ul class="benefits-list">
 
         <li class="benefit-item">
           <div class="benefit-content">
-            <span class="benefit-phase">Phase 1</span>
-            <strong>Research Conversation</strong>
-            <span>You join a short call with the Innerverse founder. We learn about your community, your program structure, and what a spatial environment could hold for your members. Your input informs how the environment is customised to serve your goals.</span>
+            <strong>A place, not a feed.</strong>
+            <span>Your work lives in rooms you build. It doesn't expire, refresh, or get buried. It stays.</span>
           </div>
         </li>
 
         <li class="benefit-item">
           <div class="benefit-content">
-            <span class="benefit-phase">Phase 2</span>
-            <strong>Demo Access</strong>
-            <span>Before any public release, you get first access to the Innerverse V0 spatial environment. You see it, respond to it, and your feedback influences the next layer of development.</span>
+            <strong>Spatial, not scrollable.</strong>
+            <span>You don't scroll through Innerverse. You move through it. Rooms connected by portals you choose.</span>
           </div>
         </li>
 
         <li class="benefit-item">
           <div class="benefit-content">
-            <span class="benefit-phase">Phase 3</span>
-            <strong>Founding Pilot</strong>
-            <span>You host your next cohort or mastermind inside a custom Innerverse environment. Founding partner pricing applies and is locked permanently for your account as the platform grows.</span>
+            <strong>Human-made, always.</strong>
+            <span>Everything here came from a real person. The soul of this platform is entirely human.</span>
           </div>
         </li>
 
@@ -790,9 +891,9 @@
   <section id="connect">
     <div class="container">
       <p class="section-label reveal">Begin here</p>
-      <h2 class="connect-title reveal delay-1">Let's talk.</h2>
+      <h2 class="connect-title reveal delay-1">Join the first community.</h2>
       <p class="connect-subtitle reveal delay-2">
-        If this resonates, we'd like to hear about you: your community, what you're building, and what you need from a space that holds it.
+        Early access is opening to a small first community. This is not a launch. It's an opening.
       </p>
 
       <div class="reveal delay-3">
@@ -801,7 +902,7 @@
           href="#"
           onclick="Calendly.initPopupWidget({url:'https://calendly.com/blossomemami/30min'}); return false;"
         >
-          <span>Reserve your conversation</span>
+          <span>Enter the waitlist</span>
         </a>
       </div>
     </div>
@@ -815,7 +916,7 @@
       </div>
       <div class="footer-inner reveal delay-1">
         <div class="footer-dot"></div>
-        <p class="footer-tagline">Spatial environments for communities that gather with intention</p>
+        <p class="footer-tagline">Human experience and memory, made spatial. Melbourne.</p>
         <div class="footer-dot"></div>
       </div>
     </div>
@@ -1134,6 +1235,111 @@
       }
 
       tickDust();
+    }());
+  </script>
+
+
+  <script>
+    // ── Aurora hero ───────────────────────────────────────
+    (function () {
+      const section  = document.getElementById('aurora-hero');
+      const canvas   = document.getElementById('aurora-canvas');
+      const ctx      = canvas.getContext('2d');
+
+      // Size canvas to section
+      function resize() {
+        canvas.width  = section.offsetWidth  || window.innerWidth;
+        canvas.height = section.offsetHeight || window.innerHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      // Aurora blobs — drifting elliptical radial gradients
+      // Each blob: center (cx,cy as fraction), radii (rx,ry as fraction),
+      //            color [r,g,b], alpha, drift speeds + phases
+      const blobs = [
+        { cx:0.50, cy:0.35, rx:0.75, ry:0.22, col:[  0,194,255], a:0.13, sx:0.00022, sy:0.00017, px:0.00, py:0.00, rot:0.00009 },
+        { cx:0.28, cy:0.55, rx:0.62, ry:0.19, col:[ 90,155,225], a:0.10, sx:0.00015, sy:0.00021, px:1.20, py:2.10, rot:0.00007 },
+        { cx:0.72, cy:0.48, rx:0.58, ry:0.21, col:[130,185,240], a:0.09, sx:0.00028, sy:0.00013, px:2.40, py:0.50, rot:0.00011 },
+        { cx:0.50, cy:0.68, rx:0.52, ry:0.15, col:[253,207,124], a:0.05, sx:0.00019, sy:0.00025, px:0.80, py:3.20, rot:0.00008 },
+        { cx:0.38, cy:0.28, rx:0.50, ry:0.17, col:[175,220,255], a:0.08, sx:0.00012, sy:0.00019, px:3.10, py:1.40, rot:0.00006 },
+        { cx:0.64, cy:0.72, rx:0.60, ry:0.16, col:[ 60,120,200], a:0.07, sx:0.00024, sy:0.00014, px:1.70, py:2.80, rot:0.00010 },
+        { cx:0.50, cy:0.50, rx:0.82, ry:0.13, col:[  0,194,255], a:0.06, sx:0.00010, sy:0.00030, px:4.20, py:0.90, rot:0.00005 },
+        { cx:0.20, cy:0.40, rx:0.45, ry:0.18, col:[240,165, 55], a:0.03, sx:0.00017, sy:0.00022, px:2.00, py:1.60, rot:0.00008 },
+      ];
+
+      let t = 0;
+
+      function drawBlob(b) {
+        const W = canvas.width, H = canvas.height;
+        // Sinusoidal drift in x and y
+        const cx  = (b.cx + Math.sin(t * b.sx + b.px) * 0.18) * W;
+        const cy  = (b.cy + Math.sin(t * b.sy + b.py) * 0.13) * H;
+        const rx  = b.rx * W;
+        const ry  = b.ry * H;
+        const ang = Math.sin(t * b.rot + b.px) * 0.35; // gentle rotation ±20°
+        const [r, g, bl] = b.col;
+
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(ang);
+        ctx.scale(1, ry / rx);
+
+        const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, rx);
+        grad.addColorStop(0,    `rgba(${r},${g},${bl},${b.a})`);
+        grad.addColorStop(0.40, `rgba(${r},${g},${bl},${(b.a * 0.55).toFixed(3)})`);
+        grad.addColorStop(0.72, `rgba(${r},${g},${bl},${(b.a * 0.15).toFixed(3)})`);
+        grad.addColorStop(1,    `rgba(${r},${g},${bl},0)`);
+
+        ctx.beginPath();
+        ctx.arc(0, 0, rx, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+        ctx.restore();
+      }
+
+      function tick() {
+        t++;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.globalCompositeOperation = 'screen';
+        blobs.forEach(drawBlob);
+        ctx.globalCompositeOperation = 'source-over';
+        requestAnimationFrame(tick);
+      }
+
+      tick();
+
+      // ── Scroll-triggered text entrance + sequential reveal ──
+      const lines    = section.querySelectorAll('.aurora-line');
+      const wordmark = document.getElementById('aurora-wordmark');
+      const subline  = document.getElementById('aurora-subline');
+      const ctaEl    = document.getElementById('aurora-cta');
+
+      spellOut('aurora-wordmark');
+
+      let triggered = false;
+
+      const io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting && !triggered) {
+            triggered = true;
+            // All lines fade up simultaneously
+            lines.forEach(function (l) { l.classList.add('a-visible'); });
+            // After text finishes (1.4s) + 1.5s pause → wordmark
+            setTimeout(function () {
+              wordmark.style.opacity = '1';
+              setTimeout(function () {
+                subline.style.opacity = '1';
+                setTimeout(function () {
+                  ctaEl.style.opacity = '1';
+                }, 1000);
+              }, 1000);
+            }, 2900); // 1400ms fade + 1500ms pause
+          }
+        });
+      }, { threshold: 0.20 });
+
+      io.observe(section);
     }());
   </script>
 
