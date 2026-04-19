@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Innerverse — Founding Partners</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400;500&family=Syne:wght@400;500;600;700&family=Genos:wght@200&display=swap" rel="stylesheet" />
+  <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet" />
+  <script src="https://assets.calendly.com/assets/external/widget.js" async></script>
+
+  <style>
+    /* ── Reset & Base ───────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --void:   #00010A;
+      --blue:   #00C2FF;
+      --gold:   #FDCF7C;
+      --fog:    #0E1117;
+      --mist:   #8a9bb0;
+      --white:  #ffffff;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: #060c18;
+      color: var(--white);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-weight: 300;
+      font-size: 16px;
+      line-height: 1.75;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Stage lighting — three-point spotlights + floor glow ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        /* Central top spotlight — blue-white cone from above */
+        radial-gradient(ellipse 65% 80% at 50% -8%,
+          rgba(175,220,255,0.42) 0%,
+          rgba(130,185,240,0.18) 45%,
+          transparent 72%),
+        /* Left angled spotlight from upper-left corner */
+        radial-gradient(ellipse 55% 70% at -6% -4%,
+          rgba(90,155,225,0.38) 0%,
+          rgba(80,140,210,0.12) 50%,
+          transparent 68%),
+        /* Right angled spotlight from upper-right corner */
+        radial-gradient(ellipse 55% 70% at 106% -4%,
+          rgba(90,155,225,0.38) 0%,
+          rgba(80,140,210,0.12) 50%,
+          transparent 68%),
+        /* Mid-room blue ambient fill */
+        radial-gradient(ellipse 90% 50% at 50% 40%,
+          rgba(60,120,200,0.10) 0%,
+          transparent 70%),
+        /* Golden floor glow — the horizontal amber line */
+        radial-gradient(ellipse 140% 8% at 50% 66%,
+          rgba(252,190,70,0.50) 0%,
+          rgba(240,155,45,0.22) 50%,
+          transparent 78%),
+        /* Floor reflection below the line */
+        radial-gradient(ellipse 100% 25% at 50% 80%,
+          rgba(210,145,50,0.18) 0%,
+          transparent 72%),
+        /* Warm gold ambient in lower room */
+        radial-gradient(ellipse 70% 35% at 50% 90%,
+          rgba(180,110,30,0.12) 0%,
+          transparent 65%),
+        /* Deep void base — slightly lifted from pure black */
+        radial-gradient(ellipse 100% 60% at 50% 100%,
+          #050d1e 0%, #080f1c 60%, #080f1c 100%);
+      animation: stageBreath 20s ease-in-out infinite alternate;
+    }
+
+    @keyframes stageBreath {
+      0%   { opacity: 0.85; }
+      50%  { opacity: 1.0; }
+      100% { opacity: 0.90; }
+    }
+
+    /* ── Layout ─────────────────────────────────────────── */
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+
+    section { padding: 96px 0; }
+
+    /* ── Divider ─────────────────────────────────────────── */
+    .divider {
+      width: 1px;
+      height: 64px;
+      background: linear-gradient(to bottom, transparent, rgba(0,194,255,0.3), transparent);
+      margin: 0 auto;
+    }
+
+    /* ── Fade-in animation base ─────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      filter: blur(6px);
+      transition: opacity 1.3s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 1.3s cubic-bezier(0.22, 1, 0.36, 1),
+                  filter 1.3s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0px);
+    }
+
+    /* Stagger delays */
+    .delay-1 { transition-delay: 0.15s; }
+    .delay-2 { transition-delay: 0.32s; }
+    .delay-3 { transition-delay: 0.50s; }
+    .delay-4 { transition-delay: 0.68s; }
+    .delay-5 { transition-delay: 0.86s; }
+
+    /* ── Hero ───────────────────────────────────────────── */
+    #hero {
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-top: 80px;
+      padding-bottom: 80px;
+    }
+
+    .hero-eyebrow {
+      font-size: 16px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 28px;
+      opacity: 0;
+      animation: heroFadeIn 2s cubic-bezier(0.22, 1, 0.36, 1) 0.3s forwards;
+    }
+
+    .hero-headline {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: clamp(2.8rem, 6.8vw, 4.4rem);
+      font-weight: 300;
+      line-height: 1.12;
+      letter-spacing: 0.02em;
+      color: var(--white);
+      margin-bottom: 48px;
+      opacity: 0;
+      animation: heroFadeIn 2s cubic-bezier(0.22, 1, 0.36, 1) 0.55s forwards;
+    }
+
+    .hero-headline em {
+      font-style: normal;
+      font-weight: 400;
+      color: var(--gold);
+    }
+
+    .hero-subheadline {
+      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      font-weight: 300;
+      color: rgba(255,255,255,0.95);
+      max-width: 560px;
+      margin-bottom: 0;
+      opacity: 0;
+      animation: heroFadeIn 2s cubic-bezier(0.22, 1, 0.36, 1) 0.85s forwards;
+    }
+
+    /* ── Vision / Room section ──────────────────────────── */
+    #vision {
+      padding: 80px 0 0;
+    }
+
+    .vision-header {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(0.85rem, 1.5vw, 1rem);
+      font-weight: 300;
+      color: rgba(255,255,255,0.48);
+      letter-spacing: 0.1em;
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto 56px;
+      line-height: 1.8;
+    }
+
+    #room-stage {
+      position: relative;
+      width: 100%;
+      height: 70vh;
+      min-height: 420px;
+      overflow: hidden;
+    }
+
+    #room-particles {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    #room-perspective {
+      position: absolute;
+      inset: 0;
+      perspective-origin: 50% 50%;
+    }
+
+    #room-carousel {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 1.7s cubic-bezier(0.55, 0.06, 0.22, 1);
+      will-change: transform;
+    }
+
+    .room-wall {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 14%;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      background:
+        radial-gradient(ellipse 40% 60% at 50% 0%,
+          rgba(120,175,240,0.10) 0%,
+          rgba(80,140,210,0.04) 55%,
+          transparent 82%
+        ),
+        linear-gradient(180deg,
+          rgba(9,15,28,0.98)  0%,
+          rgba(5,9,18,1)      55%,
+          rgba(4,7,16,1)     100%
+        );
+      box-shadow:
+        inset 2px  0 50px rgba(90,155,225,0.12),
+        inset -2px 0 50px rgba(90,155,225,0.12),
+        inset 0    2px 70px rgba(130,185,240,0.08);
+    }
+
+    /* floor glow warm wash */
+    .room-wall::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 65% 28% at 50% 92%,
+        rgba(253,207,124,0.09) 0%,
+        transparent 70%
+      );
+      pointer-events: none;
+    }
+
+    .room-wall p {
+      position: relative;
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.15rem, 2.3vw, 1.8rem);
+      font-weight: 400;
+      color: rgba(255,255,255,0.82);
+      text-align: center;
+      line-height: 1.7;
+      max-width: 680px;
+      letter-spacing: 0.01em;
+      z-index: 1;
+    }
+
+    .room-wall-featured {
+      font-size: clamp(1.5rem, 3.2vw, 2.4rem) !important;
+      font-weight: 300 !important;
+      color: rgba(255,255,255,0.95) !important;
+      line-height: 1.55 !important;
+      letter-spacing: 0.02em !important;
+    }
+
+    @media (max-width: 1024px) {
+      .room-wall p {
+        font-size: clamp(1.25rem, 3.2vw, 1.6rem);
+        line-height: 1.72;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .room-wall p {
+        font-size: clamp(1.2rem, 4.8vw, 1.5rem);
+        line-height: 1.75;
+        max-width: 88%;
+      }
+    }
+
+    /* top/bottom gradient masks — room dissolves into page */
+    .room-fade {
+      position: absolute;
+      left: 0; right: 0;
+      height: 32%;
+      pointer-events: none;
+      z-index: 9;
+    }
+
+    .room-fade-top {
+      top: 0;
+      background: linear-gradient(to bottom, #111d2c 0%, rgba(17,29,44,0) 100%);
+    }
+
+    .room-fade-bottom {
+      bottom: 0;
+      background: linear-gradient(to top, #111d2c 0%, rgba(17,29,44,0) 100%);
+    }
+
+    .room-fade-left {
+      top: 0; bottom: 0; left: 0;
+      right: auto;
+      width: 18%;
+      height: 100%;
+      background: linear-gradient(to right, #111d2c 0%, rgba(17,29,44,0) 100%);
+    }
+
+    .room-fade-right {
+      top: 0; bottom: 0; right: 0;
+      left: auto;
+      width: 18%;
+      height: 100%;
+      background: linear-gradient(to left, #111d2c 0%, rgba(17,29,44,0) 100%);
+    }
+
+    @keyframes heroFadeIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Canvas bokeh layer */
+    #stage-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── What Founding Partners Get ─────────────────────── */
+    #benefits {
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .section-label {
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.8rem, 4.5vw, 2.5rem);
+      font-weight: 400;
+      line-height: 1.2;
+      color: var(--white);
+      margin-bottom: 48px;
+    }
+
+    .benefits-list,
+    .benefits-list li {
+      list-style: none !important;
+      list-style-type: none !important;
+    }
+
+    .benefits-list {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0 48px;
+    }
+
+    .benefit-item {
+      position: relative;
+      padding: 32px 0 0;
+      border-top: 1px solid rgba(253,207,124,0.35);
+      background: none;
+      box-shadow: none;
+      opacity: 0;
+      transform: translateY(28px);
+      will-change: transform, opacity;
+      transition:
+        opacity  1.1s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .benefit-item.in-view {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .benefit-item:nth-child(2) { transition-delay: 0.15s; }
+    .benefit-item:nth-child(3) { transition-delay: 0.30s; }
+
+    .benefit-phase {
+      display: block;
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 20px;
+    }
+
+    .benefit-content strong {
+      display: block;
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.1rem, 2vw, 1.35rem);
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 14px;
+      letter-spacing: -0.01em;
+      line-height: 1.25;
+    }
+
+    .benefit-content span {
+      font-size: 0.88rem;
+      color: rgba(255,255,255,0.72);
+      line-height: 1.8;
+    }
+
+    /* ── Calendly Section ───────────────────────────────── */
+    #connect {
+      border-top: 1px solid rgba(255,255,255,0.05);
+      text-align: center;
+    }
+
+    .connect-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 400;
+      color: var(--white);
+      margin-bottom: 16px;
+    }
+
+    .connect-subtitle {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.95);
+      max-width: 440px;
+      margin: 0 auto 48px;
+    }
+
+    /* Calendly placeholder */
+    #calendly-embed {
+      width: 100%;
+      min-height: 120px;
+      border: 1px dashed rgba(0,194,255,0.2);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 40px 24px;
+      margin-bottom: 40px;
+      background: rgba(0,194,255,0.02);
+    }
+
+    #calendly-embed p {
+      font-size: 0.85rem;
+      color: rgba(0,194,255,0.5);
+      font-style: italic;
+      text-align: center;
+      max-width: 400px;
+      line-height: 1.6;
+    }
+
+    #calendly-embed code {
+      font-family: 'Courier New', monospace;
+      font-size: 0.8rem;
+      background: rgba(0,194,255,0.08);
+      color: var(--blue);
+      padding: 6px 12px;
+      border-radius: 4px;
+      letter-spacing: 0.02em;
+    }
+
+    /* CTA Button */
+    .cta-button {
+      display: inline-block;
+      padding: 16px 40px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--void);
+      background: var(--blue);
+      border-radius: 3px;
+      border: none;
+      cursor: pointer;
+      transition:
+        box-shadow 0.5s ease,
+        transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+        color 0.5s ease;
+      position: relative;
+      overflow: hidden;
+      transform: scale(1);
+      will-change: transform;
+    }
+
+    .cta-button::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--gold);
+      opacity: 0;
+      transition: opacity 0.55s ease;
+    }
+
+    .cta-button span { position: relative; z-index: 1; }
+
+    .cta-button:hover::before { opacity: 1; }
+
+    .cta-button:hover {
+      transform: scale(1.04);
+      box-shadow:
+        0 0 28px rgba(253,207,124,0.45),
+        0 0 70px rgba(253,207,124,0.15),
+        0 4px 24px rgba(0,0,0,0.3);
+      color: var(--void);
+    }
+
+    /* Soft glow pulse at rest */
+    @keyframes glowPulse {
+      0%, 100% { box-shadow: 0 0 12px rgba(0,194,255,0.2); }
+      50%       { box-shadow: 0 0 22px rgba(0,194,255,0.38); }
+    }
+
+    .cta-button { animation: glowPulse 3.5s ease-in-out infinite; }
+    .cta-button:hover { animation: none; }
+
+    /* ── Calendly popup overrides ───────────────────────── */
+    .calendly-overlay .calendly-popup {
+      border-radius: 4px;
+    }
+
+    /* ── Footer ─────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding: 48px 0;
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .footer-wordmark {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: 1.2rem;
+      font-weight: 400;
+      color: var(--white);
+      letter-spacing: 0.05em;
+    }
+
+    .footer-wordmark span {
+      color: var(--blue);
+    }
+
+    .footer-tagline {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.78);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .footer-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--gold);
+      opacity: 0.5;
+      box-shadow: 0 0 6px rgba(253,207,124,0.4);
+    }
+
+    /* ── Innerverse wordmark banners (top + bottom) ─────── */
+    .iv-wordmark {
+      font-family: 'Genos', sans-serif;
+      font-weight: 200;
+      font-size: clamp(2rem, 6vw, 4rem);
+      color: #ffffff;
+      text-transform: uppercase;
+      display: block;
+      width: 100%;
+      text-align: center;
+      user-select: none;
+      letter-spacing: 12px;  /* fixed px — never stretches with viewport */
+    }
+
+    .iv-wordmark span { display: inline; }
+
+    /* Opaque animated backdrop — sits behind the wordmark, blocks scrolled content */
+    #header-backdrop {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 99;
+      /* height set by JS to exactly match header */
+      background:
+        radial-gradient(ellipse 70% 400% at 50% 0%,
+          rgba(175,220,255,0.42) 0%,
+          rgba(130,185,240,0.18) 30%,
+          transparent 65%),
+        radial-gradient(ellipse 55% 350% at -6% 0%,
+          rgba(90,155,225,0.36) 0%,
+          transparent 55%),
+        radial-gradient(ellipse 55% 350% at 106% 0%,
+          rgba(90,155,225,0.36) 0%,
+          transparent 55%),
+        #080f1c;
+      animation: stageBreath 20s ease-in-out infinite alternate;
+    }
+
+    /* Top header banner */
+    #site-header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 18px 32px;
+      background: transparent;
+      pointer-events: none;
+    }
+
+    /* Bottom footer wordmark — full width row */
+    .footer-wordmark-full {
+      padding: 28px 0 20px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    /* ── Responsive ─────────────────────────────────────── */
+    /* Tablet */
+    @media (min-width: 641px) and (max-width: 1024px) {
+      .container { padding: 0 40px; }
+    }
+
+    /* Desktop */
+    @media (min-width: 1025px) {
+      .container { padding: 0 32px; }
+      section { padding: 112px 0; }
+    }
+
+    /* Mobile */
+    @media (max-width: 640px) {
+      .container { padding: 0 20px; }
+      section { padding: 72px 0; }
+      #hero { padding-top: 64px; padding-bottom: 64px; }
+      #site-header { padding: 14px 20px; }
+
+      .footer-inner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+      }
+
+      .benefits-list { grid-template-columns: 1fr; gap: 0; }
+      .benefit-item { padding: 28px 0 0; }
+      .benefit-item:nth-child(2),
+      .benefit-item:nth-child(3) { margin-top: 32px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Animated backdrop that blocks scrolled content behind logo -->
+  <div id="header-backdrop"></div>
+
+  <!-- Top wordmark banner -->
+  <header id="site-header">
+    <div class="container">
+      <div class="iv-wordmark" id="header-wordmark">INNERVERSE</div>
+    </div>
+  </header>
+
+  <!-- Stage bokeh canvas -->
+  <canvas id="stage-canvas" aria-hidden="true"></canvas>
+
+  <!-- ── HERO ──────────────────────────────────────────── -->
+  <section id="hero">
+    <div class="container">
+      <p class="hero-eyebrow">Founding Partners</p>
+      <h1 class="hero-headline">
+        Building the future of<br><em>immersive community spaces</em>
+      </h1>
+      <p class="hero-subheadline">
+        An invitation for the hosts who want to define what intentional digital gathering looks like.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── VISION / ROOM ────────────────────────────────── -->
+  <section id="vision">
+    <div class="container">
+      <p class="vision-header reveal">Innerverse is a spatial web platform where communities gather inside immersive, navigable environments built for presence.</p>
+    </div>
+
+    <div id="room-stage">
+      <canvas id="room-particles" aria-hidden="true"></canvas>
+
+      <div id="room-perspective">
+        <div id="room-carousel">
+
+          <div class="room-wall">
+            <p class="room-wall-featured">Currently in development, with first environments launching mid-2025.</p>
+          </div>
+
+          <div class="room-wall">
+            <p>Designed for mastermind hosts, cohort facilitators, and creative community leaders who understand that the space you gather in elevates the experience and how your work is perceived.</p>
+          </div>
+
+          <div class="room-wall">
+            <p>Built to feel like a sanctuary rather than a tool, each environment is a premium venue that transforms how your community shows up.</p>
+          </div>
+
+          <div class="room-wall">
+            <p>Founding Partners are the first to step inside, shape how the environment is customised to serve their goals, and define how their brand is experienced.</p>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="room-fade room-fade-top"></div>
+      <div class="room-fade room-fade-bottom"></div>
+      <div class="room-fade room-fade-left"></div>
+      <div class="room-fade room-fade-right"></div>
+    </div>
+  </section>
+
+  <div class="container"><div class="divider reveal"></div></div>
+
+  <!-- ── BENEFITS ──────────────────────────────────────── -->
+  <section id="benefits">
+    <div class="container">
+      <p class="section-label reveal">For those who build with intention</p>
+      <h2 class="section-title reveal delay-1">How it works</h2>
+
+      <ul class="benefits-list">
+
+        <li class="benefit-item">
+          <div class="benefit-content">
+            <span class="benefit-phase">Phase 1</span>
+            <strong>Research Conversation</strong>
+            <span>You join a short call with the Innerverse founder. We learn about your community, your program structure, and what a spatial environment could hold for your members. Your input informs how the environment is customised to serve your goals.</span>
+          </div>
+        </li>
+
+        <li class="benefit-item">
+          <div class="benefit-content">
+            <span class="benefit-phase">Phase 2</span>
+            <strong>Demo Access</strong>
+            <span>Before any public release, you get first access to the Innerverse V0 spatial environment. You see it, respond to it, and your feedback influences the next layer of development.</span>
+          </div>
+        </li>
+
+        <li class="benefit-item">
+          <div class="benefit-content">
+            <span class="benefit-phase">Phase 3</span>
+            <strong>Founding Pilot</strong>
+            <span>You host your next cohort or mastermind inside a custom Innerverse environment. Founding partner pricing applies and is locked permanently for your account as the platform grows.</span>
+          </div>
+        </li>
+
+      </ul>
+    </div>
+  </section>
+
+  <div class="container"><div class="divider reveal"></div></div>
+
+  <!-- ── CONNECT ───────────────────────────────────────── -->
+  <section id="connect">
+    <div class="container">
+      <p class="section-label reveal">Begin here</p>
+      <h2 class="connect-title reveal delay-1">Let's talk.</h2>
+      <p class="connect-subtitle reveal delay-2">
+        If this resonates, we'd like to hear about you: your community, what you're building, and what you need from a space that holds it.
+      </p>
+
+      <div class="reveal delay-3">
+        <a
+          class="cta-button"
+          href="#"
+          onclick="Calendly.initPopupWidget({url:'https://calendly.com/blossomemami/30min'}); return false;"
+        >
+          <span>Reserve your conversation</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ────────────────────────────────────────── -->
+  <footer>
+    <div class="container">
+      <div class="footer-wordmark-full reveal">
+        <div class="iv-wordmark" id="footer-wordmark">INNERVERSE</div>
+      </div>
+      <div class="footer-inner reveal delay-1">
+        <div class="footer-dot"></div>
+        <p class="footer-tagline">Spatial environments for communities that gather with intention</p>
+        <div class="footer-dot"></div>
+      </div>
+    </div>
+  </footer>
+
+
+  <script>
+    // ── Reserve header space so content never scrolls under logo ──
+    function setHeaderOffset() {
+      const h = document.getElementById('site-header').offsetHeight;
+      document.body.style.paddingTop = h + 'px';
+      document.getElementById('header-backdrop').style.height = h + 'px';
+    }
+    // Run immediately, again on load, and again after fonts render
+    setHeaderOffset();
+    window.addEventListener('load', setHeaderOffset);
+    document.fonts.ready.then(setHeaderOffset);
+    window.addEventListener('resize', setHeaderOffset);
+
+    // ── Wordmark letter spread ───────────────────────────
+    function spellOut(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const text = el.textContent.trim();
+      el.textContent = '';
+      [...text].forEach(ch => {
+        const s = document.createElement('span');
+        s.textContent = ch;
+        el.appendChild(s);
+      });
+    }
+    spellOut('header-wordmark');
+    spellOut('footer-wordmark');
+
+    // ── Scroll-triggered reveal (bidirectional) ──────────
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        } else {
+          entry.target.classList.remove('visible');
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // ── Benefit items — fade up (bidirectional) ──────────
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const benefitObserver = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('in-view');
+            } else {
+              entry.target.classList.remove('in-view');
+            }
+          });
+        }, {
+          threshold: 0.18,
+          rootMargin: '0px 0px -80px 0px'
+        });
+
+        document.querySelectorAll('.benefit-item').forEach(el => benefitObserver.observe(el));
+      });
+    });
+
+
+    // ── Canvas bokeh — atmospheric gold/blue particles ──
+    const canvas = document.getElementById('stage-canvas');
+    const ctx    = canvas.getContext('2d');
+
+    function resize() {
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', () => { resize(); });
+
+    // Particle definition
+    // Bokeh are large, soft, blurred circles — like the reference images
+    const GOLD = [[253,200,90],[240,165,55],[255,215,110],[248,182,70]];
+    const BLUE = [[100,195,255],[130,210,255],[80,175,240]];
+
+    function rnd(min, max) { return Math.random() * (max - min) + min; }
+
+    // Spawn particles concentrated in the lower-center (rising from the floor line)
+    function spawnParticle() {
+      const isGold = Math.random() > 0.22;
+      const palette = isGold ? GOLD : BLUE;
+      const col = palette[Math.floor(Math.random() * palette.length)];
+
+      return {
+        x:      rnd(canvas.width * 0.10, canvas.width * 0.90),
+        y:      rnd(canvas.height * 0.45, canvas.height * 0.90),  // start lower half
+        r:      rnd(isGold ? 8 : 5, isGold ? 32 : 18),           // large for bokeh look
+        vx:     rnd(-0.12, 0.12),
+        vy:     rnd(-0.06, -0.22),                                 // drift upward slowly
+        alpha:  rnd(0.10, isGold ? 0.38 : 0.22),
+        fade:   rnd(0.00015, 0.0004),                             // very slow fade out
+        col,
+        life:   1.0,
+      };
+    }
+
+    let particles = Array.from({ length: 55 }, () => {
+      const p = spawnParticle();
+      // Pre-scatter across full height so it doesn't all start at floor
+      p.y = rnd(canvas.height * 0.15, canvas.height * 0.90);
+      p.life = rnd(0.2, 1.0);
+      return p;
+    });
+
+    // ── Foreground spark particles — sharp, vivid, falling gold ──
+    // These spawn from the top-center (spotlight source) and fall slowly downward,
+    // like lit dust caught in a beam. Crisp, no blur, sparingly seeded (18 total).
+    const SPARK_GOLD = [[255,220,120],[253,200,80],[255,240,150],[250,190,65]];
+
+    function spawnSpark() {
+      const col = SPARK_GOLD[Math.floor(Math.random() * SPARK_GOLD.length)];
+      // Concentrate horizontally near center, skewing toward spotlight cone
+      const spreadX = rnd(0.20, 0.80);
+      return {
+        x:      canvas.width  * spreadX,
+        y:      rnd(canvas.height * 0.02, canvas.height * 0.55),  // upper + mid zone
+        r:      rnd(0.8, 2.4),               // tiny — sharp dot
+        vx:     rnd(-0.08, 0.08),
+        vy:     rnd(0.04, 0.18),             // falling downward (spotlight rain)
+        alpha:  rnd(0.55, 0.95),             // vivid
+        fade:   rnd(0.0003, 0.0008),
+        col,
+        life:   1.0,
+        spark:  true,
+      };
+    }
+
+    const sparks = Array.from({ length: 18 }, () => {
+      const s = spawnSpark();
+      // Pre-scatter vertically so they don't all start at the same place
+      s.y    = rnd(0, canvas.height * 0.75);
+      s.life = rnd(0.15, 1.0);
+      return s;
+    });
+
+    function drawBokeh(p) {
+      const [r, g, b] = p.col;
+      const a = p.alpha * p.life;
+      if (a <= 0) return;
+
+      const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
+      grad.addColorStop(0,   `rgba(${r},${g},${b},${a})`);
+      grad.addColorStop(0.35,`rgba(${r},${g},${b},${a * 0.65})`);
+      grad.addColorStop(0.7, `rgba(${r},${g},${b},${a * 0.20})`);
+      grad.addColorStop(1,   `rgba(${r},${g},${b},0)`);
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+    }
+
+    function drawSpark(s) {
+      const [r, g, b] = s.col;
+      const a = s.alpha * s.life;
+      if (a <= 0) return;
+
+      // Crisp solid core with a very tight halo — no blur, just vivid presence
+      ctx.save();
+      ctx.shadowColor  = `rgba(${r},${g},${b},${a * 0.7})`;
+      ctx.shadowBlur   = 4;
+      ctx.fillStyle    = `rgba(${r},${g},${b},${a})`;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fill();
+      // White-hot centre on the brightest sparks
+      if (a > 0.55) {
+        ctx.shadowBlur  = 0;
+        ctx.fillStyle   = `rgba(255,255,220,${a * 0.55})`;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r * 0.38, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    function tick() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw bokeh first (background layer)
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        p.x    += p.vx;
+        p.y    += p.vy;
+        p.life -= p.fade;
+        drawBokeh(p);
+        if (p.life <= 0 || p.y < -p.r * 2) {
+          particles[i] = spawnParticle();
+        }
+      }
+
+      // Draw sparks on top (foreground layer)
+      for (let i = 0; i < sparks.length; i++) {
+        const s = sparks[i];
+        s.x    += s.vx;
+        s.y    += s.vy;
+        s.life -= s.fade;
+        drawSpark(s);
+        // Respawn when faded or fallen off screen
+        if (s.life <= 0 || s.y > canvas.height + 4) {
+          sparks[i] = spawnSpark();
+        }
+      }
+
+      requestAnimationFrame(tick);
+    }
+
+    tick();
+
+
+    // ── 3D Room carousel ─────────────────────────────────
+    (function () {
+      const roomPerspective = document.getElementById('room-perspective');
+      const roomCarousel    = document.getElementById('room-carousel');
+      const roomWalls       = roomCarousel.querySelectorAll('.room-wall');
+      let roomAngle = 0;
+
+      function setupRoom() {
+        const vw = window.innerWidth;
+        const R  = Math.round(vw * 0.52);
+        roomPerspective.style.perspective = Math.round(vw * 1.4) + 'px';
+        roomWalls.forEach(function (wall, i) {
+          wall.style.transform = 'rotateY(' + (i * 90) + 'deg) translateZ(' + (-R) + 'px)';
+        });
+      }
+
+      setupRoom();
+      window.addEventListener('resize', setupRoom);
+
+      // Auto-rotate every 4 seconds, always rightward
+      setInterval(function () {
+        roomAngle -= 90;
+        roomCarousel.style.transform = 'rotateY(' + roomAngle + 'deg)';
+      }, 6000);
+    }());
+
+
+    // ── Room dust particles ───────────────────────────────
+    (function () {
+      const rc  = document.getElementById('room-particles');
+      const rctx = rc.getContext('2d');
+
+      function resizeRoomCanvas() {
+        rc.width  = rc.offsetWidth  || rc.parentElement.offsetWidth;
+        rc.height = rc.offsetHeight || rc.parentElement.offsetHeight;
+      }
+      resizeRoomCanvas();
+      window.addEventListener('resize', resizeRoomCanvas);
+
+      const DUST_COLS = [
+        [255,210,100],[248,190,70],[253,207,124],[255,230,140],[240,175,55]
+      ];
+
+      function rnd(a, b) { return Math.random() * (b - a) + a; }
+
+      function spawnDust() {
+        const col = DUST_COLS[Math.floor(Math.random() * DUST_COLS.length)];
+        return {
+          x:     rnd(rc.width * 0.08, rc.width * 0.92),
+          y:     rnd(-20, rc.height * 0.55),
+          r:     rnd(0.35, 2.4),
+          vy:    rnd(0.07, 0.32),
+          vx:    rnd(-0.05, 0.05),
+          alpha: rnd(0.20, 0.78),
+          fade:  rnd(0.0005, 0.0016),
+          life:  1.0,
+          col,
+        };
+      }
+
+      // Pre-scatter across full height so it doesn't all start at top
+      let dust = Array.from({ length: 90 }, function () {
+        const d = spawnDust();
+        d.y    = rnd(0, rc.height);
+        d.life = rnd(0.2, 1.0);
+        return d;
+      });
+
+      function tickDust() {
+        rctx.clearRect(0, 0, rc.width, rc.height);
+
+        for (let i = 0; i < dust.length; i++) {
+          const d = dust[i];
+          d.x += d.vx;
+          d.y += d.vy;
+          d.life -= d.fade;
+
+          const a = d.alpha * d.life;
+          if (a > 0.01) {
+            const [r, g, b] = d.col;
+            rctx.save();
+            rctx.shadowColor = 'rgba(' + r + ',' + g + ',' + b + ',' + (a * 0.55) + ')';
+            rctx.shadowBlur  = d.r * 4;
+            rctx.fillStyle   = 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
+            rctx.beginPath();
+            rctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+            rctx.fill();
+            rctx.restore();
+          }
+
+          if (d.life <= 0 || d.y > rc.height + 10) {
+            dust[i] = spawnDust();
+          }
+        }
+
+        requestAnimationFrame(tickDust);
+      }
+
+      tickDust();
+    }());
+  </script>
+
+</body>
+</html>
