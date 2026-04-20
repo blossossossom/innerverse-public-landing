@@ -40,7 +40,14 @@ module.exports = async function handler(req, res) {
 
     const mlData = await mlRes.json();
 
-    // 200 = created, 201 = updated (already subscribed) — both are success
+    // Log full response so we can diagnose automation/status issues
+    console.log('MailerLite response', mlRes.status, JSON.stringify({
+      status:        mlData?.data?.status,
+      subscribed_at: mlData?.data?.subscribed_at,
+      groups:        mlData?.data?.groups?.map(g => g.id),
+      opted_in_at:   mlData?.data?.opted_in_at,
+    }));
+
     if (!mlRes.ok) {
       const msg =
         mlData?.message ||
