@@ -33,8 +33,10 @@ module.exports = async function handler(req, res) {
         'Authorization': `Bearer ${API_KEY}`,
       },
       body: JSON.stringify({
-        email:  email.toLowerCase().trim(),
-        groups: [GROUP_ID],
+        email:       email.toLowerCase().trim(),
+        groups:      [GROUP_ID],
+        resubscribe: true,   // re-trigger automations for returning/lapsed subscribers
+        status:      'active',
       }),
     });
 
@@ -51,7 +53,7 @@ module.exports = async function handler(req, res) {
 
     // 201 = newly created subscriber, 200 = subscriber already existed
     const isNew = mlRes.status === 201;
-    console.log(`MailerLite: subscriber ${isNew ? 'created' : 'already existed'} (HTTP ${mlRes.status})`);
+    console.log(`MailerLite HTTP ${mlRes.status} | status=${mlData?.data?.status} | groups=${JSON.stringify(mlData?.data?.groups?.map(g=>({id:g.id,name:g.name})))} | subscribed_at=${mlData?.data?.subscribed_at}`);
     return res.status(200).json({ success: true, existing: !isNew });
   } catch (err) {
     console.error('Unhandled error in /api/subscribe:', err);
