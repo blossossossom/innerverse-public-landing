@@ -543,6 +543,74 @@
     }
 
 
+    /* ── Aurora CTA (hero button) ───────────────────────── */
+    .aurora-cta {
+      display: inline-block;
+      position: relative;
+      overflow: visible;
+      padding: 20px 58px;
+      font-family: 'Inter', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 300;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.88);
+      text-decoration: none;
+      cursor: pointer;
+      background: rgba(0,194,255,0.06);
+      border: 1px solid rgba(0,194,255,0.22);
+      border-radius: 3px;
+      /* Multi-layer halo — natural faded edges */
+      box-shadow:
+        0 0 28px  rgba(0,194,255,0.22),
+        0 0 70px  rgba(0,194,255,0.10),
+        0 0 130px rgba(0,194,255,0.05);
+      transition:
+        box-shadow   0.65s ease,
+        border-color 0.65s ease,
+        background   0.65s ease,
+        color        0.4s  ease;
+      opacity: 0;
+      animation: heroFadeIn 2s cubic-bezier(0.22,1,0.36,1) 1.1s forwards;
+    }
+
+    /* Blurred aurora bloom that bleeds outside the button */
+    .aurora-cta::before {
+      content: '';
+      position: absolute;
+      inset: -24px -40px;
+      background: radial-gradient(ellipse 100% 100% at 50% 50%,
+        rgba(0,194,255,0.20)  0%,
+        rgba(90,155,225,0.10) 45%,
+        transparent           72%
+      );
+      filter: blur(24px);
+      border-radius: 50%;
+      pointer-events: none;
+      transition: opacity 0.65s ease, background 0.65s ease;
+    }
+
+    .aurora-cta:hover {
+      color: #fff;
+      background: rgba(0,194,255,0.12);
+      border-color: rgba(0,194,255,0.55);
+      box-shadow:
+        0 0 50px  rgba(0,194,255,0.60),
+        0 0 110px rgba(0,194,255,0.32),
+        0 0 200px rgba(0,194,255,0.15),
+        0 0 310px rgba(0,194,255,0.06);
+    }
+
+    .aurora-cta:hover::before {
+      background: radial-gradient(ellipse 110% 110% at 50% 50%,
+        rgba(0,194,255,0.42)  0%,
+        rgba(90,155,225,0.22) 45%,
+        transparent           72%
+      );
+    }
+
+    .aurora-cta span { position: relative; }
+
     /* ── Aurora Hero ─────────────────────────────────────── */
     #aurora-hero {
       position: relative;
@@ -654,6 +722,9 @@
       <p class="hero-subheadline">
         Early access opening to first community of 100.
       </p>
+      <div style="margin-top: 44px;">
+        <a class="aurora-cta" href="#connect"><span>Enter the waitlist</span></a>
+      </div>
     </div>
   </section>
 
@@ -666,13 +737,6 @@
       <p class="aurora-line">Over time, they become harder to return to. The digital world starts to feel shallow. Fleeting.</p>
       <p class="aurora-line aurora-line-highlight">Your inner life is multidimensional, but fragmented.</p>
       <p class="aurora-line">Innerverse brings those fragments together, and gives you a place to return to yourself, anytime.</p>
-      <div id="aurora-reveal">
-        <div class="iv-wordmark" id="aurora-wordmark">INNERVERSE</div>
-        <p id="aurora-subline">Early access opening to a small first community.</p>
-        <div id="aurora-cta">
-          <a class="cta-button" href="#connect"><span>Enter the waitlist</span></a>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -1199,32 +1263,15 @@
 
       tick();
 
-      // ── Scroll-triggered text entrance + sequential reveal ──
-      const lines    = section.querySelectorAll('.aurora-line');
-      const wordmark = document.getElementById('aurora-wordmark');
-      const subline  = document.getElementById('aurora-subline');
-      const ctaEl    = document.getElementById('aurora-cta');
-
-      spellOut('aurora-wordmark');
-
+      // ── Scroll-triggered text entrance ──
+      const lines = section.querySelectorAll('.aurora-line');
       let triggered = false;
 
       const io = new IntersectionObserver(function (entries) {
         entries.forEach(function (entry) {
           if (entry.isIntersecting && !triggered) {
             triggered = true;
-            // All lines fade up simultaneously
             lines.forEach(function (l) { l.classList.add('a-visible'); });
-            // After text finishes (1.4s) + 1.5s pause → wordmark
-            setTimeout(function () {
-              wordmark.style.opacity = '1';
-              setTimeout(function () {
-                subline.style.opacity = '1';
-                setTimeout(function () {
-                  ctaEl.style.opacity = '1';
-                }, 1000);
-              }, 1000);
-            }, 2900); // 1400ms fade + 1500ms pause
           }
         });
       }, { threshold: 0.20 });
