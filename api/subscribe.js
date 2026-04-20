@@ -40,14 +40,6 @@ module.exports = async function handler(req, res) {
 
     const mlData = await mlRes.json();
 
-    // Log full response so we can diagnose automation/status issues
-    console.log('MailerLite response', mlRes.status, JSON.stringify({
-      status:        mlData?.data?.status,
-      subscribed_at: mlData?.data?.subscribed_at,
-      groups:        mlData?.data?.groups?.map(g => g.id),
-      opted_in_at:   mlData?.data?.opted_in_at,
-    }));
-
     if (!mlRes.ok) {
       const msg =
         mlData?.message ||
@@ -57,7 +49,10 @@ module.exports = async function handler(req, res) {
       return res.status(mlRes.status).json({ error: msg });
     }
 
-    return res.status(200).json({ success: true });
+    // 201 = newly created subscriber, 200 = subscriber already existed
+    const isNew = mlRes.status === 201;
+    console.log(`MailerLite: subscriber ${isNew ? 'created' : 'already existed'} (HTTP ${mlRes.status})`);
+    return res.status(200).json({ success: true, existing: !isNew });
   } catch (err) {
     console.error('Unhandled error in /api/subscribe:', err);
     return res.status(500).json({ error: 'Server error — please try again.' });

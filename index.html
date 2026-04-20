@@ -1506,6 +1506,9 @@
             if (res.ok) {
               form.style.display    = 'none';
               success.style.display = 'block';
+              if (data.existing) {
+                success.querySelector('p').textContent = "You\u2019ve already joined our waitlist. We\u2019ve reserved your place.";
+              }
             } else {
               span.textContent           = data.error || 'Something went wrong.';
               submitBtn.disabled         = false;
