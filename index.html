@@ -135,9 +135,17 @@
       min-height: 100svh;
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: flex-start;
       padding-top: 80px;
       padding-bottom: 80px;
+    }
+
+    #hero-cta-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 56px 0;
     }
 
     .hero-eyebrow {
@@ -545,14 +553,18 @@
 
     /* ── Aurora CTA (hero button) ───────────────────────── */
     .aurora-cta {
-      display: inline-block;
+      display: block;
       position: relative;
       overflow: visible;
-      padding: 24px 72px;
+      width: 33vw;
+      min-width: 280px;
+      max-width: 540px;
+      text-align: center;
+      padding: 44px 0;
       font-family: 'Inter', sans-serif;
-      font-size: 1.18rem;
+      font-size: 1.45rem;
       font-weight: 300;
-      letter-spacing: 0.22em;
+      letter-spacing: 0.28em;
       text-transform: uppercase;
       color: rgba(255,255,255,0.88);
       text-decoration: none;
@@ -578,13 +590,13 @@
     .aurora-cta::before {
       content: '';
       position: absolute;
-      inset: -24px -40px;
+      inset: -40px -60px;
       background: radial-gradient(ellipse 100% 100% at 50% 50%,
-        rgba(0,194,255,0.20)  0%,
-        rgba(90,155,225,0.10) 45%,
+        rgba(0,194,255,0.22)  0%,
+        rgba(90,155,225,0.11) 45%,
         transparent           72%
       );
-      filter: blur(24px);
+      filter: blur(36px);
       border-radius: 50%;
       pointer-events: none;
       transition: opacity 0.65s ease, background 0.65s ease;
@@ -722,9 +734,9 @@
       <p class="hero-subheadline">
         Early access opening to first community of 100.
       </p>
-      <div style="margin-top: 44px; text-align: center;">
-        <a class="aurora-cta" href="#connect"><span>Enter the waitlist</span></a>
-      </div>
+    </div>
+    <div id="hero-cta-wrap">
+      <a class="aurora-cta" href="#connect"><span>Enter the waitlist</span></a>
     </div>
   </section>
 
