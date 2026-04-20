@@ -3,10 +3,12 @@
 // Uses MailerLite API v3 (connect.mailerlite.com).
 //
 // Logic:
-//   1. GET the subscriber to check their current status.
-//   2. If they are already ACTIVE in our group → return existing:true (already on waitlist).
-//   3. If they don't exist, or are unsubscribed/bounced/junk → POST to (re-)subscribe them,
-//      return existing:false so the frontend shows the normal "You're in" confirmation.
+//   1. GET subscriber to check current status + group membership.
+//   2. If already ACTIVE in our group → return existing:true (already on waitlist).
+//   3. If subscriber exists but is unsubscribed/inactive:
+//        a. DELETE them from the group (resets the "joins group" trigger).
+//        b. POST to re-add them → fires the "subscriber joins group" automation fresh.
+//   4. If subscriber doesn't exist at all → POST to create → fires automation normally.
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -36,37 +38,48 @@ module.exports = async function handler(req, res) {
   };
 
   try {
-    // ── Step 1: check if subscriber already exists and is active ──────────
+    // ── Step 1: check if subscriber exists ───────────────────────────────
     const checkRes  = await fetch(
       `https://connect.mailerlite.com/api/subscribers/${encodeURIComponent(cleanEmail)}`,
       { headers }
     );
 
     if (checkRes.ok) {
-      const checkData   = await checkRes.json();
-      const status      = checkData?.data?.status;          // 'active' | 'unsubscribed' | 'unconfirmed' | 'bounced' | 'junk'
-      const groupIds    = (checkData?.data?.groups || []).map(g => String(g.id));
-      const inOurGroup  = groupIds.includes(String(GROUP_ID));
+      const checkData    = await checkRes.json();
+      const status       = checkData?.data?.status;
+      const subscriberId = checkData?.data?.id;
+      const groupIds     = (checkData?.data?.groups || []).map(g => String(g.id));
+      const inOurGroup   = groupIds.includes(String(GROUP_ID));
 
-      console.log(`Existing subscriber | status=${status} | inGroup=${inOurGroup}`);
+      console.log(`Existing subscriber | status=${status} | inGroup=${inOurGroup} | id=${subscriberId}`);
 
+      // Already active on the waitlist — nothing to do
       if (status === 'active' && inOurGroup) {
-        // Already on the waitlist and active — nothing to do
         return res.status(200).json({ success: true, existing: true });
       }
-      // Otherwise: unsubscribed / not in group / bounced / junk → fall through to re-subscribe
-    }
-    // 404 = subscriber doesn't exist at all → fall through to create
 
-    // ── Step 2: create or re-subscribe ───────────────────────────────────
-    const mlRes  = await fetch('https://connect.mailerlite.com/api/subscribers', {
+      // Subscriber exists but unsubscribed/inactive.
+      // Delete them from the group first so the next POST fires a genuine
+      // "subscriber joins group" event and triggers the welcome automation.
+      if (inOurGroup && subscriberId) {
+        const delRes = await fetch(
+          `https://connect.mailerlite.com/api/subscribers/${subscriberId}/groups/${GROUP_ID}`,
+          { method: 'DELETE', headers }
+        );
+        console.log(`Removed from group | HTTP ${delRes.status}`);
+      }
+    }
+    // 404 = never existed → fall straight through to POST
+
+    // ── Step 2: (re-)add to group — fires "subscriber joins group" automation
+    const mlRes = await fetch('https://connect.mailerlite.com/api/subscribers', {
       method: 'POST',
       headers,
       body: JSON.stringify({
         email:       cleanEmail,
         groups:      [GROUP_ID],
         status:      'active',
-        resubscribe: true,   // re-trigger automations for returning subscribers
+        resubscribe: true,
       }),
     });
 
@@ -78,7 +91,7 @@ module.exports = async function handler(req, res) {
       return res.status(mlRes.status).json({ error: msg });
     }
 
-    console.log(`MailerLite subscribed | HTTP ${mlRes.status} | status=${mlData?.data?.status} | groups=${JSON.stringify(mlData?.data?.groups?.map(g => g.id))}`);
+    console.log(`Subscribed | HTTP ${mlRes.status} | status=${mlData?.data?.status} | groups=${JSON.stringify(mlData?.data?.groups?.map(g => g.id))}`);
     return res.status(200).json({ success: true, existing: false });
 
   } catch (err) {
