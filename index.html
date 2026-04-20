@@ -421,6 +421,118 @@
     .cta-button { animation: glowPulse 3.5s ease-in-out infinite; }
     .cta-button:hover { animation: none; }
 
+    /* ── Waitlist signup form ───────────────────────────── */
+    #waitlist-form-wrap {
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      margin-top: 0;
+      transition:
+        max-height 0.80s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity    0.60s ease,
+        margin-top 0.60s ease;
+    }
+
+    #waitlist-form-wrap.open {
+      max-height: 360px;
+      opacity: 1;
+      margin-top: 44px;
+    }
+
+    #waitlist-form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+    }
+
+    #waitlist-email {
+      width: 100%;
+      max-width: 380px;
+      padding: 18px 24px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(0,194,255,0.18);
+      border-radius: 4px;
+      color: rgba(255,255,255,0.88);
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      font-weight: 300;
+      letter-spacing: 0.05em;
+      text-align: center;
+      outline: none;
+      box-sizing: border-box;
+      transition:
+        border-color 0.4s ease,
+        box-shadow   0.4s ease,
+        background   0.4s ease;
+    }
+
+    #waitlist-email::placeholder {
+      color: rgba(255,255,255,0.22);
+      letter-spacing: 0.08em;
+    }
+
+    #waitlist-email:focus {
+      border-color: rgba(0,194,255,0.50);
+      background: rgba(0,194,255,0.04);
+      box-shadow:
+        0 0 28px rgba(0,194,255,0.15),
+        0 0 70px rgba(0,194,255,0.06);
+    }
+
+    .waitlist-submit {
+      display: inline-block;
+      padding: 15px 48px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #00010A;
+      background: rgba(0,194,255,0.88);
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      transition:
+        background  0.4s ease,
+        box-shadow  0.4s ease,
+        opacity     0.3s ease;
+    }
+
+    .waitlist-submit:hover:not(:disabled) {
+      background: #00C2FF;
+      box-shadow:
+        0 0 32px rgba(0,194,255,0.50),
+        0 0 80px rgba(0,194,255,0.20);
+    }
+
+    .waitlist-submit:disabled {
+      opacity: 0.50;
+      cursor: default;
+    }
+
+    .waitlist-note {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.22);
+      letter-spacing: 0.05em;
+      font-style: italic;
+      margin: 0;
+    }
+
+    #waitlist-success {
+      display: none;
+      padding: 28px 0 8px;
+      text-align: center;
+    }
+
+    #waitlist-success p {
+      font-size: 0.95rem;
+      color: rgba(0,194,255,0.72);
+      letter-spacing: 0.08em;
+      font-style: italic;
+      line-height: 1.7;
+    }
+
     /* ── Calendly popup overrides ───────────────────────── */
     .calendly-overlay .calendly-popup {
       border-radius: 4px;
@@ -831,14 +943,32 @@
       </p>
 
       <div class="reveal delay-3">
-        <a
-          class="cta-button"
-          href="#"
-          onclick="Calendly.initPopupWidget({url:'https://calendly.com/blossomemami/30min'}); return false;"
-        >
+        <button class="cta-button" id="waitlist-toggle">
           <span>Enter the waitlist</span>
-        </a>
+        </button>
       </div>
+
+      <div id="waitlist-form-wrap" role="region" aria-label="Waitlist signup">
+        <form id="waitlist-form" novalidate>
+          <input
+            type="email"
+            id="waitlist-email"
+            name="email"
+            placeholder="your@email.com"
+            autocomplete="email"
+            required
+            aria-label="Email address"
+          />
+          <button type="submit" class="waitlist-submit">
+            <span>Join the waitlist</span>
+          </button>
+          <p class="waitlist-note">No noise. Just a quiet door when it opens.</p>
+        </form>
+        <div id="waitlist-success" aria-live="polite">
+          <p>You're in.<br>We'll reach out when the door opens.</p>
+        </div>
+      </div>
+
     </div>
   </section>
 
@@ -1316,6 +1446,83 @@
       }, { threshold: 0.20 });
 
       io.observe(section);
+    }());
+
+    // ── Waitlist form ────────────────────────────────────────
+    (function () {
+      var toggle  = document.getElementById('waitlist-toggle');
+      var wrap    = document.getElementById('waitlist-form-wrap');
+      var form    = document.getElementById('waitlist-form');
+      var success = document.getElementById('waitlist-success');
+
+      function openForm() {
+        if (!wrap || wrap.classList.contains('open')) return;
+        wrap.classList.add('open');
+        // Quietly retire the toggle button
+        if (toggle) {
+          toggle.style.transition  = 'opacity 0.4s ease';
+          toggle.style.opacity     = '0';
+          toggle.style.pointerEvents = 'none';
+        }
+        // Focus input after slide-in finishes
+        setTimeout(function () {
+          var inp = document.getElementById('waitlist-email');
+          if (inp) inp.focus();
+        }, 550);
+      }
+
+      // Trigger button in #connect
+      if (toggle) toggle.addEventListener('click', openForm);
+
+      // Hero aurora-cta: smooth scroll → open form
+      var heroCta = document.querySelector('.aurora-cta');
+      if (heroCta) {
+        heroCta.addEventListener('click', function (e) {
+          e.preventDefault();
+          var connectSection = document.getElementById('connect');
+          if (connectSection) connectSection.scrollIntoView({ behavior: 'smooth' });
+          setTimeout(openForm, 720);
+        });
+      }
+
+      // Form submission
+      if (form) {
+        form.addEventListener('submit', async function (e) {
+          e.preventDefault();
+          var email     = document.getElementById('waitlist-email').value.trim();
+          var submitBtn = form.querySelector('.waitlist-submit');
+          var span      = submitBtn.querySelector('span');
+
+          submitBtn.disabled = true;
+          span.textContent   = 'Joining\u2026';
+
+          try {
+            var res  = await fetch('/api/subscribe', {
+              method:  'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body:    JSON.stringify({ email: email }),
+            });
+            var data = await res.json();
+
+            if (res.ok) {
+              form.style.display    = 'none';
+              success.style.display = 'block';
+            } else {
+              span.textContent           = data.error || 'Something went wrong.';
+              submitBtn.disabled         = false;
+              submitBtn.style.background = 'rgba(220,60,60,0.75)';
+              setTimeout(function () {
+                span.textContent           = 'Try again';
+                submitBtn.style.background = '';
+              }, 3200);
+            }
+          } catch (err) {
+            span.textContent   = 'Connection error \u2014 try again';
+            submitBtn.disabled = false;
+            setTimeout(function () { span.textContent = 'Try again'; }, 3200);
+          }
+        });
+      }
     }());
   </script>
 
