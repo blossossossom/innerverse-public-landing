@@ -184,38 +184,7 @@
       width: 100%;
       height: 75vh;
       min-height: 440px;
-      overflow: hidden;
-    }
-
-    /* Steel-blue aurora glow bleeds in from top and bottom edges */
-    #circular-room::before,
-    #circular-room::after {
-      content: '';
-      position: absolute;
-      left: 0; right: 0;
-      height: 42%;
-      pointer-events: none;
-      z-index: 2;
-    }
-
-    #circular-room::before {
-      top: 0;
-      background: linear-gradient(to bottom,
-        rgba(130,185,240,0.45) 0%,
-        rgba(90,155,225,0.22)  22%,
-        rgba(0,194,255,0.08)   50%,
-        transparent            100%
-      );
-    }
-
-    #circular-room::after {
-      bottom: 0;
-      background: linear-gradient(to top,
-        rgba(130,185,240,0.45) 0%,
-        rgba(90,155,225,0.22)  22%,
-        rgba(0,194,255,0.08)   50%,
-        transparent            100%
-      );
+      /* No overflow:hidden — aurora blobs bleed past section edges */
     }
 
     #room-canvas {
@@ -224,7 +193,11 @@
       width: 100%;
       height: 100%;
       display: block;
-      z-index: 1;
+      mix-blend-mode: screen;
+      pointer-events: none;
+      /* Scale canvas 40% taller so aurora blobs bleed above & below the section */
+      transform: scaleY(1.4);
+      transform-origin: center center;
     }
 
     @keyframes heroFadeIn {
@@ -1052,75 +1025,58 @@
       document.fonts.ready.then(buildPhrases);
       buildPhrases(); // immediate fallback before fonts event
 
+      // ── Aurora blobs — wispy horizontal curtains, screen-blended ─
+      // Each blob: cx/cy (fraction of W/H), rx/ry (fraction of W/H),
+      // col [r,g,b], a (alpha), sx/sy (drift speeds), px/py (phase offsets), rot
+      var roomBlobs = [
+        // Primary sweeping bands
+        { cx:0.50, cy:0.18, rx:1.15, ry:0.11, col:[  0,194,255], a:0.34, sx:0.00038, sy:0.00018, px:0.00, py:0.00, rot:0.00005 },
+        { cx:0.30, cy:0.42, rx:1.05, ry:0.09, col:[ 90,155,225], a:0.30, sx:0.00028, sy:0.00024, px:1.40, py:0.80, rot:0.00007 },
+        { cx:0.72, cy:0.62, rx:1.00, ry:0.10, col:[130,185,240], a:0.32, sx:0.00042, sy:0.00016, px:2.60, py:1.60, rot:0.00006 },
+        { cx:0.50, cy:0.82, rx:1.10, ry:0.08, col:[  0,194,255], a:0.28, sx:0.00022, sy:0.00030, px:0.60, py:2.40, rot:0.00008 },
+        // Accent wisps — faster drift, layered motion
+        { cx:0.18, cy:0.32, rx:0.80, ry:0.13, col:[175,220,255], a:0.24, sx:0.00052, sy:0.00014, px:3.20, py:0.40, rot:0.00005 },
+        { cx:0.82, cy:0.55, rx:0.85, ry:0.09, col:[ 60,120,200], a:0.22, sx:0.00034, sy:0.00020, px:1.80, py:3.00, rot:0.00009 },
+        { cx:0.44, cy:0.08, rx:0.95, ry:0.10, col:[175,220,255], a:0.28, sx:0.00018, sy:0.00022, px:4.00, py:1.20, rot:0.00006 },
+        { cx:0.56, cy:0.90, rx:0.90, ry:0.08, col:[130,185,240], a:0.24, sx:0.00036, sy:0.00016, px:2.00, py:2.80, rot:0.00007 },
+        // Faint gold wisps
+        { cx:0.50, cy:0.50, rx:0.90, ry:0.06, col:[253,207,124], a:0.09, sx:0.00018, sy:0.00028, px:1.20, py:1.60, rot:0.00004 },
+        { cx:0.62, cy:0.28, rx:0.72, ry:0.07, col:[240,165, 55], a:0.07, sx:0.00025, sy:0.00020, px:3.50, py:0.60, rot:0.00006 },
+      ];
+
+      function drawRoomBlob(b) {
+        var cx  = (b.cx + Math.sin(t * b.sx + b.px) * 0.28) * W;
+        var cy  = (b.cy + Math.sin(t * b.sy + b.py) * 0.20) * H;
+        var rx  = b.rx * W;
+        var ry  = b.ry * H;
+        var ang = Math.sin(t * b.rot + b.px) * 0.22;
+        var r = b.col[0], g = b.col[1], bl = b.col[2];
+
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(ang);
+        ctx.scale(1, ry / rx);
+
+        var grad = ctx.createRadialGradient(0, 0, 0, 0, 0, rx);
+        grad.addColorStop(0,    'rgba(' + r + ',' + g + ',' + bl + ',' + b.a + ')');
+        grad.addColorStop(0.38, 'rgba(' + r + ',' + g + ',' + bl + ',' + (b.a * 0.55).toFixed(3) + ')');
+        grad.addColorStop(0.68, 'rgba(' + r + ',' + g + ',' + bl + ',' + (b.a * 0.14).toFixed(3) + ')');
+        grad.addColorStop(1,    'rgba(' + r + ',' + g + ',' + bl + ',0)');
+
+        ctx.beginPath();
+        ctx.arc(0, 0, rx, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+        ctx.restore();
+      }
+
       // ── Room background ──────────────────────────────────
       function drawRoom() {
+        // Fully transparent base — canvas is invisible where no blobs exist,
+        // so the section has no visible edge against the page background.
+        // mix-blend-mode: screen on the canvas element handles compositing.
         ctx.clearRect(0, 0, W, H);
-
-        var midY  = H / 2;
-        // Slow breathing pulse for wall glow
-        var pulse = 0.055 + 0.022 * Math.sin(t * 0.007);
-
-        // Solid base matching body background — no visible canvas border
-        ctx.fillStyle = '#060c18';
-        ctx.fillRect(0, 0, W, H);
-
-        // Radial center-darkening — slightly deeper in the room interior
-        var ctr = ctx.createRadialGradient(W / 2, midY, H * 0.04, W / 2, midY, Math.max(W, H) * 0.65);
-        ctr.addColorStop(0,    'rgba(2,5,14,0.55)');
-        ctr.addColorStop(0.60, 'rgba(2,5,14,0.20)');
-        ctr.addColorStop(1,    'rgba(2,5,14,0)');
-        ctx.fillStyle = ctr;
-        ctx.fillRect(0, 0, W, H);
-
-        // Equatorial blue band — ambient wall glow
-        var bh   = H * 0.72;
-        var band = ctx.createLinearGradient(0, midY - bh / 2, 0, midY + bh / 2);
-        band.addColorStop(0,    'rgba(0,194,255,0)');
-        band.addColorStop(0.28, 'rgba(0,194,255,' + (pulse * 0.55).toFixed(4) + ')');
-        band.addColorStop(0.5,  'rgba(0,194,255,' + pulse.toFixed(4) + ')');
-        band.addColorStop(0.72, 'rgba(0,194,255,' + (pulse * 0.55).toFixed(4) + ')');
-        band.addColorStop(1,    'rgba(0,194,255,0)');
-        ctx.fillStyle = band;
-        ctx.fillRect(0, midY - bh / 2, W, bh);
-
-        // Side wall glows — wall curves away into the periphery
-        var sw = W * 0.30;
-        var lg = ctx.createLinearGradient(0, 0, sw, 0);
-        lg.addColorStop(0,   'rgba(0,194,255,' + (pulse * 1.4).toFixed(4) + ')');
-        lg.addColorStop(0.6, 'rgba(0,194,255,' + (pulse * 0.22).toFixed(4) + ')');
-        lg.addColorStop(1,   'rgba(0,194,255,0)');
-        ctx.fillStyle = lg;
-        ctx.fillRect(0, 0, sw, H);
-
-        var rg = ctx.createLinearGradient(W, 0, W - sw, 0);
-        rg.addColorStop(0,   'rgba(0,194,255,' + (pulse * 1.4).toFixed(4) + ')');
-        rg.addColorStop(0.6, 'rgba(0,194,255,' + (pulse * 0.22).toFixed(4) + ')');
-        rg.addColorStop(1,   'rgba(0,194,255,0)');
-        ctx.fillStyle = rg;
-        ctx.fillRect(W - sw, 0, sw, H);
-
-        // Faint gold equator accent
-        var ga = 0.028 + 0.014 * Math.sin(t * 0.005 + 1.2);
-        var gg = ctx.createLinearGradient(0, midY - 48, 0, midY + 48);
-        gg.addColorStop(0,   'rgba(253,207,124,0)');
-        gg.addColorStop(0.5, 'rgba(253,207,124,' + ga.toFixed(4) + ')');
-        gg.addColorStop(1,   'rgba(253,207,124,0)');
-        ctx.fillStyle = gg;
-        ctx.fillRect(0, midY - 48, W, 96);
-
-        // Side darkness — wall curves away (blends to body bg, no hard edge)
-        var sd = W * 0.16;
-        var sl = ctx.createLinearGradient(0, 0, sd, 0);
-        sl.addColorStop(0, 'rgba(6,12,24,0.85)');
-        sl.addColorStop(1, 'rgba(6,12,24,0)');
-        ctx.fillStyle = sl;
-        ctx.fillRect(0, 0, sd, H);
-
-        var sr = ctx.createLinearGradient(W, 0, W - sd, 0);
-        sr.addColorStop(0, 'rgba(6,12,24,0.85)');
-        sr.addColorStop(1, 'rgba(6,12,24,0)');
-        ctx.fillStyle = sr;
-        ctx.fillRect(W - sd, 0, sd, H);
+        roomBlobs.forEach(drawRoomBlob);
       }
 
       // ── Orbiting text ────────────────────────────────────
@@ -1129,6 +1085,7 @@
         setFont(ctx);
         ctx.textAlign    = 'center';
         ctx.textBaseline = 'middle';
+        // Canvas extends 120px above the section, so visual center = H/2 (canvas mid)
         var midY = H / 2;
 
         phraseData.forEach(function (chars, pi) {
