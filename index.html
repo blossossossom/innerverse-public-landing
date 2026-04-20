@@ -683,11 +683,14 @@
       color: rgba(255,255,255,0.88);
       text-decoration: none;
       cursor: pointer;
-      /* Invisible at rest — glow only appears on hover */
-      background: transparent;
+      /* No hard border — glow only */
+      background: rgba(0,194,255,0.04);
       border: none;
       border-radius: 12px;
-      box-shadow: none;
+      box-shadow:
+        0 0 50px  rgba(0,194,255,0.16),
+        0 0 110px rgba(0,194,255,0.07),
+        0 0 220px rgba(0,194,255,0.03);
       transition:
         box-shadow 0.7s ease,
         background 0.7s ease,
@@ -701,19 +704,28 @@
       content: '';
       position: absolute;
       inset: -50px -70px;
-      background: transparent;
+      background: radial-gradient(ellipse 90% 80% at 50% 50%,
+        rgba(0,194,255,0.18)  0%,
+        rgba(60,140,230,0.09) 42%,
+        rgba(0,194,255,0.02)  68%,
+        transparent           82%
+      );
       filter: blur(44px);
       border-radius: 50%;
       pointer-events: none;
       transition: background 0.7s ease;
     }
 
-    /* Outer corona — wide, vaporous */
+    /* Outer corona — wide, vaporous, barely-there */
     .aurora-cta::after {
       content: '';
       position: absolute;
       inset: -110px -140px;
-      background: transparent;
+      background: radial-gradient(ellipse 100% 100% at 50% 50%,
+        rgba(0,194,255,0.07)  0%,
+        rgba(80,130,210,0.03) 50%,
+        transparent           74%
+      );
       filter: blur(80px);
       border-radius: 50%;
       pointer-events: none;
