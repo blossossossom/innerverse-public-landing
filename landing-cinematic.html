@@ -966,8 +966,8 @@
   <section id="aurora-hero">
     <canvas id="aurora-canvas" aria-hidden="true"></canvas>
     <div id="aurora-content">
-      <p class="aurora-line">Some rooms are meant for one person, some for five. Some for humanity, and some for no one but you.</p>
-      <p class="aurora-line"><span class="pn">Innerverse</span> is where your galaxy of self-expression and human connection lives.</p>
+      <p class="aurora-line reveal">Some rooms are meant for one person, some for five. Some for humanity, and some for no one but you.</p>
+      <p class="aurora-line reveal delay-1"><span class="pn">Innerverse</span> is where your galaxy of self-expression and human connection lives.</p>
     </div>
   </section>
 
@@ -1415,20 +1415,7 @@
 
       tick();
 
-      // ── Scroll-triggered text entrance ──
-      const lines = section.querySelectorAll('.aurora-line');
-      let triggered = false;
-
-      const io = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting && !triggered) {
-            triggered = true;
-            lines.forEach(function (l) { l.classList.add('a-visible'); });
-          }
-        });
-      }, { threshold: 0.20 });
-
-      io.observe(section);
+      // Aurora-line text reveal handled by the main .reveal observer
     }());
 
     // ── Waitlist form ────────────────────────────────────────
