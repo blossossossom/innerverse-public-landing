@@ -1024,10 +1024,12 @@
           fill="url(#ring-grad)" filter="url(#sub-filter)"/>
       </mask>
 
-      <!-- Radiation column gradient: white within reel column, black outside -->
+      <!-- Radiation ring gradient: black centre + black exterior, white only at ring edge.
+           Stops tracked to solidFrac in setCoverage — radiation follows the ring. -->
       <radialGradient id="rad-col-grad" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="1">
-        <stop offset="0.70" stop-color="white"/>
-        <stop offset="0.95" stop-color="black"/>
+        <stop id="rad-col-stop1"  offset="0.35" stop-color="black"/>
+        <stop id="rad-col-stop1b" offset="0.45" stop-color="white"/>
+        <stop id="rad-col-stop2"  offset="0.62" stop-color="black"/>
       </radialGradient>
 
       <!-- Radiation overlay mask: binary noise × column shape.
@@ -1631,8 +1633,11 @@
       var ringStop1   = document.getElementById('ring-stop1');
       var ringStop1b  = document.getElementById('ring-stop1b');
       var ringStop2   = document.getElementById('ring-stop2');
-      var radColGrad  = document.getElementById('rad-col-grad');
-      var radCm       = document.getElementById('rad-cm');
+      var radColGrad    = document.getElementById('rad-col-grad');
+      var radColStop1   = document.getElementById('rad-col-stop1');
+      var radColStop1b  = document.getElementById('rad-col-stop1b');
+      var radColStop2   = document.getElementById('rad-col-stop2');
+      var radCm         = document.getElementById('rad-cm');
       var subTurb     = document.getElementById('sub-turb');
       var coreRx      = 1;  // updated in resizeMasks
       var coreRy      = 1;
@@ -1777,6 +1782,12 @@
         ringStop1.setAttribute('offset',  solidFrac.toFixed(3));
         ringStop1b.setAttribute('offset', solidFrac.toFixed(3));
         ringStop2.setAttribute('offset',  transFrac.toFixed(3));
+        // Radiation ring stops track the main ring — warm glow at edge only, never inside
+        var radInner = Math.max(0.30, solidFrac - 0.10);
+        var radOuter = Math.min(transFrac + 0.06, 0.97);
+        radColStop1.setAttribute('offset',  radInner.toFixed(3));
+        radColStop1b.setAttribute('offset', solidFrac.toFixed(3));
+        radColStop2.setAttribute('offset',  radOuter.toFixed(3));
       }
 
       // ── Set feColorMatrix values (radiation overlay only) ─────────────────────
