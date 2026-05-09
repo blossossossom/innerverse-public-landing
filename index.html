@@ -786,14 +786,14 @@
     #aurora-content {
       position: relative;
       z-index: 1;
-      max-width: 660px;
+      max-width: 800px;
       width: 100%;
       padding: 100px 32px;
-      text-align: center;
+      text-align: left;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 2.2em;
+      align-items: flex-start;
+      gap: 4.5em;
     }
 
     .aurora-line {
@@ -845,6 +845,91 @@
       transition: opacity 1s ease;
     }
 
+    /* ── Proper noun — Genos, visual-size-compensated ───── */
+    .pn {
+      font-family: 'Genos', sans-serif;
+      font-weight: 200;
+      font-style: normal;
+      /* Genos has a smaller x-height than Inter at the same em size.
+         1.35em brings the cap/x-height visually flush with surrounding body text.
+         line-height: 1 collapses the inline box to the glyph height so the
+         larger font-size doesn't inflate the line box or push spacing. */
+      font-size: 1.35em;
+      line-height: 1;
+    }
+
+    /* ── Section 3 — The World ──────────────────────────── */
+    .world-prose-line {
+      font-size: clamp(1.05rem, 2.2vw, 1.32rem);
+      font-weight: 300;
+      line-height: 1.9;
+      color: rgba(255,255,255,0.88);
+      margin-bottom: 2em;
+    }
+
+    .world-prose-line:last-child { margin-bottom: 0; }
+
+    .world-breath {
+      padding-left: 2.4em;
+      letter-spacing: 0.06em;
+      color: rgba(255,255,255,0.62) !important;
+    }
+
+    /* Structural slot for future video backdrop */
+    .world-video-slot {
+      position: relative;
+      padding-bottom: 4em;
+      margin-bottom: 1.6em;
+    }
+
+    /* ── Section 4 — The Key ─────────────────────────────── */
+    #key-section {
+      padding: 160px 0;
+      text-align: center;
+    }
+
+    .key-block p {
+      font-size: clamp(1.05rem, 2.2vw, 1.32rem);
+      font-weight: 300;
+      line-height: 2.4;
+      color: rgba(255,255,255,0.88);
+      max-width: 620px;
+      margin: 0 auto 3.6em;
+    }
+
+    .key-block p:last-child { margin-bottom: 0; }
+
+    /* ── Section 5 — The Principles ─────────────────────── */
+    #principles {
+      padding: 120px 0;
+      text-align: center;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .principles-inner {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.15em;
+    }
+
+    .principle-line {
+      font-size: clamp(1.3rem, 2.8vw, 1.85rem);
+      font-weight: 300;
+      line-height: 1.7;
+      color: rgba(255,255,255,0.88);
+      letter-spacing: 0.03em;
+    }
+
+    .principle-entirely {
+      font-size: clamp(1.3rem, 2.8vw, 1.85rem);
+      font-weight: 300;
+      line-height: 1.7;
+      color: rgba(255,255,255,0.88);
+      letter-spacing: 0.03em;
+      margin-top: 2.8em;
+    }
+
   </style>
 </head>
 
@@ -871,11 +956,11 @@
         Human experience & memory,<br><em>made spatial</em>
       </h1>
       <p class="hero-subheadline">
-        Early access opening to first community of 100.
+        Imprint your world, for yourself and those you let in.
       </p>
     </div>
     <div id="hero-cta-wrap">
-      <a class="aurora-cta" href="#connect"><span>Enter the waitlist</span></a>
+      <a class="aurora-cta" href="#connect"><span>I'm in</span></a>
     </div>
   </section>
 
@@ -883,11 +968,8 @@
   <section id="aurora-hero">
     <canvas id="aurora-canvas" aria-hidden="true"></canvas>
     <div id="aurora-content">
-      <p class="aurora-line">Technology was never meant to disorient you.</p>
-      <p class="aurora-line">You leave pieces of yourself in different places: your notes app, camera roll, voice memos, texts. Imprints and ideas, scattered and drowned out in endless digital noise.</p>
-      <p class="aurora-line">Over time, they become harder to return to. The digital world starts to feel shallow. Fleeting.</p>
-      <p class="aurora-line aurora-line-highlight">Your inner life is multidimensional, but fragmented.</p>
-      <p class="aurora-line">Innerverse brings those fragments together, and gives you a place to return to yourself, anytime.</p>
+      <p class="aurora-line">Some rooms are meant for one person, some for five. Some for humanity, and some for no one but you.</p>
+      <p class="aurora-line"><span class="pn">Innerverse</span> is where your galaxy of self-expression and human connection lives.</p>
     </div>
   </section>
 
@@ -896,55 +978,54 @@
     <canvas id="room-canvas" aria-hidden="true"></canvas>
   </section>
 
-  <div class="container"><div class="divider reveal"></div></div>
 
-  <!-- ── BENEFITS ──────────────────────────────────────── -->
-  <section id="benefits">
+  <!-- ── THE WORLD ─────────────────────────────────────── -->
+  <section id="world">
     <div class="container">
-      <p class="section-label reveal">There&#8217;s a different way to exist online</p>
-      <h2 class="section-title reveal delay-1">Platform Philosophy</h2>
-
-      <ul class="benefits-list">
-
-        <li class="benefit-item">
-          <div class="benefit-content">
-            <strong>A place, not a feed.</strong>
-            <span>Your work lives in rooms you build. It doesn't expire, refresh, or get buried. It stays.</span>
-          </div>
-        </li>
-
-        <li class="benefit-item">
-          <div class="benefit-content">
-            <strong>Spatial, not scrollable.</strong>
-            <span>You don't scroll through Innerverse. You move through it. Rooms connected by portals you choose.</span>
-          </div>
-        </li>
-
-        <li class="benefit-item">
-          <div class="benefit-content">
-            <strong>Human-first, always.</strong>
-            <span>Everything here came from a real person. The soul of this platform is entirely human.</span>
-          </div>
-        </li>
-
-      </ul>
+      <div class="world-video-slot">
+        <p class="world-prose-line reveal">Your <span class="pn">World</span> is manifest of you.</p>
+        <p class="world-prose-line reveal delay-1">You architect and imprint</p>
+        <p class="world-prose-line world-breath reveal delay-2">with your … writing, art, photographs, memory …</p>
+        <p class="world-prose-line reveal delay-3">connect <span class="pn">Rooms</span> by <span class="pn">Portals</span>, and enter.</p>
+      </div>
+      <p class="world-prose-line reveal delay-1">There has never been, and never will be, a repeat of your <span class="pn">Innerverse</span>.</p>
+      <p class="world-prose-line reveal delay-2">Yours alone, unseen and untouched by anyone other than those you grant access to.</p>
     </div>
   </section>
 
-  <div class="container"><div class="divider reveal"></div></div>
+
+  <!-- ── THE KEY ───────────────────────────────────────── -->
+  <section id="key-section">
+    <div class="container">
+      <div class="key-block">
+        <p class="reveal">A <span class="pn">Room</span> is opened by <span class="pn">Key</span>.</p>
+        <p class="reveal delay-1">A Key is given, not requested. To hold someone&#8217;s Key is to be trusted with a part of them.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── THE PRINCIPLES ────────────────────────────────── -->
+  <section id="principles">
+    <div class="container">
+      <div class="principles-inner reveal">
+        <p class="principle-line" aria-label="Trust over broadcast">Trust &gt; broadcast</p>
+        <p class="principle-line" aria-label="Connection over performance">Connection &gt; performance</p>
+        <p class="principle-line" aria-label="Architecture over algorithm">Architecture &gt; algorithm</p>
+        <p class="principle-entirely">Entirely human.</p>
+      </div>
+    </div>
+  </section>
 
   <!-- ── CONNECT ───────────────────────────────────────── -->
   <section id="connect">
     <div class="container">
-      <p class="section-label reveal">Begin here</p>
-      <h2 class="connect-title reveal delay-1">Join the first community.</h2>
-      <p class="connect-subtitle reveal delay-2">
-        Innerverse opens to an early-access group of founding members.
+      <p class="connect-subtitle reveal">
+        <span class="pn">Innerverse</span> opens to the first 100 who take a <span class="pn">Key</span>.
       </p>
 
-      <div class="reveal delay-3">
+      <div class="reveal delay-1">
         <button class="cta-button" id="waitlist-toggle">
-          <span>Enter the waitlist</span>
+          <span>I'm in</span>
         </button>
       </div>
 
@@ -964,7 +1045,7 @@
           </button>
         </form>
         <div id="waitlist-success" aria-live="polite">
-          <p>You're in. You'll hear from us when the platform is live.</p>
+          <p>You&#8217;re in. When the doors open, your <span class="pn">Key</span> will let you in.</p>
         </div>
       </div>
 
@@ -976,11 +1057,6 @@
     <div class="container">
       <div class="footer-wordmark-full reveal">
         <div class="iv-wordmark" id="footer-wordmark">INNERVERSE</div>
-      </div>
-      <div class="footer-inner reveal delay-1">
-        <div class="footer-dot"></div>
-        <p class="footer-tagline">Human experience and memory, made spatial. Melbourne.</p>
-        <div class="footer-dot"></div>
       </div>
     </div>
   </footer>
