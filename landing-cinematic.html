@@ -1004,51 +1004,41 @@
       }
     }
 
-    /* ── Ambient body text breathing ─────────────────────── */
-    @keyframes ambientBreathe {
-      0%, 100% { opacity: 1.00; }
-      50%       { opacity: 0.99; }  /* 1 % swing — perceptible only subliminally */
-    }
+    /* ── Ambient breathing — body text: disabled ─────────── */
+    .c-breathing      { /* no-op — class kept for JS compat */ }
+    .c-breathing-slow { /* no-op */ }
 
-    .c-breathing         { animation: ambientBreathe  8s ease-in-out infinite; }
-    .c-breathing-slow    { animation: ambientBreathe  9s ease-in-out infinite 1s; }
-    .c-breathing-headline{ animation: headlineBreathe 9s ease-in-out infinite; }
+    /* Headline glow breathing only (hero H1 — approved) */
+    .c-breathing-headline { animation: headlineBreathe 9s ease-in-out infinite; }
 
-    /* ── Section reveals — gentle atmospheric drift ──────── */
+    /* ── Section reveals — pure opacity, no motion ──────── */
     .reveal {
       opacity: 0 !important;
-      transform: translateY(12px) !important;  /* ≤15 px keeps drift subtle */
+      transform: none !important;
       filter: none !important;
-      transition:
-        opacity  1.8s cubic-bezier(0.16, 1, 0.3, 1),
-        transform 1.8s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      transition: opacity 1.5s ease !important;
     }
 
     .reveal.visible {
       opacity: 1 !important;
-      transform: translateY(0) !important;
+      transform: none !important;
     }
 
-    /* 220 ms stagger — sequential but not slow */
+    /* 220 ms stagger between sibling lines */
     .delay-1 { transition-delay: 0.22s !important; }
     .delay-2 { transition-delay: 0.44s !important; }
     .delay-3 { transition-delay: 0.66s !important; }
     .delay-4 { transition-delay: 0.88s !important; }
     .delay-5 { transition-delay: 1.10s !important; }
 
-    /* Once locked, element stays visible regardless of observer state */
+    /* Once locked, element is permanently visible */
     .c-locked {
       opacity: 1 !important;
-      transform: translateY(0) !important;
+      transform: none !important;
       transition-duration: 0s !important;
     }
 
-    /* ── Aurora lines: same gentle drift as body text ─────── */
-    .aurora-line {
-      transform: translateY(12px) !important;
-      transition-duration: 1.8s !important;
-      transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1) !important;
-    }
+    /* Aurora lines — use base CSS behaviour (no cinematic override) */
 
     /* ── Vignette ────────────────────────────────────────── */
     #c-vignette {
@@ -1100,8 +1090,6 @@
         transform: none !important;
         transition: none !important;
       }
-      .c-breathing,
-      .c-breathing-slow,
       .c-breathing-headline { animation: none !important; }
       #c-particles { display: none !important; }
     }
@@ -1748,34 +1736,16 @@
             subheadline.style.transform = 'translateY(0)';
           }
 
-          // After subheadline arrives → start glow breathing
+          // After subheadline arrives → start headline glow breathing only
           setTimeout(function () {
             if (headline) headline.classList.add('c-breathing-headline');
-            document.querySelectorAll('.aurora-line').forEach(el => el.classList.add('c-breathing-slow'));
           }, BREATHE_AFTER * 1000);
 
         }, (totalWordTime + SUB_AFTER_LAST) * 1000);
 
       }, FIRST_WORD_DELAY);
 
-      // ── 2. Add ambient breathing to body text once sections enter view ─
-      const breatheObserver = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting) {
-            entry.target.querySelectorAll('p, .principle-line, .principle-entirely').forEach(function (el) {
-              el.classList.add('c-breathing');
-            });
-            breatheObserver.unobserve(entry.target);
-          }
-        });
-      }, { threshold: 0.25 });
-
-      ['aurora-hero', 'world', 'key-section', 'principles', 'connect'].forEach(function (id) {
-        var el = document.getElementById(id);
-        if (el) breatheObserver.observe(el);
-      });
-
-      // ── 3. Cinematic drift particles (fixed overlay canvas) ───────────
+      // ── 2. Cinematic drift particles (fixed overlay canvas) ───────────
       var driftCanvas = document.getElementById('c-particles');
       if (!driftCanvas) return;
       var dctx = driftCanvas.getContext('2d');
