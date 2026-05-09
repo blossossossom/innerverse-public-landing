@@ -929,6 +929,56 @@
       margin-top: 2.8em;
     }
 
+
+    /* ── Substrate video layer ───────────────────────────── */
+    #substrate-video-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+      mask: url(#sub-mask);
+      -webkit-mask: url(#sub-mask);
+    }
+
+    #substrate-reel {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      /* Cover viewport while preserving 9:16 portrait ratio */
+      width: auto;
+      height: 100%;
+      min-width: 56.25vh; /* 100vh * 9/16 */
+      min-height: 177.78vw; /* 100vw * 16/9 */
+      object-fit: cover;
+    }
+
+    /* When video fails / reduced motion: hide layer entirely */
+    #substrate-video-layer.substrate-hidden {
+      display: none;
+    }
+
+    #substrate-radiation {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      /* Warm amber radial gradient — softened glow */
+      background: radial-gradient(
+        ellipse 70% 55% at 50% 45%,
+        rgba(210, 140, 40, 0.18) 0%,
+        rgba(180, 100, 20, 0.08) 50%,
+        transparent 100%
+      );
+      mask: url(#rad-mask);
+      -webkit-mask: url(#rad-mask);
+    }
+
+    #substrate-radiation.substrate-hidden {
+      display: none;
+    }
+
   </style>
 </head>
 
@@ -946,6 +996,54 @@
 
   <!-- Stage bokeh canvas -->
   <canvas id="stage-canvas" aria-hidden="true"></canvas>
+
+  <!-- Substrate SVG filter + mask definitions (hidden) -->
+  <svg id="substrate-svg" width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true">
+    <defs>
+      <!-- Main video mask -->
+      <filter id="sub-filter" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+        <feTurbulence id="sub-turb" type="fractalNoise"
+          baseFrequency="0.0052 0.0038" numOctaves="4" seed="3"
+          result="noise"/>
+        <feColorMatrix id="sub-cm" type="matrix"
+          values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  20 20 20 20 -11"
+          result="thresh"/>
+      </filter>
+      <mask id="sub-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="1920" height="1080">
+        <rect id="sub-rect" x="0" y="0" width="1920" height="1080"
+          fill="white" filter="url(#sub-filter)"/>
+      </mask>
+
+      <!-- Radiation overlay mask -->
+      <filter id="rad-filter" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+        <feTurbulence id="rad-turb" type="fractalNoise"
+          baseFrequency="0.0098 0.0072" numOctaves="5" seed="11"
+          result="noise"/>
+        <feColorMatrix id="rad-cm" type="matrix"
+          values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  20 20 20 20 -3"
+          result="thresh"/>
+      </filter>
+      <mask id="rad-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="1920" height="1080">
+        <rect id="rad-rect" x="0" y="0" width="1920" height="1080"
+          fill="white" filter="url(#rad-filter)"/>
+      </mask>
+    </defs>
+  </svg>
+
+  <!-- Substrate atmospheric video layer -->
+  <div id="substrate-video-layer" aria-hidden="true">
+    <video id="substrate-reel"
+      src="assets/reel.webm"
+      poster="assets/reel-poster.jpg"
+      autoplay muted loop playsinline
+      preload="auto">
+      <source src="assets/reel.webm" type="video/webm">
+      <source src="assets/reel.mp4" type="video/mp4">
+    </video>
+  </div>
+
+  <!-- Substrate warm radiation overlay -->
+  <div id="substrate-radiation" aria-hidden="true"></div>
 
   <!-- ── HERO ──────────────────────────────────────────── -->
   <section id="hero">
@@ -1496,6 +1594,220 @@
           }
         });
       }
+    }());
+  </script>
+
+  <!-- ── Atmospheric Substrate (Pass 2) ─────────────────── -->
+  <script>
+    (function () {
+      'use strict';
+
+      // ── Elements ──────────────────────────────────────────
+      var videoLayer  = document.getElementById('substrate-video-layer');
+      var reel        = document.getElementById('substrate-reel');
+      var radiation   = document.getElementById('substrate-radiation');
+      var subRect     = document.getElementById('sub-rect');
+      var radRect     = document.getElementById('rad-rect');
+      var subCm       = document.getElementById('sub-cm');
+      var radCm       = document.getElementById('rad-cm');
+      var subTurb     = document.getElementById('sub-turb');
+
+      // ── Bias targets per section ──────────────────────────
+      var SECTION_BIASES = {
+        'hero':        -11.0,
+        'aurora-hero': -18.0,
+        'world':        -7.0,
+        'key-section': -19.0,
+        'principles':  -19.5,
+        'connect':     -11.0
+      };
+      var FOOTER_BIAS   = -14.0;
+      var PEAK_BIAS     = -0.5;   // ~97% video coverage
+      var LOOP_DROP_AMT =  9.0;   // bias boost during loop transition (less visible)
+      var RAD_OFFSET    =  8.0;   // radiation bias = main bias + offset (less visible)
+      var PLAYBACK_RATE =  0.85;
+
+      // ── State ─────────────────────────────────────────────
+      var currentBias = -11.0;
+      var targetBias  = -11.0;
+      var peakPhase   = 0;        // 0=idle 1=rise 2=hold 3=fall
+      var peakStart   = 0;
+      var PEAK_RISE   = 1500;
+      var PEAK_HOLD   = 2000;
+      var PEAK_FALL   = 1500;
+      var peakBaselineBias = -7.0;
+      var loopDropBias = 0.0;
+      var frameCount   = 0;
+      var tBase        = performance.now();
+      var bfX0 = 0.0052, bfY0 = 0.0038;
+
+      // ── Resize masks to viewport ──────────────────────────
+      function resizeMasks () {
+        var w = window.innerWidth;
+        var h = window.innerHeight;
+        ['sub-rect', 'rad-rect'].forEach(function (id) {
+          var el = document.getElementById(id);
+          el.setAttribute('width',  w);
+          el.setAttribute('height', h);
+        });
+        ['sub-mask', 'rad-mask'].forEach(function (id) {
+          var el = document.getElementById(id);
+          el.setAttribute('width',  w);
+          el.setAttribute('height', h);
+        });
+        ['sub-filter', 'rad-filter'].forEach(function (id) {
+          var el = document.getElementById(id);
+          el.setAttribute('width',  w);
+          el.setAttribute('height', h);
+        });
+      }
+
+      resizeMasks();
+      window.addEventListener('resize', resizeMasks, { passive: true });
+
+      // ── Section bias from scroll ───────────────────────────
+      function getScrollBias () {
+        var vh = window.innerHeight;
+        var sections = Object.keys(SECTION_BIASES);
+        var totalWeight = 0;
+        var weightedBias = 0;
+
+        sections.forEach(function (id) {
+          var el = document.getElementById(id);
+          if (!el) return;
+          var rect = el.getBoundingClientRect();
+          var visible = Math.max(0, Math.min(rect.bottom, vh) - Math.max(rect.top, 0));
+          var fraction = visible / vh;
+          if (fraction > 0) {
+            weightedBias += SECTION_BIASES[id] * fraction;
+            totalWeight  += fraction;
+          }
+        });
+
+        // Footer
+        var footer = document.querySelector('footer') || document.getElementById('site-footer');
+        if (footer) {
+          var rect = footer.getBoundingClientRect();
+          var visible = Math.max(0, Math.min(rect.bottom, vh) - Math.max(rect.top, 0));
+          var fraction = visible / vh;
+          if (fraction > 0) {
+            weightedBias += FOOTER_BIAS * fraction;
+            totalWeight  += fraction;
+          }
+        }
+
+        if (totalWeight < 0.001) return currentBias;
+        return weightedBias / totalWeight;
+      }
+
+      // ── Loop-point drop ───────────────────────────────────
+      function getLoopDrop () {
+        if (!reel || reel.paused || !reel.duration) return 0;
+        var t   = reel.currentTime;
+        var dur = reel.duration;
+        var nearEnd   = dur - t < 2.0;
+        var nearStart = t < 1.5;
+        if (nearEnd || nearStart) {
+          var distEnd   = nearEnd   ? (2.0 - (dur - t)) / 2.0 : 0;
+          var distStart = nearStart ? (1.5 - t) / 1.5          : 0;
+          var strength  = Math.max(distEnd, distStart);
+          return strength * LOOP_DROP_AMT;
+        }
+        return 0;
+      }
+
+      // ── World section peak revelation ─────────────────────
+      function checkWorldPeak () {
+        var world = document.getElementById('world');
+        if (!world || peakPhase !== 0) return;
+        var rect = world.getBoundingClientRect();
+        var vh   = window.innerHeight;
+        // Trigger peak when 52–88% of #world has scrolled through
+        var scrollThrough = -rect.top / (rect.height - vh);
+        if (scrollThrough >= 0.52 && scrollThrough <= 0.88) {
+          peakPhase = 1;
+          peakStart = performance.now();
+          peakBaselineBias = currentBias;
+        }
+      }
+
+      // ── Set feColorMatrix values ───────────────────────────
+      function setMatrix (el, bias) {
+        // Amplify=20, bias in last column (alpha row)
+        el.setAttribute('values',
+          '0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  20 20 20 20 ' + bias.toFixed(3));
+      }
+
+      // ── Animation RAF ─────────────────────────────────────
+      function tick (now) {
+        requestAnimationFrame(tick);
+        frameCount++;
+
+        // ── Peak phase state machine ──
+        if (peakPhase === 1) {
+          var elapsed = now - peakStart;
+          var t = Math.min(elapsed / PEAK_RISE, 1);
+          var ease = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t; // ease in-out quad
+          currentBias = peakBaselineBias + (PEAK_BIAS - peakBaselineBias) * ease;
+          if (elapsed >= PEAK_RISE) { peakPhase = 2; peakStart = now; }
+        } else if (peakPhase === 2) {
+          currentBias = PEAK_BIAS;
+          if (now - peakStart >= PEAK_HOLD) { peakPhase = 3; peakStart = now; }
+        } else if (peakPhase === 3) {
+          var elapsed = now - peakStart;
+          var t = Math.min(elapsed / PEAK_FALL, 1);
+          var ease = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+          currentBias = PEAK_BIAS + (peakBaselineBias - PEAK_BIAS) * ease;
+          if (elapsed >= PEAK_FALL) {
+            peakPhase = 0;
+            currentBias = peakBaselineBias;
+          }
+        } else {
+          // Normal scroll-driven targeting
+          checkWorldPeak();
+          targetBias  = getScrollBias();
+          loopDropBias = getLoopDrop();
+          // Lerp toward target (smooth ~0.06 per frame at 60fps)
+          currentBias += (targetBias - currentBias) * 0.06;
+        }
+
+        // Apply every 2 frames to reduce SVG filter thrash
+        if (frameCount % 2 === 0) {
+          var effectiveBias = currentBias + loopDropBias;
+          setMatrix(subCm, effectiveBias);
+          setMatrix(radCm, effectiveBias + RAD_OFFSET);
+
+          // Slow sinusoidal drift of baseFrequency
+          var elapsed = (now - tBase) * 0.001;
+          var bfX = bfX0 + Math.sin(elapsed * 0.11) * 0.0008;
+          var bfY = bfY0 + Math.cos(elapsed * 0.07) * 0.0006;
+          subTurb.setAttribute('baseFrequency', bfX.toFixed(5) + ' ' + bfY.toFixed(5));
+        }
+      }
+
+      // ── Autoplay / reduced-motion fallback ───────────────
+      function hideSubstrate () {
+        videoLayer.classList.add('substrate-hidden');
+        radiation.classList.add('substrate-hidden');
+      }
+
+      var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReduced) {
+        hideSubstrate();
+        return;
+      }
+
+      if (reel) {
+        reel.playbackRate = PLAYBACK_RATE;
+        var playPromise = reel.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(function () {
+            hideSubstrate();
+          });
+        }
+      }
+
+      requestAnimationFrame(tick);
     }());
   </script>
 
