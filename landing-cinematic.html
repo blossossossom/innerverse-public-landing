@@ -1007,21 +1007,21 @@
     /* ── Ambient body text breathing ─────────────────────── */
     @keyframes ambientBreathe {
       0%, 100% { opacity: 1.00; }
-      50%       { opacity: 0.96; }
+      50%       { opacity: 0.99; }  /* 1 % swing — perceptible only subliminally */
     }
 
     .c-breathing         { animation: ambientBreathe  8s ease-in-out infinite; }
     .c-breathing-slow    { animation: ambientBreathe  9s ease-in-out infinite 1s; }
     .c-breathing-headline{ animation: headlineBreathe 9s ease-in-out infinite; }
 
-    /* ── Enhanced section reveals ─────────────────────────── */
+    /* ── Section reveals — gentle atmospheric drift ──────── */
     .reveal {
       opacity: 0 !important;
-      transform: translateY(20px) !important;
+      transform: translateY(12px) !important;  /* ≤15 px keeps drift subtle */
       filter: none !important;
       transition:
-        opacity  2.4s cubic-bezier(0.16, 1, 0.3, 1),
-        transform 2.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        opacity  1.8s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 1.8s cubic-bezier(0.16, 1, 0.3, 1) !important;
     }
 
     .reveal.visible {
@@ -1029,12 +1029,12 @@
       transform: translateY(0) !important;
     }
 
-    /* Cinematic stagger — more generous spacing between lines */
-    .delay-1 { transition-delay: 0.35s !important; }
-    .delay-2 { transition-delay: 0.70s !important; }
-    .delay-3 { transition-delay: 1.05s !important; }
-    .delay-4 { transition-delay: 1.40s !important; }
-    .delay-5 { transition-delay: 1.75s !important; }
+    /* 220 ms stagger — sequential but not slow */
+    .delay-1 { transition-delay: 0.22s !important; }
+    .delay-2 { transition-delay: 0.44s !important; }
+    .delay-3 { transition-delay: 0.66s !important; }
+    .delay-4 { transition-delay: 0.88s !important; }
+    .delay-5 { transition-delay: 1.10s !important; }
 
     /* Once locked, element stays visible regardless of observer state */
     .c-locked {
@@ -1043,10 +1043,10 @@
       transition-duration: 0s !important;
     }
 
-    /* ── Aurora lines: slower cinematic entrance ─────────── */
+    /* ── Aurora lines: same gentle drift as body text ─────── */
     .aurora-line {
-      transform: translateY(22px) !important;
-      transition-duration: 2.4s !important;
+      transform: translateY(12px) !important;
+      transition-duration: 1.8s !important;
       transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1) !important;
     }
 
@@ -1278,7 +1278,7 @@
           observer.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    }, { threshold: 0.06, rootMargin: '0px 0px -16px 0px' });
 
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
