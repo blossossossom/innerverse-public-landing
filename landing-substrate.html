@@ -1009,6 +1009,13 @@
         <stop id="ring-stop2"  offset="0.75" stop-color="black"/>
       </radialGradient>
 
+      <!-- State B fill gradient: white centre dissolving organically at outer edge -->
+      <radialGradient id="col-fill-grad" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="1">
+        <stop offset="0" stop-color="white"/>
+        <stop id="col-fill-stop1" offset="0.82" stop-color="white"/>
+        <stop id="col-fill-stop2" offset="0.93" stop-color="black"/>
+      </radialGradient>
+
       <!-- Main video mask: displacement applied only to the edge ring -->
       <filter id="sub-filter" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
         <feTurbulence id="sub-turb" type="fractalNoise"
@@ -1018,8 +1025,10 @@
           xChannelSelector="R" yChannelSelector="G"/>
       </filter>
       <mask id="sub-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="1920" height="1080">
-        <!-- Ring only — black centre (hollow interior) + white ring + black exterior.
-             Displacement creates organic fraying at both inner and outer ring edges. -->
+        <!-- State B: solid fill with organic outer dissolve; invisible until crossfade -->
+        <rect id="sub-rect-b" x="0" y="0" width="1920" height="1080"
+          fill="url(#col-fill-grad)" filter="url(#sub-filter)" opacity="0"/>
+        <!-- State A: ring only — black centre (hollow interior) + white ring + black exterior -->
         <rect id="sub-rect" x="0" y="0" width="1920" height="1080"
           fill="url(#ring-grad)" filter="url(#sub-filter)"/>
       </mask>
@@ -1639,6 +1648,10 @@
       var radColStop2   = document.getElementById('rad-col-stop2');
       var radCm         = document.getElementById('rad-cm');
       var subTurb     = document.getElementById('sub-turb');
+      var subRectB    = document.getElementById('sub-rect-b');
+      var colFillGrad = document.getElementById('col-fill-grad');
+      var colFillStop1 = document.getElementById('col-fill-stop1');
+      var colFillStop2 = document.getElementById('col-fill-stop2');
       var coreRx      = 1;  // updated in resizeMasks
       var coreRy      = 1;
 
@@ -1652,7 +1665,6 @@
         'connect':     -11.0
       };
       var FOOTER_BIAS   = -14.0;
-      var PEAK_BIAS     = -0.5;   // ~97% video coverage
       var LOOP_DROP_AMT =  9.0;   // bias boost during loop transition (less visible)
       var RAD_OFFSET    =  8.0;   // radiation bias = main bias + offset (less visible)
       var PLAYBACK_RATE =  0.85;
@@ -1660,13 +1672,8 @@
       // ── State ─────────────────────────────────────────────
       var currentBias = -11.0;
       var targetBias  = -11.0;
-      var peakPhase   = 0;        // 0=idle 1=rise 2=hold 3=fall
-      var peakStart   = 0;
-      var PEAK_RISE   = 1500;
-      var PEAK_HOLD   = 2000;
-      var PEAK_FALL   = 1500;
-      var peakBaselineBias = -7.0;
       var loopDropBias = 0.0;
+      var tFactor      = 0;       // 0=State A (fire ring), 1=State B (filled figure)
       var frameCount   = 0;
       var tBase        = performance.now();
       var bfX0 = 0.10, bfY0 = 0.07;
@@ -1683,7 +1690,9 @@
           'translate(' + cx + ',' + cy + ') scale(' + coreRx + ',' + coreRy + ')');
         radColGrad.setAttribute('gradientTransform',
           'translate(' + cx + ',' + cy + ') scale(' + coreRx + ',' + coreRy + ')');
-        ['sub-rect', 'rad-rect'].forEach(function (id) {
+        colFillGrad.setAttribute('gradientTransform',
+          'translate(' + cx + ',' + cy + ') scale(' + coreRx + ',' + coreRy + ')');
+        ['sub-rect', 'sub-rect-b', 'rad-rect'].forEach(function (id) {
           var el = document.getElementById(id);
           el.setAttribute('width',  w);
           el.setAttribute('height', h);
@@ -1757,21 +1766,6 @@
         return 0;
       }
 
-      // ── World section peak revelation ─────────────────────
-      function checkWorldPeak () {
-        var world = document.getElementById('world');
-        if (!world || peakPhase !== 0) return;
-        var rect = world.getBoundingClientRect();
-        var vh   = window.innerHeight;
-        // Trigger peak when 52–88% of #world has scrolled through
-        var scrollThrough = -rect.top / (rect.height - vh);
-        if (scrollThrough >= 0.52 && scrollThrough <= 0.88) {
-          peakPhase = 1;
-          peakStart = performance.now();
-          peakBaselineBias = currentBias;
-        }
-      }
-
       // ── Coverage: solid core ellipse + ring gradient stops ───────────────────────
       // Formula keeps figure visible across all sections (min ~40% of column radius).
       // Animation cycle only shifts the noise pattern; core size changes only with bias.
@@ -1790,6 +1784,24 @@
         radColStop2.setAttribute('offset',  radOuter.toFixed(3));
       }
 
+      // ── State B coverage: solid fill with gently dissolving outer edge ────────
+      function setCoverageB (bias) {
+        var solidFrac = Math.max(0.60, Math.min(0.88, 0.90 + bias * 0.012));
+        var transFrac = Math.min(solidFrac + 0.08, 0.97);
+        colFillStop1.setAttribute('offset', solidFrac.toFixed(3));
+        colFillStop2.setAttribute('offset', transFrac.toFixed(3));
+      }
+
+      // ── Transition factor: 0=State A, 1=State B, driven by #world viewport entry ──
+      function getTransitionFactor () {
+        var world = document.getElementById('world');
+        if (!world) return 0;
+        var rect = world.getBoundingClientRect();
+        var vh   = window.innerHeight;
+        var t    = (vh - rect.top) / (vh * 0.4);
+        return Math.max(0, Math.min(1, t));
+      }
+
       // ── Set feColorMatrix values (radiation overlay only) ─────────────────────
       function setMatrix (el, bias) {
         var v = '20 0 0 0 ' + bias.toFixed(3);
@@ -1801,44 +1813,27 @@
         requestAnimationFrame(tick);
         frameCount++;
 
-        // ── Peak phase state machine ──
-        if (peakPhase === 1) {
-          var elapsed = now - peakStart;
-          var t = Math.min(elapsed / PEAK_RISE, 1);
-          var ease = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t; // ease in-out quad
-          currentBias = peakBaselineBias + (PEAK_BIAS - peakBaselineBias) * ease;
-          if (elapsed >= PEAK_RISE) { peakPhase = 2; peakStart = now; }
-        } else if (peakPhase === 2) {
-          currentBias = PEAK_BIAS;
-          if (now - peakStart >= PEAK_HOLD) { peakPhase = 3; peakStart = now; }
-        } else if (peakPhase === 3) {
-          var elapsed = now - peakStart;
-          var t = Math.min(elapsed / PEAK_FALL, 1);
-          var ease = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-          currentBias = PEAK_BIAS + (peakBaselineBias - PEAK_BIAS) * ease;
-          if (elapsed >= PEAK_FALL) {
-            peakPhase = 0;
-            currentBias = peakBaselineBias;
-          }
-        } else {
-          // Normal scroll-driven targeting
-          checkWorldPeak();
-          targetBias  = getScrollBias();
-          loopDropBias = getLoopDrop();
-          // Lerp toward target (smooth ~0.06 per frame at 60fps)
-          currentBias += (targetBias - currentBias) * 0.06;
-        }
+        // Scroll-driven bias
+        targetBias   = getScrollBias();
+        loopDropBias = getLoopDrop();
+        currentBias  += (targetBias - currentBias) * 0.06;
+
+        // State A→B crossfade: lerp tFactor toward scroll target (~1.5s at 60fps)
+        tFactor += (getTransitionFactor() - tFactor) * 0.04;
+        subRect.setAttribute('opacity',  (1 - tFactor).toFixed(3));
+        subRectB.setAttribute('opacity', tFactor.toFixed(3));
 
         // Apply every 2 frames to reduce SVG filter thrash
         if (frameCount % 2 === 0) {
           var effectiveBias = currentBias + loopDropBias;
           setCoverage(effectiveBias);
+          setCoverageB(effectiveBias);
           setMatrix(radCm, effectiveBias + RAD_OFFSET);
 
           // Slow sinusoidal drift of baseFrequency
-          var elapsed = (now - tBase) * 0.001;
-          var bfX = bfX0 + Math.sin(elapsed * 0.11) * 0.006;
-          var bfY = bfY0 + Math.cos(elapsed * 0.07) * 0.004;
+          var elapsedSec = (now - tBase) * 0.001;
+          var bfX = bfX0 + Math.sin(elapsedSec * 0.11) * 0.006;
+          var bfY = bfY0 + Math.cos(elapsedSec * 0.07) * 0.004;
           subTurb.setAttribute('baseFrequency', bfX.toFixed(5) + ' ' + bfY.toFixed(5));
         }
       }
