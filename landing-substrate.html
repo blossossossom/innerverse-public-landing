@@ -1018,20 +1018,17 @@
           xChannelSelector="R" yChannelSelector="G"/>
       </filter>
       <mask id="sub-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="1920" height="1080">
-        <!-- Displaced ring FIRST — organic fraying at the column edge -->
+        <!-- Solid clean core — no filter, always opaque at the centre -->
+        <ellipse id="sub-core" cx="960" cy="540" rx="160" ry="270" fill="white"/>
+        <!-- Displaced transition ring — organic fraying at the column edge only -->
         <rect id="sub-rect" x="0" y="0" width="1920" height="1080"
           fill="url(#ring-grad)" filter="url(#sub-filter)"/>
-        <!-- Solid core SECOND — paints white on top, overwriting any displaced black
-             pixels that bled inward from the ring-grad's black centre zone -->
-        <ellipse id="sub-core" cx="960" cy="540" rx="160" ry="270" fill="white"/>
       </mask>
 
-      <!-- Radiation ring gradient: black centre, white at ring edge, black exterior.
-           Warm radiation glow appears only at the silhouette boundary, never inside. -->
+      <!-- Radiation column gradient: white within reel column, black outside -->
       <radialGradient id="rad-col-grad" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="1">
-        <stop id="rad-col-stop1"  offset="0.53" stop-color="black"/>
-        <stop id="rad-col-stop1b" offset="0.63" stop-color="white"/>
-        <stop id="rad-col-stop2"  offset="0.80" stop-color="black"/>
+        <stop offset="0.70" stop-color="white"/>
+        <stop offset="0.95" stop-color="black"/>
       </radialGradient>
 
       <!-- Radiation overlay mask: binary noise × column shape.
@@ -1636,11 +1633,8 @@
       var ringStop1b  = document.getElementById('ring-stop1b');
       var ringStop2   = document.getElementById('ring-stop2');
       var subCore     = document.getElementById('sub-core');
-      var radColGrad    = document.getElementById('rad-col-grad');
-      var radColStop1   = document.getElementById('rad-col-stop1');
-      var radColStop1b  = document.getElementById('rad-col-stop1b');
-      var radColStop2   = document.getElementById('rad-col-stop2');
-      var radCm         = document.getElementById('rad-cm');
+      var radColGrad  = document.getElementById('rad-col-grad');
+      var radCm       = document.getElementById('rad-cm');
       var subTurb     = document.getElementById('sub-turb');
       var coreRx      = 1;  // updated in resizeMasks
       var coreRy      = 1;
@@ -1783,20 +1777,13 @@
       function setCoverage (bias) {
         var solidFrac = Math.max(0.40, Math.min(0.92, 0.90 + bias * 0.025));
         var transFrac = Math.min(solidFrac + 0.12, 0.97);
-        // Main ring gradient: white only in [solidFrac, transFrac]
+        // Ring gradient: white only in [solidFrac, transFrac]
         ringStop1.setAttribute('offset',  solidFrac.toFixed(3));
         ringStop1b.setAttribute('offset', solidFrac.toFixed(3));
         ringStop2.setAttribute('offset',  transFrac.toFixed(3));
         // Solid core ellipse: covers the inner solid zone with no filter
         subCore.setAttribute('rx', (solidFrac * coreRx).toFixed(1));
         subCore.setAttribute('ry', (solidFrac * coreRy).toFixed(1));
-        // Radiation ring gradient: warm glow at the silhouette boundary only.
-        // Black centre (no radiation inside) → white at ring edge → black exterior.
-        var radInner = Math.max(0.30, solidFrac - 0.10);
-        var radOuter = Math.min(transFrac + 0.06, 0.97);
-        radColStop1.setAttribute('offset',  radInner.toFixed(3));
-        radColStop1b.setAttribute('offset', solidFrac.toFixed(3));
-        radColStop2.setAttribute('offset',  radOuter.toFixed(3));
       }
 
       // ── Set feColorMatrix values (radiation overlay only) ─────────────────────
