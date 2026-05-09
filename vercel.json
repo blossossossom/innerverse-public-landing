@@ -1,5 +1,7 @@
 {
   "rewrites": [
+    { "source": "/cinematic", "destination": "/landing-cinematic.html" },
+    { "source": "/substrate",  "destination": "/landing-substrate.html" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }

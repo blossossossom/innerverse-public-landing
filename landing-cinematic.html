@@ -1,0 +1,1798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Innerverse — Early Access</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400;500&family=Genos:wght@200&display=swap" rel="stylesheet" />
+  <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet" />
+  <script src="https://assets.calendly.com/assets/external/widget.js" async></script>
+
+  <style>
+    /* ── Reset & Base ───────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --void:   #00010A;
+      --blue:   #00C2FF;
+      --gold:   #FDCF7C;
+      --fog:    #0E1117;
+      --mist:   #8a9bb0;
+      --white:  #ffffff;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: #060c18;
+      color: var(--white);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-weight: 300;
+      font-size: 16px;
+      line-height: 1.75;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Stage lighting — three-point spotlights + floor glow ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        /* Central top spotlight — blue-white cone from above */
+        radial-gradient(ellipse 65% 80% at 50% -8%,
+          rgba(175,220,255,0.42) 0%,
+          rgba(130,185,240,0.18) 45%,
+          transparent 72%),
+        /* Left angled spotlight from upper-left corner */
+        radial-gradient(ellipse 55% 70% at -6% -4%,
+          rgba(90,155,225,0.38) 0%,
+          rgba(80,140,210,0.12) 50%,
+          transparent 68%),
+        /* Right angled spotlight from upper-right corner */
+        radial-gradient(ellipse 55% 70% at 106% -4%,
+          rgba(90,155,225,0.38) 0%,
+          rgba(80,140,210,0.12) 50%,
+          transparent 68%),
+        /* Mid-room blue ambient fill */
+        radial-gradient(ellipse 90% 50% at 50% 40%,
+          rgba(60,120,200,0.10) 0%,
+          transparent 70%),
+        /* Golden floor glow — the horizontal amber line */
+        radial-gradient(ellipse 140% 8% at 50% 66%,
+          rgba(252,190,70,0.50) 0%,
+          rgba(240,155,45,0.22) 50%,
+          transparent 78%),
+        /* Floor reflection below the line */
+        radial-gradient(ellipse 100% 25% at 50% 80%,
+          rgba(210,145,50,0.18) 0%,
+          transparent 72%),
+        /* Warm gold ambient in lower room */
+        radial-gradient(ellipse 70% 35% at 50% 90%,
+          rgba(180,110,30,0.12) 0%,
+          transparent 65%),
+        /* Deep void base — slightly lifted from pure black */
+        radial-gradient(ellipse 100% 60% at 50% 100%,
+          #050d1e 0%, #080f1c 60%, #080f1c 100%);
+      animation: stageBreath 20s ease-in-out infinite alternate;
+    }
+
+    @keyframes stageBreath {
+      0%   { opacity: 0.85; }
+      50%  { opacity: 1.0; }
+      100% { opacity: 0.90; }
+    }
+
+    /* ── Layout ─────────────────────────────────────────── */
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+
+    section { padding: 96px 0; }
+
+    /* ── Divider ─────────────────────────────────────────── */
+    .divider {
+      width: 1px;
+      height: 64px;
+      background: linear-gradient(to bottom, transparent, rgba(0,194,255,0.3), transparent);
+      margin: 0 auto;
+    }
+
+    /* ── Fade-in animation base ─────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      filter: blur(6px);
+      transition: opacity 1.3s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 1.3s cubic-bezier(0.22, 1, 0.36, 1),
+                  filter 1.3s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0px);
+    }
+
+    /* Stagger delays */
+    .delay-1 { transition-delay: 0.15s; }
+    .delay-2 { transition-delay: 0.32s; }
+    .delay-3 { transition-delay: 0.50s; }
+    .delay-4 { transition-delay: 0.68s; }
+    .delay-5 { transition-delay: 0.86s; }
+
+    /* ── Hero ───────────────────────────────────────────── */
+    #hero {
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding-top: 80px;
+      padding-bottom: 100px;
+    }
+
+    #hero-cta-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 120px;   /* breathing room below the text block */
+      padding: 60px 0;
+      min-height: 220px;
+    }
+
+    .hero-eyebrow {
+      font-size: 16px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 28px;
+      opacity: 0;
+      animation: heroFadeIn 2s cubic-bezier(0.22, 1, 0.36, 1) 0.3s forwards;
+    }
+
+    .hero-headline {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: clamp(2.8rem, 6.8vw, 4.4rem);
+      font-weight: 300;
+      line-height: 1.12;
+      letter-spacing: 0.02em;
+      color: var(--white);
+      margin-bottom: 48px;
+      opacity: 0;
+      animation: heroFadeIn 2s cubic-bezier(0.22, 1, 0.36, 1) 0.55s forwards;
+    }
+
+    .hero-headline em {
+      font-style: normal;
+      font-weight: 400;
+      color: var(--gold);
+    }
+
+    .hero-subheadline {
+      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      font-weight: 300;
+      color: rgba(255,255,255,0.95);
+      max-width: 560px;
+      margin-bottom: 0;
+      opacity: 0;
+      animation: heroFadeIn 2s cubic-bezier(0.22, 1, 0.36, 1) 0.85s forwards;
+    }
+
+    /* ── Circular Room ───────────────────────────────────── */
+    #circular-room {
+      position: relative;
+      width: 100%;
+      height: 75vh;
+      min-height: 440px;
+      /* No overflow:hidden — aurora blobs bleed past section edges */
+    }
+
+    #room-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      mix-blend-mode: screen;
+      pointer-events: none;
+      /* Scale canvas 40% taller so aurora blobs bleed above & below the section */
+      transform: scaleY(1.4);
+      transform-origin: center center;
+    }
+
+    @keyframes heroFadeIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Canvas bokeh layer */
+    #stage-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── What Founding Partners Get ─────────────────────── */
+    #benefits {
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .section-label {
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(1.8rem, 4.5vw, 2.5rem);
+      font-weight: 400;
+      line-height: 1.2;
+      color: var(--white);
+      margin-bottom: 48px;
+    }
+
+    .benefits-list,
+    .benefits-list li {
+      list-style: none !important;
+      list-style-type: none !important;
+    }
+
+    .benefits-list {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0 48px;
+    }
+
+    .benefit-item {
+      position: relative;
+      padding: 32px 0 0;
+      border-top: 1px solid rgba(253,207,124,0.35);
+      background: none;
+      box-shadow: none;
+      opacity: 0;
+      transform: translateY(28px);
+      will-change: transform, opacity;
+      transition:
+        opacity  1.1s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .benefit-item.in-view {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .benefit-item:nth-child(2) { transition-delay: 0.15s; }
+    .benefit-item:nth-child(3) { transition-delay: 0.30s; }
+
+    .benefit-phase {
+      display: block;
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 20px;
+    }
+
+    .benefit-content strong {
+      display: block;
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(1.1rem, 2vw, 1.35rem);
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 14px;
+      letter-spacing: -0.01em;
+      line-height: 1.25;
+    }
+
+    .benefit-content span {
+      font-size: 0.88rem;
+      color: rgba(255,255,255,0.72);
+      line-height: 1.8;
+    }
+
+    /* ── Calendly Section ───────────────────────────────── */
+    #connect {
+      border-top: 1px solid rgba(255,255,255,0.05);
+      text-align: center;
+    }
+
+    .connect-title {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 400;
+      color: var(--white);
+      margin-bottom: 16px;
+    }
+
+    .connect-subtitle {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.95);
+      max-width: 440px;
+      margin: 0 auto 48px;
+    }
+
+    /* Calendly placeholder */
+    #calendly-embed {
+      width: 100%;
+      min-height: 120px;
+      border: 1px dashed rgba(0,194,255,0.2);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 40px 24px;
+      margin-bottom: 40px;
+      background: rgba(0,194,255,0.02);
+    }
+
+    #calendly-embed p {
+      font-size: 0.85rem;
+      color: rgba(0,194,255,0.5);
+      font-style: italic;
+      text-align: center;
+      max-width: 400px;
+      line-height: 1.6;
+    }
+
+    #calendly-embed code {
+      font-family: 'Courier New', monospace;
+      font-size: 0.8rem;
+      background: rgba(0,194,255,0.08);
+      color: var(--blue);
+      padding: 6px 12px;
+      border-radius: 4px;
+      letter-spacing: 0.02em;
+    }
+
+    /* CTA Button */
+    .cta-button {
+      display: inline-block;
+      padding: 16px 40px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--void);
+      background: var(--blue);
+      border-radius: 3px;
+      border: none;
+      cursor: pointer;
+      transition:
+        box-shadow 0.5s ease,
+        transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+        color 0.5s ease;
+      position: relative;
+      overflow: hidden;
+      transform: scale(1);
+      will-change: transform;
+    }
+
+    .cta-button::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--gold);
+      opacity: 0;
+      transition: opacity 0.55s ease;
+    }
+
+    .cta-button span { position: relative; z-index: 1; }
+
+    .cta-button:hover::before { opacity: 1; }
+
+    .cta-button:hover {
+      transform: scale(1.04);
+      box-shadow:
+        0 0 28px rgba(253,207,124,0.45),
+        0 0 70px rgba(253,207,124,0.15),
+        0 4px 24px rgba(0,0,0,0.3);
+      color: var(--void);
+    }
+
+    /* Soft glow pulse at rest */
+    @keyframes glowPulse {
+      0%, 100% { box-shadow: 0 0 12px rgba(0,194,255,0.2); }
+      50%       { box-shadow: 0 0 22px rgba(0,194,255,0.38); }
+    }
+
+    .cta-button { animation: glowPulse 3.5s ease-in-out infinite; }
+    .cta-button:hover { animation: none; }
+
+    /* ── Waitlist signup form ───────────────────────────── */
+    #waitlist-form-wrap {
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      margin-top: 0;
+      transition:
+        max-height 0.80s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity    0.60s ease,
+        margin-top 0.60s ease;
+    }
+
+    #waitlist-form-wrap.open {
+      max-height: 360px;
+      opacity: 1;
+      margin-top: 44px;
+    }
+
+    #waitlist-form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+    }
+
+    #waitlist-email {
+      width: 100%;
+      max-width: 380px;
+      padding: 18px 24px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(0,194,255,0.18);
+      border-radius: 4px;
+      color: rgba(255,255,255,0.88);
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      font-weight: 300;
+      letter-spacing: 0.05em;
+      text-align: center;
+      outline: none;
+      box-sizing: border-box;
+      transition:
+        border-color 0.4s ease,
+        box-shadow   0.4s ease,
+        background   0.4s ease;
+    }
+
+    #waitlist-email::placeholder {
+      color: rgba(255,255,255,0.22);
+      letter-spacing: 0.08em;
+    }
+
+    #waitlist-email:focus {
+      border-color: rgba(0,194,255,0.50);
+      background: rgba(0,194,255,0.04);
+      box-shadow:
+        0 0 28px rgba(0,194,255,0.15),
+        0 0 70px rgba(0,194,255,0.06);
+    }
+
+    .waitlist-submit {
+      display: inline-block;
+      padding: 15px 48px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #00010A;
+      background: rgba(0,194,255,0.88);
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      transition:
+        background  0.4s ease,
+        box-shadow  0.4s ease,
+        opacity     0.3s ease;
+    }
+
+    .waitlist-submit:hover:not(:disabled) {
+      background: #00C2FF;
+      box-shadow:
+        0 0 32px rgba(0,194,255,0.50),
+        0 0 80px rgba(0,194,255,0.20);
+    }
+
+    .waitlist-submit:disabled {
+      opacity: 0.50;
+      cursor: default;
+    }
+
+    .waitlist-note {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.22);
+      letter-spacing: 0.05em;
+      font-style: italic;
+      margin: 0;
+    }
+
+    #waitlist-success {
+      display: none;
+      padding: 28px 0 8px;
+      text-align: center;
+    }
+
+    #waitlist-success p {
+      font-size: 0.95rem;
+      color: rgba(0,194,255,0.95);
+      letter-spacing: 0.08em;
+      font-style: italic;
+      line-height: 1.7;
+    }
+
+    /* ── Calendly popup overrides ───────────────────────── */
+    .calendly-overlay .calendly-popup {
+      border-radius: 4px;
+    }
+
+    /* ── Footer ─────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding: 48px 0;
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .footer-wordmark {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: 1.2rem;
+      font-weight: 400;
+      color: var(--white);
+      letter-spacing: 0.05em;
+    }
+
+    .footer-wordmark span {
+      color: var(--blue);
+    }
+
+    .footer-tagline {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.78);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .footer-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--gold);
+      opacity: 0.5;
+      box-shadow: 0 0 6px rgba(253,207,124,0.4);
+    }
+
+    /* ── Innerverse wordmark banners (top + bottom) ─────── */
+    .iv-wordmark {
+      font-family: 'Genos', sans-serif;
+      font-weight: 200;
+      font-size: clamp(2rem, 6vw, 4rem);
+      color: #ffffff;
+      text-transform: uppercase;
+      display: block;
+      width: 100%;
+      text-align: center;
+      user-select: none;
+      letter-spacing: 12px;  /* fixed px — never stretches with viewport */
+    }
+
+    .iv-wordmark span { display: inline; }
+
+    /* Opaque animated backdrop — sits behind the wordmark, blocks scrolled content */
+    #header-backdrop {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 99;
+      /* height set by JS to exactly match header */
+      background:
+        radial-gradient(ellipse 70% 400% at 50% 0%,
+          rgba(175,220,255,0.42) 0%,
+          rgba(130,185,240,0.18) 30%,
+          transparent 65%),
+        radial-gradient(ellipse 55% 350% at -6% 0%,
+          rgba(90,155,225,0.36) 0%,
+          transparent 55%),
+        radial-gradient(ellipse 55% 350% at 106% 0%,
+          rgba(90,155,225,0.36) 0%,
+          transparent 55%),
+        #080f1c;
+      animation: stageBreath 20s ease-in-out infinite alternate;
+    }
+
+    /* Top header banner */
+    #site-header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 18px 32px;
+      background: transparent;
+      pointer-events: none;
+    }
+
+    /* Bottom footer wordmark — full width row */
+    .footer-wordmark-full {
+      padding: 28px 0 20px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    /* ── Responsive ─────────────────────────────────────── */
+    /* Tablet */
+    @media (min-width: 641px) and (max-width: 1024px) {
+      .container { padding: 0 40px; }
+    }
+
+    /* Desktop */
+    @media (min-width: 1025px) {
+      .container { padding: 0 32px; }
+      section { padding: 112px 0; }
+    }
+
+    /* Mobile */
+    @media (max-width: 640px) {
+      .container { padding: 0 20px; }
+      section { padding: 72px 0; }
+      #hero { padding-top: 64px; padding-bottom: 64px; }
+      #site-header { padding: 14px 20px; }
+
+      .footer-inner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+      }
+
+      .benefits-list { grid-template-columns: 1fr; gap: 0; }
+      .benefit-item { padding: 28px 0 0; }
+      .benefit-item:nth-child(2),
+      .benefit-item:nth-child(3) { margin-top: 32px; }
+    }
+
+
+    /* ── Aurora CTA (hero button) ───────────────────────── */
+    .aurora-cta {
+      display: block;
+      position: relative;
+      overflow: visible;
+      width: 50vw;
+      min-width: 300px;
+      max-width: 740px;
+      text-align: center;
+      padding: 56px 0;
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+      font-weight: 300;
+      letter-spacing: 0.26em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.88);
+      text-decoration: none;
+      cursor: pointer;
+      /* No hard border — glow only */
+      background: rgba(0,194,255,0.04);
+      border: none;
+      border-radius: 12px;
+      box-shadow:
+        0 0 50px  rgba(0,194,255,0.16),
+        0 0 110px rgba(0,194,255,0.07),
+        0 0 220px rgba(0,194,255,0.03);
+      transition:
+        box-shadow 0.7s ease,
+        background 0.7s ease,
+        color      0.4s ease;
+      opacity: 0;
+      animation: heroFadeIn 2s cubic-bezier(0.22,1,0.36,1) 1.1s forwards;
+    }
+
+    /* Inner wispy bloom — tight around the button */
+    .aurora-cta::before {
+      content: '';
+      position: absolute;
+      inset: -50px -70px;
+      background: radial-gradient(ellipse 90% 80% at 50% 50%,
+        rgba(0,194,255,0.18)  0%,
+        rgba(60,140,230,0.09) 42%,
+        rgba(0,194,255,0.02)  68%,
+        transparent           82%
+      );
+      filter: blur(44px);
+      border-radius: 50%;
+      pointer-events: none;
+      transition: background 0.7s ease;
+    }
+
+    /* Outer corona — wide, vaporous, barely-there */
+    .aurora-cta::after {
+      content: '';
+      position: absolute;
+      inset: -110px -140px;
+      background: radial-gradient(ellipse 100% 100% at 50% 50%,
+        rgba(0,194,255,0.07)  0%,
+        rgba(80,130,210,0.03) 50%,
+        transparent           74%
+      );
+      filter: blur(80px);
+      border-radius: 50%;
+      pointer-events: none;
+      transition: background 0.7s ease;
+    }
+
+    /* Hover — brighter blue, no hard edges */
+    .aurora-cta:hover {
+      color: #fff;
+      background: rgba(0,194,255,0.07);
+      box-shadow:
+        0 0 70px  rgba(0,194,255,0.70),
+        0 0 150px rgba(0,194,255,0.38),
+        0 0 280px rgba(0,194,255,0.18),
+        0 0 420px rgba(0,194,255,0.07);
+    }
+
+    .aurora-cta:hover::before {
+      background: radial-gradient(ellipse 90% 80% at 50% 50%,
+        rgba(0,194,255,0.52)  0%,
+        rgba(60,140,230,0.26) 42%,
+        rgba(0,194,255,0.05)  68%,
+        transparent           82%
+      );
+    }
+
+    .aurora-cta:hover::after {
+      background: radial-gradient(ellipse 110% 110% at 50% 50%,
+        rgba(0,194,255,0.16)  0%,
+        rgba(80,130,210,0.08) 50%,
+        transparent           74%
+      );
+    }
+
+    .aurora-cta span { position: relative; }
+
+    /* ── Aurora Hero ─────────────────────────────────────── */
+    #aurora-hero {
+      position: relative;
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    #aurora-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 2;
+      mix-blend-mode: screen;
+    }
+
+    #aurora-content {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+      width: 100%;
+      padding: 100px 32px;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4.5em;
+    }
+
+    .aurora-line {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(1.05rem, 2.2vw, 1.32rem);
+      font-weight: 300;
+      color: rgba(255, 255, 255, 0.88);
+      line-height: 1.8;
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 1.4s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 1.4s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .aurora-line-highlight {
+      font-size: clamp(1.15rem, 2.6vw, 1.5rem);
+      font-weight: 400;
+      color: rgba(255, 255, 255, 1);
+    }
+
+    .aurora-line.a-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    #aurora-reveal {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      padding-top: 0.6em;
+    }
+
+    #aurora-wordmark {
+      opacity: 0;
+      transition: opacity 1.2s ease;
+    }
+
+    #aurora-subline {
+      font-size: clamp(0.95rem, 2vw, 1.1rem);
+      font-weight: 300;
+      color: rgba(255, 255, 255, 0.88);
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+
+    #aurora-cta {
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+
+    /* ── Proper noun — Genos, visual-size-compensated ───── */
+    .pn {
+      font-family: 'Genos', sans-serif;
+      font-weight: 200;
+      font-style: normal;
+      /* Genos has a smaller x-height than Inter at the same em size.
+         1.35em brings the cap/x-height visually flush with surrounding body text.
+         line-height: 1 collapses the inline box to the glyph height so the
+         larger font-size doesn't inflate the line box or push spacing. */
+      font-size: 1.35em;
+      line-height: 1;
+    }
+
+    /* ── Section 3 — The World ──────────────────────────── */
+    .world-prose-line {
+      font-size: clamp(1.05rem, 2.2vw, 1.32rem);
+      font-weight: 300;
+      line-height: 1.9;
+      color: rgba(255,255,255,0.88);
+      margin-bottom: 2em;
+    }
+
+    .world-prose-line:last-child { margin-bottom: 0; }
+
+    .world-breath {
+      padding-left: 2.4em;
+      letter-spacing: 0.06em;
+      color: rgba(255,255,255,0.62) !important;
+    }
+
+    /* Structural slot for future video backdrop */
+    .world-video-slot {
+      position: relative;
+      padding-bottom: 4em;
+      margin-bottom: 1.6em;
+    }
+
+    /* ── Section 4 — The Key ─────────────────────────────── */
+    #key-section {
+      padding: 160px 0;
+      text-align: center;
+    }
+
+    .key-block p {
+      font-size: clamp(1.05rem, 2.2vw, 1.32rem);
+      font-weight: 300;
+      line-height: 2.4;
+      color: rgba(255,255,255,0.88);
+      max-width: 620px;
+      margin: 0 auto 3.6em;
+    }
+
+    .key-block p:last-child { margin-bottom: 0; }
+
+    /* ── Section 5 — The Principles ─────────────────────── */
+    #principles {
+      padding: 120px 0;
+      text-align: center;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .principles-inner {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.15em;
+    }
+
+    .principle-line {
+      font-size: clamp(1.3rem, 2.8vw, 1.85rem);
+      font-weight: 300;
+      line-height: 1.7;
+      color: rgba(255,255,255,0.88);
+      letter-spacing: 0.03em;
+    }
+
+    .principle-entirely {
+      font-size: clamp(1.3rem, 2.8vw, 1.85rem);
+      font-weight: 300;
+      line-height: 1.7;
+      color: rgba(255,255,255,0.88);
+      letter-spacing: 0.03em;
+      margin-top: 2.8em;
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       CINEMATIC MOTION LAYER — Pass 1
+       Additive only. Base stylesheet unchanged.
+    ═══════════════════════════════════════════════════════ */
+
+    /* ── Letterbox bars ─────────────────────────────────── */
+    .c-letterbox {
+      position: fixed;
+      left: 0;
+      right: 0;
+      height: 56px;
+      background: #000;
+      z-index: 210;
+      pointer-events: none;
+      will-change: transform;
+      transition: transform 2.2s cubic-bezier(0.76, 0, 0.24, 1) 0.5s;
+    }
+    .c-letterbox-top    { top: 0; }
+    .c-letterbox-bottom { bottom: 0; }
+    body.c-open .c-letterbox-top    { transform: translateY(-100%); }
+    body.c-open .c-letterbox-bottom { transform: translateY(100%);  }
+    .c-letterbox.c-done { display: none; }
+
+    /* ── Opening veil — page starts in darkness ─────────── */
+    #c-veil {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 200;
+      pointer-events: none;
+      will-change: opacity;
+      transition: opacity 3.2s cubic-bezier(0.4, 0, 0.2, 1) 0.6s;
+    }
+    body.c-open #c-veil { opacity: 0; }
+    #c-veil.c-done { display: none; }
+
+    /* ── Film grain overlay ─────────────────────────────── */
+    #c-grain {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 195;
+      opacity: 0.038;
+      mix-blend-mode: overlay;
+    }
+
+    /* ── Hero timing — delayed past veil lift (~3.2 s) ──── */
+    .hero-eyebrow    { animation-delay: 2.3s  !important; animation-duration: 3.0s !important; }
+    .hero-headline   { animation-delay: 2.8s  !important; animation-duration: 3.2s !important; }
+    .hero-subheadline{ animation-delay: 3.3s  !important; animation-duration: 3.0s !important; }
+    .aurora-cta      { animation-delay: 3.9s  !important; animation-duration: 3.5s !important; }
+
+    /* ── Deeper section reveals ─────────────────────────── */
+    .reveal {
+      transform: translateY(40px) !important;
+      filter: blur(10px) !important;
+      transition:
+        opacity  1.9s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 1.9s cubic-bezier(0.22, 1, 0.36, 1),
+        filter   1.9s cubic-bezier(0.22, 1, 0.36, 1) !important;
+    }
+    .reveal.visible {
+      transform: translateY(0) !important;
+      filter: blur(0px) !important;
+    }
+
+    /* ── Cinematic aurora-line entrance ─────────────────── */
+    .aurora-line {
+      transform: translateY(32px) !important;
+      transition-duration: 2.2s !important;
+    }
+
+    /* ── Slower ambient stage breath ────────────────────── */
+    @keyframes stageBreath {
+      0%   { opacity: 0.70; }
+      40%  { opacity: 1.00; }
+      70%  { opacity: 0.86; }
+      100% { opacity: 0.74; }
+    }
+    body::before { animation-duration: 32s !important; }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- ── CINEMATIC OVERLAYS (Pass 1) ──────────────────── -->
+  <!-- Letterbox bars — retract on page open -->
+  <div class="c-letterbox c-letterbox-top"    aria-hidden="true"></div>
+  <div class="c-letterbox c-letterbox-bottom" aria-hidden="true"></div>
+  <!-- Opening veil — fades from black to reveal the scene -->
+  <div id="c-veil" aria-hidden="true"></div>
+  <!-- Film grain canvas -->
+  <canvas id="c-grain" aria-hidden="true"></canvas>
+
+  <!-- Animated backdrop that blocks scrolled content behind logo -->
+  <div id="header-backdrop"></div>
+
+  <!-- Top wordmark banner -->
+  <header id="site-header">
+    <div class="container">
+      <div class="iv-wordmark" id="header-wordmark">INNERVERSE</div>
+    </div>
+  </header>
+
+  <!-- Stage bokeh canvas -->
+  <canvas id="stage-canvas" aria-hidden="true"></canvas>
+
+  <!-- ── HERO ──────────────────────────────────────────── -->
+  <section id="hero">
+    <div class="container">
+      <p class="hero-eyebrow">founding members</p>
+      <h1 class="hero-headline">
+        Human experience & memory,<br><em>made spatial</em>
+      </h1>
+      <p class="hero-subheadline">
+        Imprint your world, for yourself and those you let in.
+      </p>
+    </div>
+    <div id="hero-cta-wrap">
+      <a class="aurora-cta" href="#connect"><span>I'm in</span></a>
+    </div>
+  </section>
+
+  <!-- ── AURORA HERO ───────────────────────────────────── -->
+  <section id="aurora-hero">
+    <canvas id="aurora-canvas" aria-hidden="true"></canvas>
+    <div id="aurora-content">
+      <p class="aurora-line">Some rooms are meant for one person, some for five. Some for humanity, and some for no one but you.</p>
+      <p class="aurora-line"><span class="pn">Innerverse</span> is where your galaxy of self-expression and human connection lives.</p>
+    </div>
+  </section>
+
+  <!-- ── CIRCULAR ROOM ───────────────────────────────── -->
+  <section id="circular-room">
+    <canvas id="room-canvas" aria-hidden="true"></canvas>
+  </section>
+
+
+  <!-- ── THE WORLD ─────────────────────────────────────── -->
+  <section id="world">
+    <div class="container">
+      <div class="world-video-slot">
+        <p class="world-prose-line reveal">Your <span class="pn">World</span> is manifest of you.</p>
+        <p class="world-prose-line reveal delay-1">You architect and imprint</p>
+        <p class="world-prose-line world-breath reveal delay-2">with your … writing, art, photographs, memory …</p>
+        <p class="world-prose-line reveal delay-3">connect <span class="pn">Rooms</span> by <span class="pn">Portals</span>, and enter.</p>
+      </div>
+      <p class="world-prose-line reveal delay-1">There has never been, and never will be, a repeat of your <span class="pn">Innerverse</span>.</p>
+      <p class="world-prose-line reveal delay-2">Yours alone, unseen and untouched by anyone other than those you grant access to.</p>
+    </div>
+  </section>
+
+
+  <!-- ── THE KEY ───────────────────────────────────────── -->
+  <section id="key-section">
+    <div class="container">
+      <div class="key-block">
+        <p class="reveal">A <span class="pn">Room</span> is opened by <span class="pn">Key</span>.</p>
+        <p class="reveal delay-1">A <span class="pn">Key</span> is given, not requested. To hold someone&#8217;s <span class="pn">Key</span> is to be trusted with a part of them.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── THE PRINCIPLES ────────────────────────────────── -->
+  <section id="principles">
+    <div class="container">
+      <div class="principles-inner reveal">
+        <p class="principle-line" aria-label="Trust over broadcast">Trust &gt; broadcast</p>
+        <p class="principle-line" aria-label="Connection over performance">Connection &gt; performance</p>
+        <p class="principle-line" aria-label="Architecture over algorithm">Architecture &gt; algorithm</p>
+        <p class="principle-entirely">Entirely human.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CONNECT ───────────────────────────────────────── -->
+  <section id="connect">
+    <div class="container">
+      <p class="connect-subtitle reveal">
+        <span class="pn">Innerverse</span> opens to the first 100 who take a <span class="pn">Key</span>.
+      </p>
+
+      <div class="reveal delay-1">
+        <button class="cta-button" id="waitlist-toggle">
+          <span>I'm in</span>
+        </button>
+      </div>
+
+      <div id="waitlist-form-wrap" role="region" aria-label="Waitlist signup">
+        <form id="waitlist-form" novalidate>
+          <input
+            type="email"
+            id="waitlist-email"
+            name="email"
+            placeholder="your@email.com"
+            autocomplete="email"
+            required
+            aria-label="Email address"
+          />
+          <button type="submit" class="waitlist-submit">
+            <span>Enter the waitlist</span>
+          </button>
+        </form>
+        <div id="waitlist-success" aria-live="polite">
+          <p>You&#8217;re in. When the doors open, your <span class="pn">Key</span> will let you in.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── FOOTER ────────────────────────────────────────── -->
+  <footer>
+    <div class="container">
+      <div class="footer-wordmark-full reveal">
+        <div class="iv-wordmark" id="footer-wordmark">INNERVERSE</div>
+      </div>
+    </div>
+  </footer>
+
+
+  <script>
+    // ── Reserve header space so content never scrolls under logo ──
+    function setHeaderOffset() {
+      const h = document.getElementById('site-header').offsetHeight;
+      document.body.style.paddingTop = h + 'px';
+      document.getElementById('header-backdrop').style.height = h + 'px';
+    }
+    // Run immediately, again on load, and again after fonts render
+    setHeaderOffset();
+    window.addEventListener('load', setHeaderOffset);
+    document.fonts.ready.then(setHeaderOffset);
+    window.addEventListener('resize', setHeaderOffset);
+
+    // ── Wordmark letter spread ───────────────────────────
+    function spellOut(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const text = el.textContent.trim();
+      el.textContent = '';
+      [...text].forEach(ch => {
+        const s = document.createElement('span');
+        s.textContent = ch;
+        el.appendChild(s);
+      });
+    }
+    spellOut('header-wordmark');
+    spellOut('footer-wordmark');
+
+    // ── Scroll-triggered reveal (bidirectional) ──────────
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        } else {
+          entry.target.classList.remove('visible');
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // ── Benefit items — fade up (bidirectional) ──────────
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const benefitObserver = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('in-view');
+            } else {
+              entry.target.classList.remove('in-view');
+            }
+          });
+        }, {
+          threshold: 0.18,
+          rootMargin: '0px 0px -80px 0px'
+        });
+
+        document.querySelectorAll('.benefit-item').forEach(el => benefitObserver.observe(el));
+      });
+    });
+
+
+    // ── Canvas bokeh — atmospheric gold/blue particles ──
+    const canvas = document.getElementById('stage-canvas');
+    const ctx    = canvas.getContext('2d');
+
+    function resize() {
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', () => { resize(); });
+
+    // Particle definition
+    // Bokeh are large, soft, blurred circles — like the reference images
+    const GOLD = [[253,200,90],[240,165,55],[255,215,110],[248,182,70]];
+    const BLUE = [[100,195,255],[130,210,255],[80,175,240]];
+
+    function rnd(min, max) { return Math.random() * (max - min) + min; }
+
+    // Spawn particles concentrated in the lower-center (rising from the floor line)
+    function spawnParticle() {
+      const isGold = Math.random() > 0.22;
+      const palette = isGold ? GOLD : BLUE;
+      const col = palette[Math.floor(Math.random() * palette.length)];
+
+      return {
+        x:      rnd(canvas.width * 0.10, canvas.width * 0.90),
+        y:      rnd(canvas.height * 0.45, canvas.height * 0.90),  // start lower half
+        r:      rnd(isGold ? 8 : 5, isGold ? 32 : 18),           // large for bokeh look
+        vx:     rnd(-0.12, 0.12),
+        vy:     rnd(-0.06, -0.22),                                 // drift upward slowly
+        alpha:  rnd(0.10, isGold ? 0.38 : 0.22),
+        fade:   rnd(0.00015, 0.0004),                             // very slow fade out
+        col,
+        life:   1.0,
+      };
+    }
+
+    let particles = Array.from({ length: 55 }, () => {
+      const p = spawnParticle();
+      // Pre-scatter across full height so it doesn't all start at floor
+      p.y = rnd(canvas.height * 0.15, canvas.height * 0.90);
+      p.life = rnd(0.2, 1.0);
+      return p;
+    });
+
+    // ── Foreground spark particles — sharp, vivid, falling gold ──
+    // These spawn from the top-center (spotlight source) and fall slowly downward,
+    // like lit dust caught in a beam. Crisp, no blur, sparingly seeded (18 total).
+    const SPARK_GOLD = [[255,220,120],[253,200,80],[255,240,150],[250,190,65]];
+
+    function spawnSpark() {
+      const col = SPARK_GOLD[Math.floor(Math.random() * SPARK_GOLD.length)];
+      // Concentrate horizontally near center, skewing toward spotlight cone
+      const spreadX = rnd(0.20, 0.80);
+      return {
+        x:      canvas.width  * spreadX,
+        y:      rnd(canvas.height * 0.02, canvas.height * 0.55),  // upper + mid zone
+        r:      rnd(0.8, 2.4),               // tiny — sharp dot
+        vx:     rnd(-0.08, 0.08),
+        vy:     rnd(0.04, 0.18),             // falling downward (spotlight rain)
+        alpha:  rnd(0.55, 0.95),             // vivid
+        fade:   rnd(0.0003, 0.0008),
+        col,
+        life:   1.0,
+        spark:  true,
+      };
+    }
+
+    const sparks = Array.from({ length: 18 }, () => {
+      const s = spawnSpark();
+      // Pre-scatter vertically so they don't all start at the same place
+      s.y    = rnd(0, canvas.height * 0.75);
+      s.life = rnd(0.15, 1.0);
+      return s;
+    });
+
+    function drawBokeh(p) {
+      const [r, g, b] = p.col;
+      const a = p.alpha * p.life;
+      if (a <= 0) return;
+
+      const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
+      grad.addColorStop(0,   `rgba(${r},${g},${b},${a})`);
+      grad.addColorStop(0.35,`rgba(${r},${g},${b},${a * 0.65})`);
+      grad.addColorStop(0.7, `rgba(${r},${g},${b},${a * 0.20})`);
+      grad.addColorStop(1,   `rgba(${r},${g},${b},0)`);
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+    }
+
+    function drawSpark(s) {
+      const [r, g, b] = s.col;
+      const a = s.alpha * s.life;
+      if (a <= 0) return;
+
+      // Crisp solid core with a very tight halo — no blur, just vivid presence
+      ctx.save();
+      ctx.shadowColor  = `rgba(${r},${g},${b},${a * 0.7})`;
+      ctx.shadowBlur   = 4;
+      ctx.fillStyle    = `rgba(${r},${g},${b},${a})`;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fill();
+      // White-hot centre on the brightest sparks
+      if (a > 0.55) {
+        ctx.shadowBlur  = 0;
+        ctx.fillStyle   = `rgba(255,255,220,${a * 0.55})`;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r * 0.38, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    function tick() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw bokeh first (background layer)
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        p.x    += p.vx;
+        p.y    += p.vy;
+        p.life -= p.fade;
+        drawBokeh(p);
+        if (p.life <= 0 || p.y < -p.r * 2) {
+          particles[i] = spawnParticle();
+        }
+      }
+
+      // Draw sparks on top (foreground layer)
+      for (let i = 0; i < sparks.length; i++) {
+        const s = sparks[i];
+        s.x    += s.vx;
+        s.y    += s.vy;
+        s.life -= s.fade;
+        drawSpark(s);
+        // Respawn when faded or fallen off screen
+        if (s.life <= 0 || s.y > canvas.height + 4) {
+          sparks[i] = spawnSpark();
+        }
+      }
+
+      requestAnimationFrame(tick);
+    }
+
+    tick();
+
+
+    // ── Circular Room — cylinder interior with orbiting text ─
+    (function () {
+      var section = document.getElementById('circular-room');
+      var canvas  = document.getElementById('room-canvas');
+      var ctx     = canvas.getContext('2d');
+
+      // Cylinder geometry & rendering constants
+      var R_CYL  = 320;    // virtual cylinder radius
+      var FOCAL  = 700;    // perspective focal length
+      var BASE_F = 26;     // base font size (px)
+      var ROT_SPD = 0.00085; // radians per frame (~3 deg/sec)
+      var GAP    = Math.PI / 2; // 90 deg between phrase centers
+
+      var phrases = [
+        'Your inner world.',
+        'Orchestrated by you.',
+        'Entered by you.',
+        'Yours to return to.'
+      ];
+
+      var W = 0, H = 0, t = 0, rotation = 0;
+
+      // Offscreen canvas for text measurement
+      var mc   = document.createElement('canvas');
+      var mctx = mc.getContext('2d');
+      var phraseData = [];
+
+      function setFont(c) {
+        c.font = '300 ' + BASE_F + "px 'Inter', sans-serif";
+      }
+
+      function resize() {
+        W = canvas.width  = section.offsetWidth  || window.innerWidth;
+        H = canvas.height = section.offsetHeight || window.innerHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      // Build per-character angle offsets from each phrase's center
+      function buildPhrases() {
+        setFont(mctx);
+        phraseData = phrases.map(function (phrase) {
+          var chars  = phrase.split('');
+          var widths = chars.map(function (ch) { return mctx.measureText(ch).width; });
+          var total  = widths.reduce(function (a, b) { return a + b; }, 0);
+          var x = -total / 2;
+          return chars.map(function (ch, i) {
+            var cx = x + widths[i] / 2;
+            x += widths[i];
+            // atan2 maps wall-arc position → angle from phrase center
+            return { ch: ch, ao: Math.atan2(cx, R_CYL) };
+          });
+        });
+      }
+
+      document.fonts.ready.then(buildPhrases);
+      buildPhrases(); // immediate fallback before fonts event
+
+      // ── Aurora blobs — wispy horizontal curtains, screen-blended ─
+      // Each blob: cx/cy (fraction of W/H), rx/ry (fraction of W/H),
+      // col [r,g,b], a (alpha), sx/sy (drift speeds), px/py (phase offsets), rot
+      var roomBlobs = [
+        // Primary sweeping bands
+        { cx:0.50, cy:0.18, rx:1.15, ry:0.11, col:[  0,194,255], a:0.34, sx:0.00038, sy:0.00018, px:0.00, py:0.00, rot:0.00005 },
+        { cx:0.30, cy:0.42, rx:1.05, ry:0.09, col:[ 90,155,225], a:0.30, sx:0.00028, sy:0.00024, px:1.40, py:0.80, rot:0.00007 },
+        { cx:0.72, cy:0.62, rx:1.00, ry:0.10, col:[130,185,240], a:0.32, sx:0.00042, sy:0.00016, px:2.60, py:1.60, rot:0.00006 },
+        { cx:0.50, cy:0.82, rx:1.10, ry:0.08, col:[  0,194,255], a:0.28, sx:0.00022, sy:0.00030, px:0.60, py:2.40, rot:0.00008 },
+        // Accent wisps — faster drift, layered motion
+        { cx:0.18, cy:0.32, rx:0.80, ry:0.13, col:[175,220,255], a:0.24, sx:0.00052, sy:0.00014, px:3.20, py:0.40, rot:0.00005 },
+        { cx:0.82, cy:0.55, rx:0.85, ry:0.09, col:[ 60,120,200], a:0.22, sx:0.00034, sy:0.00020, px:1.80, py:3.00, rot:0.00009 },
+        { cx:0.44, cy:0.08, rx:0.95, ry:0.10, col:[175,220,255], a:0.28, sx:0.00018, sy:0.00022, px:4.00, py:1.20, rot:0.00006 },
+        { cx:0.56, cy:0.90, rx:0.90, ry:0.08, col:[130,185,240], a:0.24, sx:0.00036, sy:0.00016, px:2.00, py:2.80, rot:0.00007 },
+        // Faint gold wisps
+        { cx:0.50, cy:0.50, rx:0.90, ry:0.06, col:[253,207,124], a:0.09, sx:0.00018, sy:0.00028, px:1.20, py:1.60, rot:0.00004 },
+        { cx:0.62, cy:0.28, rx:0.72, ry:0.07, col:[240,165, 55], a:0.07, sx:0.00025, sy:0.00020, px:3.50, py:0.60, rot:0.00006 },
+      ];
+
+      function drawRoomBlob(b) {
+        var cx  = (b.cx + Math.sin(t * b.sx + b.px) * 0.28) * W;
+        var cy  = (b.cy + Math.sin(t * b.sy + b.py) * 0.20) * H;
+        var rx  = b.rx * W;
+        var ry  = b.ry * H;
+        var ang = Math.sin(t * b.rot + b.px) * 0.22;
+        var r = b.col[0], g = b.col[1], bl = b.col[2];
+
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(ang);
+        ctx.scale(1, ry / rx);
+
+        var grad = ctx.createRadialGradient(0, 0, 0, 0, 0, rx);
+        grad.addColorStop(0,    'rgba(' + r + ',' + g + ',' + bl + ',' + b.a + ')');
+        grad.addColorStop(0.38, 'rgba(' + r + ',' + g + ',' + bl + ',' + (b.a * 0.55).toFixed(3) + ')');
+        grad.addColorStop(0.68, 'rgba(' + r + ',' + g + ',' + bl + ',' + (b.a * 0.14).toFixed(3) + ')');
+        grad.addColorStop(1,    'rgba(' + r + ',' + g + ',' + bl + ',0)');
+
+        ctx.beginPath();
+        ctx.arc(0, 0, rx, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+        ctx.restore();
+      }
+
+      // ── Room background ──────────────────────────────────
+      function drawRoom() {
+        // Fully transparent base — canvas is invisible where no blobs exist,
+        // so the section has no visible edge against the page background.
+        // mix-blend-mode: screen on the canvas element handles compositing.
+        ctx.clearRect(0, 0, W, H);
+        roomBlobs.forEach(drawRoomBlob);
+      }
+
+      // ── Orbiting text ────────────────────────────────────
+      function drawText() {
+        if (!phraseData.length) return;
+        setFont(ctx);
+        ctx.textAlign    = 'center';
+        ctx.textBaseline = 'middle';
+        // Canvas extends 120px above the section, so visual center = H/2 (canvas mid)
+        var midY = H / 2;
+
+        phraseData.forEach(function (chars, pi) {
+          // Base angle for this phrase, advancing left-to-right
+          var base = pi * GAP - rotation;
+
+          chars.forEach(function (item) {
+            var theta = base + item.ao;
+            var cosT  = Math.cos(theta);
+            // Cull anything behind or at extreme sides
+            if (cosT <= 0.06) return;
+
+            // Perspective projection onto screen
+            var sx = W / 2 + (R_CYL * Math.sin(theta) / (R_CYL * cosT)) * FOCAL;
+            if (sx < -80 || sx > W + 80) return;
+
+            // Smooth fade as characters round the cylinder edge
+            var edgeFade = Math.min(1, (cosT - 0.06) / 0.40);
+
+            ctx.save();
+            ctx.translate(sx, midY);
+            ctx.scale(cosT, 1);   // horizontal foreshortening — curved wall effect
+            ctx.globalAlpha = 0.88 * edgeFade;
+            ctx.fillStyle   = '#ffffff';
+            ctx.fillText(item.ch, 0, 0);
+            ctx.restore();
+          });
+        });
+      }
+
+      function tick() {
+        t++;
+        rotation += ROT_SPD;
+        drawRoom();
+        drawText();
+        requestAnimationFrame(tick);
+      }
+
+      tick();
+    }());
+  </script>
+
+
+  <script>
+    // ── Aurora hero ───────────────────────────────────────
+    (function () {
+      const section  = document.getElementById('aurora-hero');
+      const canvas   = document.getElementById('aurora-canvas');
+      const ctx      = canvas.getContext('2d');
+
+      // Size canvas to section
+      function resize() {
+        canvas.width  = section.offsetWidth  || window.innerWidth;
+        canvas.height = section.offsetHeight || window.innerHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      // Aurora blobs — drifting elliptical radial gradients
+      // Each blob: center (cx,cy as fraction), radii (rx,ry as fraction),
+      //            color [r,g,b], alpha, drift speeds + phases
+      const blobs = [
+        { cx:0.50, cy:0.35, rx:0.75, ry:0.22, col:[  0,194,255], a:0.13, sx:0.00022, sy:0.00017, px:0.00, py:0.00, rot:0.00009 },
+        { cx:0.28, cy:0.55, rx:0.62, ry:0.19, col:[ 90,155,225], a:0.10, sx:0.00015, sy:0.00021, px:1.20, py:2.10, rot:0.00007 },
+        { cx:0.72, cy:0.48, rx:0.58, ry:0.21, col:[130,185,240], a:0.09, sx:0.00028, sy:0.00013, px:2.40, py:0.50, rot:0.00011 },
+        { cx:0.50, cy:0.68, rx:0.52, ry:0.15, col:[253,207,124], a:0.05, sx:0.00019, sy:0.00025, px:0.80, py:3.20, rot:0.00008 },
+        { cx:0.38, cy:0.28, rx:0.50, ry:0.17, col:[175,220,255], a:0.08, sx:0.00012, sy:0.00019, px:3.10, py:1.40, rot:0.00006 },
+        { cx:0.64, cy:0.72, rx:0.60, ry:0.16, col:[ 60,120,200], a:0.07, sx:0.00024, sy:0.00014, px:1.70, py:2.80, rot:0.00010 },
+        { cx:0.50, cy:0.50, rx:0.82, ry:0.13, col:[  0,194,255], a:0.06, sx:0.00010, sy:0.00030, px:4.20, py:0.90, rot:0.00005 },
+        { cx:0.20, cy:0.40, rx:0.45, ry:0.18, col:[240,165, 55], a:0.03, sx:0.00017, sy:0.00022, px:2.00, py:1.60, rot:0.00008 },
+      ];
+
+      let t = 0;
+
+      function drawBlob(b) {
+        const W = canvas.width, H = canvas.height;
+        // Sinusoidal drift in x and y
+        const cx  = (b.cx + Math.sin(t * b.sx + b.px) * 0.18) * W;
+        const cy  = (b.cy + Math.sin(t * b.sy + b.py) * 0.13) * H;
+        const rx  = b.rx * W;
+        const ry  = b.ry * H;
+        const ang = Math.sin(t * b.rot + b.px) * 0.35; // gentle rotation ±20°
+        const [r, g, bl] = b.col;
+
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(ang);
+        ctx.scale(1, ry / rx);
+
+        const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, rx);
+        grad.addColorStop(0,    `rgba(${r},${g},${bl},${b.a})`);
+        grad.addColorStop(0.40, `rgba(${r},${g},${bl},${(b.a * 0.55).toFixed(3)})`);
+        grad.addColorStop(0.72, `rgba(${r},${g},${bl},${(b.a * 0.15).toFixed(3)})`);
+        grad.addColorStop(1,    `rgba(${r},${g},${bl},0)`);
+
+        ctx.beginPath();
+        ctx.arc(0, 0, rx, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+        ctx.restore();
+      }
+
+      function tick() {
+        t++;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.globalCompositeOperation = 'screen';
+        blobs.forEach(drawBlob);
+        ctx.globalCompositeOperation = 'source-over';
+        requestAnimationFrame(tick);
+      }
+
+      tick();
+
+      // ── Scroll-triggered text entrance ──
+      const lines = section.querySelectorAll('.aurora-line');
+      let triggered = false;
+
+      const io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting && !triggered) {
+            triggered = true;
+            lines.forEach(function (l) { l.classList.add('a-visible'); });
+          }
+        });
+      }, { threshold: 0.20 });
+
+      io.observe(section);
+    }());
+
+    // ── Waitlist form ────────────────────────────────────────
+    (function () {
+      var toggle  = document.getElementById('waitlist-toggle');
+      var wrap    = document.getElementById('waitlist-form-wrap');
+      var form    = document.getElementById('waitlist-form');
+      var success = document.getElementById('waitlist-success');
+
+      function openForm() {
+        if (!wrap || wrap.classList.contains('open')) return;
+        wrap.classList.add('open');
+        // Quietly retire the toggle button
+        if (toggle) {
+          toggle.style.transition  = 'opacity 0.4s ease';
+          toggle.style.opacity     = '0';
+          toggle.style.pointerEvents = 'none';
+        }
+        // Focus input after slide-in finishes
+        setTimeout(function () {
+          var inp = document.getElementById('waitlist-email');
+          if (inp) inp.focus();
+        }, 550);
+      }
+
+      // Trigger button in #connect
+      if (toggle) toggle.addEventListener('click', openForm);
+
+      // Hero aurora-cta: smooth scroll → open form
+      var heroCta = document.querySelector('.aurora-cta');
+      if (heroCta) {
+        heroCta.addEventListener('click', function (e) {
+          e.preventDefault();
+          var connectSection = document.getElementById('connect');
+          if (connectSection) connectSection.scrollIntoView({ behavior: 'smooth' });
+          setTimeout(openForm, 720);
+        });
+      }
+
+      // Form submission
+      if (form) {
+        form.addEventListener('submit', async function (e) {
+          e.preventDefault();
+          var email     = document.getElementById('waitlist-email').value.trim();
+          var submitBtn = form.querySelector('.waitlist-submit');
+          var span      = submitBtn.querySelector('span');
+
+          submitBtn.disabled = true;
+          span.textContent   = 'Joining\u2026';
+
+          try {
+            var res  = await fetch('/api/subscribe', {
+              method:  'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body:    JSON.stringify({ email: email }),
+            });
+            var data = await res.json();
+
+            if (res.ok) {
+              form.style.display    = 'none';
+              success.style.display = 'block';
+              if (data.existing) {
+                success.querySelector('p').textContent = "You\u2019ve already joined our waitlist. We\u2019ve reserved your place.";
+              }
+            } else {
+              span.textContent           = data.error || 'Something went wrong.';
+              submitBtn.disabled         = false;
+              submitBtn.style.background = 'rgba(220,60,60,0.75)';
+              setTimeout(function () {
+                span.textContent           = 'Try again';
+                submitBtn.style.background = '';
+              }, 3200);
+            }
+          } catch (err) {
+            span.textContent   = 'Connection error \u2014 try again';
+            submitBtn.disabled = false;
+            setTimeout(function () { span.textContent = 'Try again'; }, 3200);
+          }
+        });
+      }
+    }());
+  </script>
+
+
+  <!-- ── CINEMATIC MOTION SCRIPT (Pass 1) ─────────────── -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* ── Opening sequence ─────────────────────────────
+         1. On first rAF, trigger the c-open class so CSS
+            transitions begin: veil fades, bars retract.
+         2. After both transitions complete, mark overlays
+            as done (display:none) to remove them from the
+            paint tree entirely.
+      ─────────────────────────────────────────────────── */
+      var veil      = document.getElementById('c-veil');
+      var barTop    = document.querySelector('.c-letterbox-top');
+      var barBottom = document.querySelector('.c-letterbox-bottom');
+
+      // Trigger on next frame so initial state is painted first
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          document.body.classList.add('c-open');
+        });
+      });
+
+      // Bars: transition is 2.2 s + 0.5 s delay = 2.7 s total
+      // Veil:  transition is 3.2 s + 0.6 s delay = 3.8 s total
+      // Clean up after the longer of the two (veil)
+      function markDone(el) {
+        if (el) el.classList.add('c-done');
+      }
+
+      setTimeout(function () { markDone(barTop); markDone(barBottom); }, 2800);
+      setTimeout(function () { markDone(veil); }, 4000);
+
+
+      /* ── Film grain ───────────────────────────────────
+         Generate a small (256×256) noise tile, render it
+         as a repeating pattern on the grain canvas, and
+         shift the tile origin randomly at ~12 fps for
+         animation. Tile is regenerated every ~4 frames
+         for grain variety. Performant — no per-pixel
+         iteration at the full viewport size.
+      ─────────────────────────────────────────────────── */
+      var grainCanvas = document.getElementById('c-grain');
+      if (!grainCanvas) return;
+      var gCtx = grainCanvas.getContext('2d');
+
+      var TILE = 256;
+      var noiseCanvas = document.createElement('canvas');
+      noiseCanvas.width = noiseCanvas.height = TILE;
+      var nCtx = noiseCanvas.getContext('2d');
+
+      function bakeNoise() {
+        var img  = nCtx.createImageData(TILE, TILE);
+        var data = img.data;
+        for (var i = 0; i < data.length; i += 4) {
+          var v = (Math.random() * 255) | 0;
+          data[i] = data[i + 1] = data[i + 2] = v;
+          data[i + 3] = 255;
+        }
+        nCtx.putImageData(img, 0, 0);
+      }
+
+      function resizeGrain() {
+        grainCanvas.width  = window.innerWidth;
+        grainCanvas.height = window.innerHeight;
+      }
+
+      bakeNoise();
+      resizeGrain();
+      window.addEventListener('resize', resizeGrain);
+
+      var lastGrain = 0;
+      var grainTick = 0;
+
+      function grainLoop(now) {
+        if (now - lastGrain > 83) {   // ~12 fps
+          lastGrain = now;
+          grainTick++;
+
+          // Re-bake noise every 4 frames for variety
+          if (grainTick % 4 === 0) bakeNoise();
+
+          var pattern = gCtx.createPattern(noiseCanvas, 'repeat');
+          var ox = (Math.random() * TILE) | 0;
+          var oy = (Math.random() * TILE) | 0;
+          pattern.setTransform(new DOMMatrix([1, 0, 0, 1, ox, oy]));
+          gCtx.fillStyle = pattern;
+          gCtx.fillRect(0, 0, grainCanvas.width, grainCanvas.height);
+        }
+        requestAnimationFrame(grainLoop);
+      }
+
+      requestAnimationFrame(grainLoop);
+
+    }());
+  </script>
+
+</body>
+</html>
