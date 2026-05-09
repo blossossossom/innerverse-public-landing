@@ -1006,7 +1006,7 @@
           baseFrequency="0.0052 0.0038" numOctaves="4" seed="3"
           result="noise"/>
         <feColorMatrix id="sub-cm" type="matrix"
-          values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  20 20 20 20 -11"
+          values="20 0 0 0 -11  20 0 0 0 -11  20 0 0 0 -11  0 0 0 0 1"
           result="thresh"/>
       </filter>
       <mask id="sub-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="1920" height="1080">
@@ -1020,7 +1020,7 @@
           baseFrequency="0.0098 0.0072" numOctaves="5" seed="11"
           result="noise"/>
         <feColorMatrix id="rad-cm" type="matrix"
-          values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  20 20 20 20 -3"
+          values="20 0 0 0 -3  20 0 0 0 -3  20 0 0 0 -3  0 0 0 0 1"
           result="thresh"/>
       </filter>
       <mask id="rad-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="1920" height="1080">
@@ -1733,9 +1733,9 @@
 
       // ── Set feColorMatrix values ───────────────────────────
       function setMatrix (el, bias) {
-        // Amplify=20, bias in last column (alpha row)
-        el.setAttribute('values',
-          '0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  20 20 20 20 ' + bias.toFixed(3));
+        // Output threshold into R,G,B (luminance) — CSS masks use luminance not alpha
+        var v = '20 0 0 0 ' + bias.toFixed(3);
+        el.setAttribute('values', v + '  ' + v + '  ' + v + '  0 0 0 0 1');
       }
 
       // ── Animation RAF ─────────────────────────────────────
