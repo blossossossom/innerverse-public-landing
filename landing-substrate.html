@@ -1018,9 +1018,8 @@
           xChannelSelector="R" yChannelSelector="G"/>
       </filter>
       <mask id="sub-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="1920" height="1080">
-        <!-- Solid clean core — no filter, always opaque at the centre -->
-        <ellipse id="sub-core" cx="960" cy="540" rx="160" ry="270" fill="white"/>
-        <!-- Displaced transition ring — organic fraying at the column edge only -->
+        <!-- Ring only — black centre (hollow interior) + white ring + black exterior.
+             Displacement creates organic fraying at both inner and outer ring edges. -->
         <rect id="sub-rect" x="0" y="0" width="1920" height="1080"
           fill="url(#ring-grad)" filter="url(#sub-filter)"/>
       </mask>
@@ -1632,7 +1631,6 @@
       var ringStop1   = document.getElementById('ring-stop1');
       var ringStop1b  = document.getElementById('ring-stop1b');
       var ringStop2   = document.getElementById('ring-stop2');
-      var subCore     = document.getElementById('sub-core');
       var radColGrad  = document.getElementById('rad-col-grad');
       var radCm       = document.getElementById('rad-cm');
       var subTurb     = document.getElementById('sub-turb');
@@ -1680,8 +1678,6 @@
           'translate(' + cx + ',' + cy + ') scale(' + coreRx + ',' + coreRy + ')');
         radColGrad.setAttribute('gradientTransform',
           'translate(' + cx + ',' + cy + ') scale(' + coreRx + ',' + coreRy + ')');
-        subCore.setAttribute('cx', cx);
-        subCore.setAttribute('cy', cy);
         ['sub-rect', 'rad-rect'].forEach(function (id) {
           var el = document.getElementById(id);
           el.setAttribute('width',  w);
@@ -1781,9 +1777,6 @@
         ringStop1.setAttribute('offset',  solidFrac.toFixed(3));
         ringStop1b.setAttribute('offset', solidFrac.toFixed(3));
         ringStop2.setAttribute('offset',  transFrac.toFixed(3));
-        // Solid core ellipse: covers the inner solid zone with no filter
-        subCore.setAttribute('rx', (solidFrac * coreRx).toFixed(1));
-        subCore.setAttribute('ry', (solidFrac * coreRy).toFixed(1));
       }
 
       // ── Set feColorMatrix values (radiation overlay only) ─────────────────────
