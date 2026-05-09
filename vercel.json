@@ -3,6 +3,7 @@
     { "source": "/cinematic",        "destination": "/landing-cinematic.html" },
     { "source": "/cinematic-stable", "destination": "/landing-cinematic-stable.html" },
     { "source": "/substrate",        "destination": "/landing-substrate.html" },
+    { "source": "/assets/(.*)",      "destination": "/assets/$1" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }
