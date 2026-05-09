@@ -937,8 +937,23 @@
       z-index: 0;
       overflow: hidden;
       pointer-events: none;
-      mask: url(#sub-mask);
-      -webkit-mask: url(#sub-mask);
+      /*
+       * Two-layer mask — additive composite:
+       *   Layer 1: radial gradient keeps the portrait column centre always opaque.
+       *            rx = 28.125vh = half of 56.25vh (the 9:16 reel width at full height).
+       *   Layer 2: fine SVG noise dissolves only the edge/transition zone.
+       * mask-composite:add means result = clamp(gradient + noise, 0, 1).
+       * Where gradient = 1 (centre column), result ≥ 1 → always visible.
+       * Where gradient = 0 (outside column), result = noise → fine smoke fragments.
+       */
+      mask-image:
+        radial-gradient(ellipse 28.125vh 50vh at 50% 50%, white 68%, transparent 92%),
+        url(#sub-mask);
+      mask-mode: alpha, luminance;
+      mask-composite: add;
+      -webkit-mask-image:
+        radial-gradient(ellipse 28.125vh 50vh at 50% 50%, white 68%, transparent 92%),
+        url(#sub-mask);
     }
 
     #substrate-reel {
@@ -1003,7 +1018,7 @@
       <!-- Main video mask -->
       <filter id="sub-filter" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
         <feTurbulence id="sub-turb" type="fractalNoise"
-          baseFrequency="0.0052 0.0038" numOctaves="4" seed="3"
+          baseFrequency="0.065 0.045" numOctaves="6" seed="3"
           result="noise"/>
         <feColorMatrix id="sub-cm" type="matrix"
           values="20 0 0 0 -11  20 0 0 0 -11  20 0 0 0 -11  0 0 0 0 1"
@@ -1017,7 +1032,7 @@
       <!-- Radiation overlay mask -->
       <filter id="rad-filter" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
         <feTurbulence id="rad-turb" type="fractalNoise"
-          baseFrequency="0.0098 0.0072" numOctaves="5" seed="11"
+          baseFrequency="0.08 0.06" numOctaves="5" seed="11"
           result="noise"/>
         <feColorMatrix id="rad-cm" type="matrix"
           values="20 0 0 0 -3  20 0 0 0 -3  20 0 0 0 -3  0 0 0 0 1"
@@ -1639,7 +1654,7 @@
       var loopDropBias = 0.0;
       var frameCount   = 0;
       var tBase        = performance.now();
-      var bfX0 = 0.0052, bfY0 = 0.0038;
+      var bfX0 = 0.065, bfY0 = 0.045;
 
       // ── Resize masks to viewport ──────────────────────────
       function resizeMasks () {
@@ -1779,8 +1794,8 @@
 
           // Slow sinusoidal drift of baseFrequency
           var elapsed = (now - tBase) * 0.001;
-          var bfX = bfX0 + Math.sin(elapsed * 0.11) * 0.0008;
-          var bfY = bfY0 + Math.cos(elapsed * 0.07) * 0.0006;
+          var bfX = bfX0 + Math.sin(elapsed * 0.11) * 0.006;
+          var bfY = bfY0 + Math.cos(elapsed * 0.07) * 0.004;
           subTurb.setAttribute('baseFrequency', bfX.toFixed(5) + ' ' + bfY.toFixed(5));
         }
       }
