@@ -132,6 +132,7 @@
 
     /* ── Hero ───────────────────────────────────────────── */
     #hero {
+      position: relative;          /* canvas backdrop anchors here */
       min-height: 100svh;
       display: flex;
       flex-direction: column;
@@ -141,6 +142,8 @@
     }
 
     #hero-cta-wrap {
+      position: relative;          /* float above aurora canvas */
+      z-index: 1;
       flex: 1;
       display: flex;
       align-items: center;
@@ -189,15 +192,10 @@
     }
 
     /* ── Circular Room ───────────────────────────────────── */
-    #circular-room {
-      position: relative;
-      width: 100%;
-      height: 75vh;
-      min-height: 440px;
-      /* No overflow:hidden — aurora blobs bleed past section edges */
-    }
+    /* #circular-room section removed — aurora repositioned into #hero */
 
     #room-canvas {
+      /* Atmospheric aurora backdrop for the hero title card */
       position: absolute;
       inset: 0;
       width: 100%;
@@ -205,7 +203,8 @@
       display: block;
       mix-blend-mode: screen;
       pointer-events: none;
-      /* Scale canvas 40% taller so aurora blobs bleed above & below the section */
+      z-index: 0;               /* behind all hero text content */
+      /* ScaleY(1.4) bleeds blobs above/below hero edges for a softer boundary */
       transform: scaleY(1.4);
       transform-origin: center center;
     }
@@ -950,6 +949,8 @@
 
   <!-- ── HERO ──────────────────────────────────────────── -->
   <section id="hero">
+    <!-- Aurora band — atmospheric backdrop behind title card -->
+    <canvas id="room-canvas" aria-hidden="true"></canvas>
     <div class="container">
       <p class="hero-eyebrow">founding members</p>
       <h1 class="hero-headline">
@@ -972,12 +973,6 @@
       <p class="aurora-line"><span class="pn">Innerverse</span> is where your galaxy of self-expression and human connection lives.</p>
     </div>
   </section>
-
-  <!-- ── CIRCULAR ROOM ───────────────────────────────── -->
-  <section id="circular-room">
-    <canvas id="room-canvas" aria-hidden="true"></canvas>
-  </section>
-
 
   <!-- ── THE WORLD ─────────────────────────────────────── -->
   <section id="world">
@@ -1275,63 +1270,20 @@
     tick();
 
 
-    // ── Circular Room — cylinder interior with orbiting text ─
+    // ── Aurora hero backdrop (repositioned from circular-room into #hero) ─
     (function () {
-      var section = document.getElementById('circular-room');
-      var canvas  = document.getElementById('room-canvas');
-      var ctx     = canvas.getContext('2d');
+      var heroEl = document.getElementById('hero');
+      var canvas = document.getElementById('room-canvas');
+      var ctx    = canvas.getContext('2d');
 
-      // Cylinder geometry & rendering constants
-      var R_CYL  = 320;    // virtual cylinder radius
-      var FOCAL  = 700;    // perspective focal length
-      var BASE_F = 26;     // base font size (px)
-      var ROT_SPD = 0.00085; // radians per frame (~3 deg/sec)
-      var GAP    = Math.PI / 2; // 90 deg between phrase centers
-
-      var phrases = [
-        'Your inner world.',
-        'Orchestrated by you.',
-        'Entered by you.',
-        'Yours to return to.'
-      ];
-
-      var W = 0, H = 0, t = 0, rotation = 0;
-
-      // Offscreen canvas for text measurement
-      var mc   = document.createElement('canvas');
-      var mctx = mc.getContext('2d');
-      var phraseData = [];
-
-      function setFont(c) {
-        c.font = '300 ' + BASE_F + "px 'Inter', sans-serif";
-      }
+      var W = 0, H = 0, t = 0;
 
       function resize() {
-        W = canvas.width  = section.offsetWidth  || window.innerWidth;
-        H = canvas.height = section.offsetHeight || window.innerHeight;
+        W = canvas.width  = heroEl.offsetWidth  || window.innerWidth;
+        H = canvas.height = heroEl.offsetHeight || window.innerHeight;
       }
       resize();
       window.addEventListener('resize', resize);
-
-      // Build per-character angle offsets from each phrase's center
-      function buildPhrases() {
-        setFont(mctx);
-        phraseData = phrases.map(function (phrase) {
-          var chars  = phrase.split('');
-          var widths = chars.map(function (ch) { return mctx.measureText(ch).width; });
-          var total  = widths.reduce(function (a, b) { return a + b; }, 0);
-          var x = -total / 2;
-          return chars.map(function (ch, i) {
-            var cx = x + widths[i] / 2;
-            x += widths[i];
-            // atan2 maps wall-arc position → angle from phrase center
-            return { ch: ch, ao: Math.atan2(cx, R_CYL) };
-          });
-        });
-      }
-
-      document.fonts.ready.then(buildPhrases);
-      buildPhrases(); // immediate fallback before fonts event
 
       // ── Aurora blobs — wispy horizontal curtains, screen-blended ─
       // Each blob: cx/cy (fraction of W/H), rx/ry (fraction of W/H),
@@ -1387,48 +1339,9 @@
         roomBlobs.forEach(drawRoomBlob);
       }
 
-      // ── Orbiting text ────────────────────────────────────
-      function drawText() {
-        if (!phraseData.length) return;
-        setFont(ctx);
-        ctx.textAlign    = 'center';
-        ctx.textBaseline = 'middle';
-        // Canvas extends 120px above the section, so visual center = H/2 (canvas mid)
-        var midY = H / 2;
-
-        phraseData.forEach(function (chars, pi) {
-          // Base angle for this phrase, advancing left-to-right
-          var base = pi * GAP - rotation;
-
-          chars.forEach(function (item) {
-            var theta = base + item.ao;
-            var cosT  = Math.cos(theta);
-            // Cull anything behind or at extreme sides
-            if (cosT <= 0.06) return;
-
-            // Perspective projection onto screen
-            var sx = W / 2 + (R_CYL * Math.sin(theta) / (R_CYL * cosT)) * FOCAL;
-            if (sx < -80 || sx > W + 80) return;
-
-            // Smooth fade as characters round the cylinder edge
-            var edgeFade = Math.min(1, (cosT - 0.06) / 0.40);
-
-            ctx.save();
-            ctx.translate(sx, midY);
-            ctx.scale(cosT, 1);   // horizontal foreshortening — curved wall effect
-            ctx.globalAlpha = 0.88 * edgeFade;
-            ctx.fillStyle   = '#ffffff';
-            ctx.fillText(item.ch, 0, 0);
-            ctx.restore();
-          });
-        });
-      }
-
       function tick() {
         t++;
-        rotation += ROT_SPD;
         drawRoom();
-        drawText();
         requestAnimationFrame(tick);
       }
 
