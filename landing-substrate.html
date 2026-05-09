@@ -937,23 +937,8 @@
       z-index: 0;
       overflow: hidden;
       pointer-events: none;
-      /*
-       * Two-layer mask — additive composite:
-       *   Layer 1: radial gradient keeps the portrait column centre always opaque.
-       *            rx = 28.125vh = half of 56.25vh (the 9:16 reel width at full height).
-       *   Layer 2: fine SVG noise dissolves only the edge/transition zone.
-       * mask-composite:add means result = clamp(gradient + noise, 0, 1).
-       * Where gradient = 1 (centre column), result ≥ 1 → always visible.
-       * Where gradient = 0 (outside column), result = noise → fine smoke fragments.
-       */
-      mask-image:
-        radial-gradient(ellipse 28.125vh 50vh at 50% 50%, white 68%, transparent 92%),
-        url(#sub-mask);
-      mask-mode: alpha, luminance;
-      mask-composite: add;
-      -webkit-mask-image:
-        radial-gradient(ellipse 28.125vh 50vh at 50% 50%, white 68%, transparent 92%),
-        url(#sub-mask);
+      mask: url(#sub-mask);
+      -webkit-mask: url(#sub-mask);
     }
 
     #substrate-reel {
@@ -1015,18 +1000,25 @@
   <!-- Substrate SVG filter + mask definitions (hidden) -->
   <svg id="substrate-svg" width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true">
     <defs>
-      <!-- Main video mask -->
-      <filter id="sub-filter" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+      <!-- Radial gradient: solid-white column centre → black outside (displacement source) -->
+      <radialGradient id="col-grad" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="1">
+        <stop offset="0" stop-color="white"/>
+        <stop id="col-stop1" offset="0.65" stop-color="white"/>
+        <stop id="col-stop2" offset="0.87" stop-color="black"/>
+      </radialGradient>
+
+      <!-- Main video mask: gradient shape + turbulence displacement for organic edge -->
+      <filter id="sub-filter" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
         <feTurbulence id="sub-turb" type="fractalNoise"
-          baseFrequency="0.065 0.045" numOctaves="6" seed="3"
+          baseFrequency="0.04 0.028" numOctaves="5" seed="3"
           result="noise"/>
-        <feColorMatrix id="sub-cm" type="matrix"
-          values="20 0 0 0 -11  20 0 0 0 -11  20 0 0 0 -11  0 0 0 0 1"
-          result="thresh"/>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="40"
+          xChannelSelector="R" yChannelSelector="G"
+          result="displaced"/>
       </filter>
       <mask id="sub-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="1920" height="1080">
         <rect id="sub-rect" x="0" y="0" width="1920" height="1080"
-          fill="white" filter="url(#sub-filter)"/>
+          fill="url(#col-grad)" filter="url(#sub-filter)"/>
       </mask>
 
       <!-- Radiation overlay mask -->
@@ -1623,7 +1615,9 @@
       var radiation   = document.getElementById('substrate-radiation');
       var subRect     = document.getElementById('sub-rect');
       var radRect     = document.getElementById('rad-rect');
-      var subCm       = document.getElementById('sub-cm');
+      var colGrad     = document.getElementById('col-grad');
+      var colStop1    = document.getElementById('col-stop1');
+      var colStop2    = document.getElementById('col-stop2');
       var radCm       = document.getElementById('rad-cm');
       var subTurb     = document.getElementById('sub-turb');
 
@@ -1654,12 +1648,18 @@
       var loopDropBias = 0.0;
       var frameCount   = 0;
       var tBase        = performance.now();
-      var bfX0 = 0.065, bfY0 = 0.045;
+      var bfX0 = 0.04, bfY0 = 0.028;
 
       // ── Resize masks to viewport ──────────────────────────
       function resizeMasks () {
-        var w = window.innerWidth;
-        var h = window.innerHeight;
+        var w  = window.innerWidth;
+        var h  = window.innerHeight;
+        var cx = w / 2;
+        var cy = h / 2;
+        var rx = h * 0.28125;  // half of 56.25vh (9:16 portrait column half-width)
+        var ry = h * 0.5;      // half viewport height
+        colGrad.setAttribute('gradientTransform',
+          'translate(' + cx + ',' + cy + ') scale(' + rx + ',' + ry + ')');
         ['sub-rect', 'rad-rect'].forEach(function (id) {
           var el = document.getElementById(id);
           el.setAttribute('width',  w);
@@ -1670,11 +1670,12 @@
           el.setAttribute('width',  w);
           el.setAttribute('height', h);
         });
-        ['sub-filter', 'rad-filter'].forEach(function (id) {
-          var el = document.getElementById(id);
-          el.setAttribute('width',  w);
-          el.setAttribute('height', h);
-        });
+        // sub-filter uses %-based margins for displacement bleed — only update rad-filter
+        var radFilter = document.getElementById('rad-filter');
+        radFilter.setAttribute('x', 0);
+        radFilter.setAttribute('y', 0);
+        radFilter.setAttribute('width',  w);
+        radFilter.setAttribute('height', h);
       }
 
       resizeMasks();
@@ -1746,9 +1747,16 @@
         }
       }
 
-      // ── Set feColorMatrix values ───────────────────────────
+      // ── Gradient stop positions from bias (controls column reveal extent) ──────
+      function setCoverage (bias) {
+        var solidFrac = Math.max(0.01, Math.min(0.98, 1 + bias / 20));
+        var transFrac = Math.min(solidFrac + 0.22, 0.99);
+        colStop1.setAttribute('offset', solidFrac.toFixed(3));
+        colStop2.setAttribute('offset', transFrac.toFixed(3));
+      }
+
+      // ── Set feColorMatrix values (radiation overlay only) ─────────────────────
       function setMatrix (el, bias) {
-        // Output threshold into R,G,B (luminance) — CSS masks use luminance not alpha
         var v = '20 0 0 0 ' + bias.toFixed(3);
         el.setAttribute('values', v + '  ' + v + '  ' + v + '  0 0 0 0 1');
       }
@@ -1789,7 +1797,7 @@
         // Apply every 2 frames to reduce SVG filter thrash
         if (frameCount % 2 === 0) {
           var effectiveBias = currentBias + loopDropBias;
-          setMatrix(subCm, effectiveBias);
+          setCoverage(effectiveBias);
           setMatrix(radCm, effectiveBias + RAD_OFFSET);
 
           // Slow sinusoidal drift of baseFrequency
