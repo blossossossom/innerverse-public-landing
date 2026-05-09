@@ -6,7 +6,7 @@
   <title>Innerverse — Early Access</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400;500&family=Genos:wght@200&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400;500&family=Genos:ital,wght@0,200;1,200&display=swap" rel="stylesheet" />
   <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet" />
   <script src="https://assets.calendly.com/assets/external/widget.js" async></script>
 
@@ -929,10 +929,193 @@
       margin-top: 2.8em;
     }
 
+    /* ═══════════════════════════════════════════════════════
+       CINEMATIC MOTION — Pass 1
+    ═══════════════════════════════════════════════════════ */
+
+    /* ── Headline: Genos at scale, title-card treatment ─── */
+    .hero-headline {
+      font-family: 'Genos', sans-serif !important;
+      font-weight: 200 !important;
+      font-size: clamp(3.6rem, 9.5vw, 7.2rem) !important;
+      line-height: 1.02 !important;
+      letter-spacing: 0.07em !important;
+      text-align: center !important;
+      margin-bottom: 40px !important;
+      /* JS controls individual word reveals — h1 itself stays visible */
+      opacity: 1 !important;
+      animation: none !important;
+    }
+
+    /* Gold italic for "made spatial" — Genos italic variant */
+    .hero-headline em {
+      font-family: 'Genos', sans-serif;
+      font-style: italic;
+      font-weight: 200;
+      color: var(--gold);
+      letter-spacing: 0.09em; /* slightly looser — visual distinction from upright */
+    }
+
+    /* ── Hero: title-card centering and breathing room ───── */
+    #hero {
+      justify-content: center !important;
+      align-items: center !important;
+      padding-top: 160px !important;
+      padding-bottom: 160px !important;
+      text-align: center !important;
+    }
+
+    #hero .container { text-align: center; }
+
+    .hero-eyebrow {
+      text-align: center;
+      animation-delay: 0.4s !important;
+      animation-duration: 1.8s !important;
+    }
+
+    /* Subheadline: JS-controlled, starts hidden */
+    .hero-subheadline {
+      text-align: center;
+      opacity: 0 !important;
+      transform: translateY(14px);
+      animation: none !important;
+      transition:
+        opacity  2.2s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 2.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* ── Word-by-word reveal spans ───────────────────────── */
+    .hero-word {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(18px);
+      will-change: opacity, transform;
+    }
+
+    /* ── Headline glow + breathing (applied by JS after reveal) */
+    @keyframes headlineBreathe {
+      0%, 100% {
+        opacity: 1.0;
+        filter: drop-shadow(0 0 22px rgba(253,207,124,0.14));
+      }
+      50% {
+        opacity: 0.90;
+        filter: drop-shadow(0 0 42px rgba(253,207,124,0.26));
+      }
+    }
+
+    /* ── Ambient body text breathing ─────────────────────── */
+    @keyframes ambientBreathe {
+      0%, 100% { opacity: 1.00; }
+      50%       { opacity: 0.96; }
+    }
+
+    .c-breathing         { animation: ambientBreathe  8s ease-in-out infinite; }
+    .c-breathing-slow    { animation: ambientBreathe  9s ease-in-out infinite 1s; }
+    .c-breathing-headline{ animation: headlineBreathe 9s ease-in-out infinite; }
+
+    /* ── Enhanced section reveals ─────────────────────────── */
+    .reveal {
+      opacity: 0 !important;
+      transform: translateY(20px) !important;
+      filter: none !important;
+      transition:
+        opacity  2.4s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 2.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+
+    .reveal.visible {
+      opacity: 1 !important;
+      transform: translateY(0) !important;
+    }
+
+    /* Cinematic stagger — more generous spacing between lines */
+    .delay-1 { transition-delay: 0.35s !important; }
+    .delay-2 { transition-delay: 0.70s !important; }
+    .delay-3 { transition-delay: 1.05s !important; }
+    .delay-4 { transition-delay: 1.40s !important; }
+    .delay-5 { transition-delay: 1.75s !important; }
+
+    /* Once locked, element stays visible regardless of observer state */
+    .c-locked {
+      opacity: 1 !important;
+      transform: translateY(0) !important;
+      transition-duration: 0s !important;
+    }
+
+    /* ── Aurora lines: slower cinematic entrance ─────────── */
+    .aurora-line {
+      transform: translateY(22px) !important;
+      transition-duration: 2.4s !important;
+      transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+
+    /* ── Vignette ────────────────────────────────────────── */
+    #c-vignette {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 7;
+      background: radial-gradient(
+        ellipse 78% 78% at 50% 50%,
+        transparent        52%,
+        rgba(3, 6, 18, 0.26) 76%,
+        rgba(3, 6, 18, 0.52) 100%
+      );
+    }
+
+    /* ── Drift particles canvas ──────────────────────────── */
+    #c-particles {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    /* ── prefers-reduced-motion ──────────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      .hero-word {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+      }
+      .hero-headline,
+      .hero-eyebrow,
+      .hero-subheadline {
+        opacity: 1 !important;
+        transform: none !important;
+        animation: none !important;
+        transition: none !important;
+      }
+      .reveal, .reveal.visible, .c-locked {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+        animation: none !important;
+      }
+      .aurora-line, .aurora-line.a-visible {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+      }
+      .c-breathing,
+      .c-breathing-slow,
+      .c-breathing-headline { animation: none !important; }
+      #c-particles { display: none !important; }
+    }
+
   </style>
 </head>
 
 <body>
+
+  <!-- Cinematic vignette overlay -->
+  <div id="c-vignette" aria-hidden="true"></div>
+
+  <!-- Cinematic drift-particle canvas -->
+  <canvas id="c-particles" aria-hidden="true"></canvas>
 
   <!-- Animated backdrop that blocks scrolled content behind logo -->
   <div id="header-backdrop"></div>
@@ -953,15 +1136,16 @@
     <canvas id="room-canvas" aria-hidden="true"></canvas>
     <div class="container">
       <p class="hero-eyebrow">founding members</p>
-      <h1 class="hero-headline">
-        Human experience & memory,<br><em>made spatial</em>
+      <h1 class="hero-headline" aria-label="Human experience &amp; memory, made spatial">
+        <span class="hero-word">Human</span>
+        <span class="hero-word">experience</span>
+        <span class="hero-word">&amp;</span>
+        <span class="hero-word">memory,</span><br>
+        <em><span class="hero-word">made</span> <span class="hero-word">spatial</span></em>
       </h1>
       <p class="hero-subheadline">
         Imprint your world, for yourself and those you let in.
       </p>
-    </div>
-    <div id="hero-cta-wrap">
-      <a class="aurora-cta" href="#connect"><span>I'm in</span></a>
     </div>
   </section>
 
@@ -1085,13 +1269,13 @@
     spellOut('header-wordmark');
     spellOut('footer-wordmark');
 
-    // ── Scroll-triggered reveal (bidirectional) ──────────
+    // ── Scroll-triggered reveal (one-way cinematic) ──────
+    // Once an element enters the viewport it is locked visible forever.
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-        } else {
-          entry.target.classList.remove('visible');
+          entry.target.classList.add('visible', 'c-locked');
+          observer.unobserve(entry.target);
         }
       });
     }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
@@ -1514,6 +1698,157 @@
           }
         });
       }
+    }());
+
+    // ══════════════════════════════════════════════════════
+    //  CINEMATIC MOTION — Pass 1 JS
+    // ══════════════════════════════════════════════════════
+    (function () {
+
+      // ── 1. Hero headline: word-by-word stagger reveal ────
+      const words       = document.querySelectorAll('.hero-word');
+      const subheadline = document.querySelector('.hero-subheadline');
+      const headline    = document.querySelector('.hero-headline');
+      const PFM         = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      if (PFM) {
+        // Immediately reveal everything for reduced-motion users
+        words.forEach(w => { w.style.opacity = '1'; w.style.transform = 'none'; });
+        if (subheadline) { subheadline.style.opacity = '1'; subheadline.style.transform = 'none'; }
+        return;
+      }
+
+      // Stagger constants — feel free to tune these
+      const WORD_BASE_DELAY  = 0.18;   // seconds between each word
+      const WORD_DURATION    = 0.90;   // transition duration per word
+      const SUB_AFTER_LAST   = 1.10;   // delay after final word before sub appears
+      const BREATHE_AFTER    = 1.60;   // seconds after sub fades in before breathing starts
+
+      // Prepare transition on each word
+      words.forEach((w, i) => {
+        w.style.transition = `opacity ${WORD_DURATION}s cubic-bezier(0.16, 1, 0.3, 1) ${i * WORD_BASE_DELAY}s, `
+                           + `transform ${WORD_DURATION}s cubic-bezier(0.16, 1, 0.3, 1) ${i * WORD_BASE_DELAY}s`;
+      });
+
+      // Kick off after a short breath on load
+      const FIRST_WORD_DELAY = 320; // ms after page load
+      const totalWordTime = (words.length - 1) * WORD_BASE_DELAY + WORD_DURATION; // seconds
+
+      setTimeout(function () {
+        // Reveal all words (each has its own CSS transition-delay built above)
+        words.forEach(w => {
+          w.style.opacity   = '1';
+          w.style.transform = 'translateY(0)';
+        });
+
+        // After last word settles → fade in subheadline
+        setTimeout(function () {
+          if (subheadline) {
+            subheadline.style.opacity   = '1';
+            subheadline.style.transform = 'translateY(0)';
+          }
+
+          // After subheadline arrives → start glow breathing
+          setTimeout(function () {
+            if (headline) headline.classList.add('c-breathing-headline');
+            document.querySelectorAll('.aurora-line').forEach(el => el.classList.add('c-breathing-slow'));
+          }, BREATHE_AFTER * 1000);
+
+        }, (totalWordTime + SUB_AFTER_LAST) * 1000);
+
+      }, FIRST_WORD_DELAY);
+
+      // ── 2. Add ambient breathing to body text once sections enter view ─
+      const breatheObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.querySelectorAll('p, .principle-line, .principle-entirely').forEach(function (el) {
+              el.classList.add('c-breathing');
+            });
+            breatheObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.25 });
+
+      ['aurora-hero', 'world', 'key-section', 'principles', 'connect'].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) breatheObserver.observe(el);
+      });
+
+      // ── 3. Cinematic drift particles (fixed overlay canvas) ───────────
+      var driftCanvas = document.getElementById('c-particles');
+      if (!driftCanvas) return;
+      var dctx = driftCanvas.getContext('2d');
+
+      function resizeDrift() {
+        driftCanvas.width  = window.innerWidth;
+        driftCanvas.height = window.innerHeight;
+      }
+      resizeDrift();
+      window.addEventListener('resize', resizeDrift);
+
+      // Tiny, slow-drifting motes — gold and pale-blue, very sparse
+      var MOTE_GOLD = [[255,215,120],[253,200,80],[255,235,150]];
+      var MOTE_BLUE = [[160,220,255],[180,230,255],[130,200,255]];
+
+      function spawnMote() {
+        var isGold = Math.random() > 0.38;
+        var pal    = isGold ? MOTE_GOLD : MOTE_BLUE;
+        var col    = pal[Math.floor(Math.random() * pal.length)];
+        var angle  = Math.random() * Math.PI * 2;
+        var speed  = isGold ? (Math.random() * 0.12 + 0.04) : (Math.random() * 0.08 + 0.03);
+        return {
+          x:    Math.random() * driftCanvas.width,
+          y:    Math.random() * driftCanvas.height,
+          r:    isGold ? (Math.random() * 1.4 + 0.5) : (Math.random() * 0.9 + 0.3),
+          vx:   Math.cos(angle) * speed,
+          vy:   Math.sin(angle) * speed - 0.06, // slight upward bias
+          alpha: isGold ? (Math.random() * 0.35 + 0.10) : (Math.random() * 0.18 + 0.06),
+          fade:  Math.random() * 0.0003 + 0.0001,
+          life:  1.0,
+          col:   col,
+        };
+      }
+
+      var motes = Array.from({ length: 38 }, function () {
+        var m = spawnMote();
+        m.life = Math.random();  // pre-scatter fade state
+        return m;
+      });
+
+      function drawMote(m) {
+        var a = m.alpha * m.life;
+        if (a <= 0.005) return;
+        var r = m.col[0], g = m.col[1], b = m.col[2];
+        var grad = dctx.createRadialGradient(m.x, m.y, 0, m.x, m.y, m.r * 2.8);
+        grad.addColorStop(0,   'rgba(' + r + ',' + g + ',' + b + ',' + a.toFixed(3) + ')');
+        grad.addColorStop(0.5, 'rgba(' + r + ',' + g + ',' + b + ',' + (a * 0.4).toFixed(3) + ')');
+        grad.addColorStop(1,   'rgba(' + r + ',' + g + ',' + b + ',0)');
+        dctx.beginPath();
+        dctx.arc(m.x, m.y, m.r * 2.8, 0, Math.PI * 2);
+        dctx.fillStyle = grad;
+        dctx.fill();
+      }
+
+      function driftTick() {
+        dctx.clearRect(0, 0, driftCanvas.width, driftCanvas.height);
+        for (var i = 0; i < motes.length; i++) {
+          var m = motes[i];
+          m.x    += m.vx;
+          m.y    += m.vy;
+          m.life -= m.fade;
+          drawMote(m);
+          // Respawn when faded out or drifted off-screen
+          if (m.life <= 0 || m.x < -20 || m.x > driftCanvas.width + 20 ||
+              m.y < -20 || m.y > driftCanvas.height + 20) {
+            motes[i] = spawnMote();
+          }
+        }
+        requestAnimationFrame(driftTick);
+      }
+
+      driftTick();
+
     }());
   </script>
 
