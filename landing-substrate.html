@@ -1000,25 +1000,29 @@
   <!-- Substrate SVG filter + mask definitions (hidden) -->
   <svg id="substrate-svg" width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true">
     <defs>
-      <!-- Radial gradient: solid-white column centre → black outside (displacement source) -->
-      <radialGradient id="col-grad" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="1">
-        <stop offset="0" stop-color="white"/>
-        <stop id="col-stop1" offset="0.65" stop-color="white"/>
-        <stop id="col-stop2" offset="0.87" stop-color="black"/>
+      <!-- Ring gradient: black centre + black exterior, white ONLY in transition band.
+           Displacement filter applied to this ring — noise affects only the edge band,
+           never the solid centre or the far exterior. -->
+      <radialGradient id="ring-grad" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="1">
+        <stop id="ring-stop1"  offset="0.63" stop-color="black"/>
+        <stop id="ring-stop1b" offset="0.63" stop-color="white"/>
+        <stop id="ring-stop2"  offset="0.75" stop-color="black"/>
       </radialGradient>
 
-      <!-- Main video mask: gradient shape + turbulence displacement for organic edge -->
+      <!-- Main video mask: displacement applied only to the edge ring -->
       <filter id="sub-filter" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
         <feTurbulence id="sub-turb" type="fractalNoise"
           baseFrequency="0.04 0.028" numOctaves="5" seed="3"
           result="noise"/>
-        <feDisplacementMap in="SourceGraphic" in2="noise" scale="40"
-          xChannelSelector="R" yChannelSelector="G"
-          result="displaced"/>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="45"
+          xChannelSelector="R" yChannelSelector="G"/>
       </filter>
       <mask id="sub-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="1920" height="1080">
+        <!-- Solid clean core — no filter, always opaque at the centre -->
+        <ellipse id="sub-core" cx="960" cy="540" rx="160" ry="270" fill="white"/>
+        <!-- Displaced transition ring — organic fraying at the column edge only -->
         <rect id="sub-rect" x="0" y="0" width="1920" height="1080"
-          fill="url(#col-grad)" filter="url(#sub-filter)"/>
+          fill="url(#ring-grad)" filter="url(#sub-filter)"/>
       </mask>
 
       <!-- Radiation overlay mask -->
@@ -1615,11 +1619,15 @@
       var radiation   = document.getElementById('substrate-radiation');
       var subRect     = document.getElementById('sub-rect');
       var radRect     = document.getElementById('rad-rect');
-      var colGrad     = document.getElementById('col-grad');
-      var colStop1    = document.getElementById('col-stop1');
-      var colStop2    = document.getElementById('col-stop2');
+      var ringGrad    = document.getElementById('ring-grad');
+      var ringStop1   = document.getElementById('ring-stop1');
+      var ringStop1b  = document.getElementById('ring-stop1b');
+      var ringStop2   = document.getElementById('ring-stop2');
+      var subCore     = document.getElementById('sub-core');
       var radCm       = document.getElementById('rad-cm');
       var subTurb     = document.getElementById('sub-turb');
+      var coreRx      = 1;  // updated in resizeMasks
+      var coreRy      = 1;
 
       // ── Bias targets per section ──────────────────────────
       var SECTION_BIASES = {
@@ -1656,10 +1664,12 @@
         var h  = window.innerHeight;
         var cx = w / 2;
         var cy = h / 2;
-        var rx = h * 0.28125;  // half of 56.25vh (9:16 portrait column half-width)
-        var ry = h * 0.5;      // half viewport height
-        colGrad.setAttribute('gradientTransform',
-          'translate(' + cx + ',' + cy + ') scale(' + rx + ',' + ry + ')');
+        coreRx = h * 0.28125;  // half of 56.25vh (9:16 portrait column half-width)
+        coreRy = h * 0.5;      // half viewport height
+        ringGrad.setAttribute('gradientTransform',
+          'translate(' + cx + ',' + cy + ') scale(' + coreRx + ',' + coreRy + ')');
+        subCore.setAttribute('cx', cx);
+        subCore.setAttribute('cy', cy);
         ['sub-rect', 'rad-rect'].forEach(function (id) {
           var el = document.getElementById(id);
           el.setAttribute('width',  w);
@@ -1676,6 +1686,8 @@
         radFilter.setAttribute('y', 0);
         radFilter.setAttribute('width',  w);
         radFilter.setAttribute('height', h);
+        // Refresh core ellipse size for new viewport
+        setCoverage(currentBias);
       }
 
       resizeMasks();
@@ -1747,12 +1759,19 @@
         }
       }
 
-      // ── Gradient stop positions from bias (controls column reveal extent) ──────
+      // ── Coverage: solid core ellipse + ring gradient stops ───────────────────────
+      // Formula keeps figure visible across all sections (min ~40% of column radius).
+      // Animation cycle only shifts the noise pattern; core size changes only with bias.
       function setCoverage (bias) {
-        var solidFrac = Math.max(0.01, Math.min(0.98, 1 + bias / 20));
-        var transFrac = Math.min(solidFrac + 0.22, 0.99);
-        colStop1.setAttribute('offset', solidFrac.toFixed(3));
-        colStop2.setAttribute('offset', transFrac.toFixed(3));
+        var solidFrac = Math.max(0.40, Math.min(0.92, 0.90 + bias * 0.025));
+        var transFrac = Math.min(solidFrac + 0.12, 0.97);
+        // Ring gradient: white only in [solidFrac, transFrac]
+        ringStop1.setAttribute('offset',  solidFrac.toFixed(3));
+        ringStop1b.setAttribute('offset', solidFrac.toFixed(3));
+        ringStop2.setAttribute('offset',  transFrac.toFixed(3));
+        // Solid core ellipse: covers the inner solid zone with no filter
+        subCore.setAttribute('rx', (solidFrac * coreRx).toFixed(1));
+        subCore.setAttribute('ry', (solidFrac * coreRy).toFixed(1));
       }
 
       // ── Set feColorMatrix values (radiation overlay only) ─────────────────────
