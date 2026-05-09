@@ -1012,9 +1012,9 @@
       <!-- Main video mask: displacement applied only to the edge ring -->
       <filter id="sub-filter" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
         <feTurbulence id="sub-turb" type="fractalNoise"
-          baseFrequency="0.04 0.028" numOctaves="5" seed="3"
+          baseFrequency="0.10 0.07" numOctaves="6" seed="3"
           result="noise"/>
-        <feDisplacementMap in="SourceGraphic" in2="noise" scale="45"
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="18"
           xChannelSelector="R" yChannelSelector="G"/>
       </filter>
       <mask id="sub-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="1920" height="1080">
@@ -1035,7 +1035,7 @@
            so radiation patches can only ever appear within the reel column. -->
       <filter id="rad-filter" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
         <feTurbulence id="rad-turb" type="fractalNoise"
-          baseFrequency="0.08 0.06" numOctaves="5" seed="11"
+          baseFrequency="0.18 0.12" numOctaves="5" seed="11"
           result="noise"/>
         <feColorMatrix id="rad-cm" type="matrix"
           values="20 0 0 0 -3  20 0 0 0 -3  20 0 0 0 -3  0 0 0 0 1"
@@ -1664,7 +1664,7 @@
       var loopDropBias = 0.0;
       var frameCount   = 0;
       var tBase        = performance.now();
-      var bfX0 = 0.04, bfY0 = 0.028;
+      var bfX0 = 0.10, bfY0 = 0.07;
 
       // ── Resize masks to viewport ──────────────────────────
       function resizeMasks () {
