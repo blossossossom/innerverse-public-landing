@@ -177,8 +177,10 @@
     }
 
     .hero-subheadline {
-      font-size: clamp(1rem, 2.5vw, 1.2rem);
-      font-weight: 300;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 400;
+      font-size: clamp(1.1rem, 2.5vw, 1.35rem);
       color: rgba(255,255,255,0.95);
       max-width: 560px;
       margin: 0 auto;
@@ -856,7 +858,7 @@
     }
 
     #p2-left  { left: 4%;  top: 42%; text-align: right; }
-    #p2-right { right: 4%; top: 52%; text-align: left;  }
+    #p2-right { right: 9%; top: 52%; text-align: left;  }
 
     /* ── Proper noun — Genos, visual-size-compensated ───── */
     .pn {
@@ -1825,9 +1827,9 @@
         });
 
         // Phase 2 — scroll-driven fade in after last fragment dissolves
-        var p2s = 0.95, p2w = 0.04;
+        var p2s = 0.92, p2w = 0.05;
         if (p2L) p2L.style.opacity = smoothstep((p - p2s) / p2w);
-        if (p2R) p2R.style.opacity = smoothstep((p - p2s - 0.03) / p2w);
+        if (p2R) p2R.style.opacity = smoothstep((p - p2s - 0.01) / p2w);
       }
 
       var rafPending = false;
