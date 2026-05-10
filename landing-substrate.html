@@ -667,7 +667,7 @@
       .cta-button span { letter-spacing: 0.16em; }
 
       /* Section 2 mobile — tighter vertical positions, smaller type */
-      #aurora-scroll-track { height: 240vh; }
+      #aurora-scroll-track { height: 200vh; }
       .aurora-frag { font-size: clamp(1.2rem, 5vw, 1.5rem); }
       .aurora-frag:nth-child(1) { top: 28%; }
       .aurora-frag:nth-child(2) { top: 40%; }
@@ -779,11 +779,12 @@
     #aurora-hero {
       position: relative;
       width: 100%;
+      padding: 0;
     }
 
     #aurora-scroll-track {
       position: relative;
-      height: 280vh;
+      height: 220vh;
     }
 
     #aurora-sticky {
@@ -828,7 +829,7 @@
       line-height: 1.5;
       text-align: center;
       text-shadow: 0 1px 12px rgba(0,0,0,0.5);
-      will-change: opacity, transform;
+      will-change: opacity, transform, filter;
     }
 
     /* Each fragment enters from a slightly lower position than the last */
@@ -1194,6 +1195,14 @@
   <section id="aurora-hero">
     <div id="aurora-scroll-track">
       <div id="aurora-sticky">
+        <svg aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden;pointer-events:none">
+          <defs>
+            <filter id="frag-dissolve" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="linearRGB">
+              <feTurbulence id="frag-turb" type="fractalNoise" baseFrequency="0.015 0.012" numOctaves="4" seed="11" result="noise"/>
+              <feDisplacementMap id="frag-disp" in="SourceGraphic" in2="noise" scale="0" xChannelSelector="R" yChannelSelector="G"/>
+            </filter>
+          </defs>
+        </svg>
         <canvas id="aurora-canvas" aria-hidden="true"></canvas>
         <div id="aurora-frag-stage">
           <p class="aurora-frag">Some rooms are made for one person,</p>
@@ -1737,6 +1746,9 @@
         return 0;
       }
 
+      var fragTurb = document.getElementById('frag-turb');
+      var fragDisp = document.getElementById('frag-disp');
+
       // Upward drift: 0px at rest, -50px by end of exit phase
       function fragTY(zone, p) {
         var x = zone[2], g = zone[3];
@@ -1745,39 +1757,44 @@
         return -50;
       }
 
-      // Subtle blur on dissolve: 0 → 3px during exit
-      function fragBlur(zone, p) {
+      // Returns exit progress 0→1 during dissolve phase, else null
+      function getExitT(zone, p) {
         var x = zone[2], g = zone[3];
-        if (p <= x) return 0;
-        if (p < g)  return 3 * (p - x) / (g - x);
-        return 3;
+        if (p <= x || p >= g) return null;
+        return (p - x) / (g - x);
       }
 
       function updateFrags() {
         var p = getProgress();
+        var activeExitT = null;
+
         frags.forEach(function (el, i) {
           if (!ZONES[i]) return;
           el.style.opacity = fragOpacity(ZONES[i], p);
           if (!prefersReducedMotion) {
             el.style.transform = 'translateY(' + fragTY(ZONES[i], p).toFixed(1) + 'px)';
-            el.style.filter    = 'blur('       + fragBlur(ZONES[i], p).toFixed(2) + 'px)';
+            var t = getExitT(ZONES[i], p);
+            if (t !== null) {
+              el.style.filter = 'url(#frag-dissolve)';
+              activeExitT = t;
+            } else {
+              el.style.filter = 'none';
+            }
           }
         });
-      }
 
-      // Phase 2 — flanking lines fade in when #world enters viewport
-      var worldEl = document.getElementById('world');
-      if (worldEl && p2L && p2R) {
-        var p2Observer = new IntersectionObserver(function (entries) {
-          entries.forEach(function (entry) {
-            var op = entry.isIntersecting ? '1' : '0';
-            p2L.style.transition = 'opacity 1.4s ease';
-            p2R.style.transition = 'opacity 1.8s ease';
-            p2L.style.opacity = op;
-            p2R.style.opacity = op;
-          });
-        }, { threshold: 0.15 });
-        p2Observer.observe(worldEl);
+        // Ramp SVG turbulence during dissolve: baseFreq 0.015→0.09, scale 0→35px
+        if (!prefersReducedMotion && fragTurb && fragDisp && activeExitT !== null) {
+          var bf = 0.015 + activeExitT * 0.075;
+          fragTurb.setAttribute('baseFrequency', bf.toFixed(3) + ' ' + (bf * 0.8).toFixed(3));
+          fragDisp.setAttribute('scale', (activeExitT * 35).toFixed(1));
+        }
+
+        // Phase 2 — scroll-progress reveal, bidirectional (replaces IntersectionObserver)
+        if (p2L && p2R) {
+          p2L.style.opacity = p < 0.62 ? 0 : p < 0.72 ? (p - 0.62) / 0.10 : 1;
+          p2R.style.opacity = p < 0.70 ? 0 : p < 0.80 ? (p - 0.70) / 0.10 : 1;
+        }
       }
 
       var rafPending = false;
