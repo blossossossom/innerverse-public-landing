@@ -370,61 +370,44 @@
       letter-spacing: 0.02em;
     }
 
-    /* CTA Button */
+    /* CTA Button — threshold letterbox */
     .cta-button {
-      display: inline-block;
-      padding: 16px 40px;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.9rem;
-      font-weight: 400;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      text-decoration: none;
-      color: var(--void);
-      background: var(--blue);
-      border-radius: 3px;
-      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: clamp(240px, 35vw, 320px);
+      height: clamp(78px, 10.5vw, 104px);
+      background: transparent;
+      border: 1.5px solid rgba(253,207,124,0.60);
+      border-radius: 2px;
       cursor: pointer;
-      transition:
-        box-shadow 0.5s ease,
-        transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
-        color 0.5s ease;
-      position: relative;
-      overflow: hidden;
-      transform: scale(1);
-      will-change: transform;
+      animation: ctaBreath 5s ease-in-out infinite;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
     }
 
-    .cta-button::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: var(--gold);
-      opacity: 0;
-      transition: opacity 0.55s ease;
+    .cta-button span {
+      font-family: 'Genos', sans-serif;
+      font-weight: 200;
+      font-style: normal;
+      font-size: clamp(1.2rem, 2vw, 1.4rem);
+      color: rgba(253,207,124,0.85);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      transition: color 0.3s ease;
     }
 
-    .cta-button span { position: relative; z-index: 1; }
-
-    .cta-button:hover::before { opacity: 1; }
+    @keyframes ctaBreath {
+      0%, 100% { border-color: rgba(253,207,124,0.50); }
+      50%       { border-color: rgba(253,207,124,0.75); }
+    }
 
     .cta-button:hover {
-      transform: scale(1.04);
-      box-shadow:
-        0 0 28px rgba(253,207,124,0.45),
-        0 0 70px rgba(253,207,124,0.15),
-        0 4px 24px rgba(0,0,0,0.3);
-      color: var(--void);
+      animation: none;
+      border-color: rgba(253,207,124,0.90);
+      box-shadow: 0 0 20px rgba(253,207,124,0.22), 0 0 50px rgba(253,207,124,0.08);
     }
 
-    /* Soft glow pulse at rest */
-    @keyframes glowPulse {
-      0%, 100% { box-shadow: 0 0 12px rgba(0,194,255,0.2); }
-      50%       { box-shadow: 0 0 22px rgba(0,194,255,0.38); }
-    }
-
-    .cta-button { animation: glowPulse 3.5s ease-in-out infinite; }
-    .cta-button:hover { animation: none; }
+    .cta-button:hover span { color: rgba(253,207,124,1.0); }
 
     /* ── Waitlist signup form ───────────────────────────── */
     #waitlist-form-wrap {
@@ -680,6 +663,8 @@
       .w3-frame       { position: static !important; transform: none !important; }
       .w3-f-portrait  { padding: 0.45em 1.00em; }
       .w3-portal-wrap { justify-content: flex-start; }
+      .cta-button     { width: clamp(220px, 75vw, 265px); height: clamp(72px, 20vw, 86px); }
+      .cta-button span { letter-spacing: 0.16em; }
     }
 
 
@@ -974,7 +959,8 @@
       50%       { border-color: rgba(253,207,124,0.72); }
     }
     @media (prefers-reduced-motion: reduce) {
-      .w3-frame { animation: none; border-color: rgba(253,207,124,0.55); }
+      .w3-frame    { animation: none; border-color: rgba(253,207,124,0.55); }
+      .cta-button  { animation: none; border-color: rgba(253,207,124,0.65); }
     }
 
     /* Portal connection visual — right-aligned SVG below L5 */
