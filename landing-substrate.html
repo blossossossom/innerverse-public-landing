@@ -1009,12 +1009,19 @@
         <stop id="ring-stop2"  offset="0.75" stop-color="black"/>
       </radialGradient>
 
-      <!-- State B fill gradient: white centre dissolving organically at outer edge -->
-      <radialGradient id="col-fill-grad" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="1">
-        <stop offset="0" stop-color="white"/>
-        <stop id="col-fill-stop1" offset="0.82" stop-color="white"/>
-        <stop id="col-fill-stop2" offset="0.93" stop-color="black"/>
-      </radialGradient>
+      <!-- State B filter: full-viewport white rect eroded at screen edges, then blurred + displaced.
+           feMorphology erode shrinks the white rect inward on all sides → creates a black band
+           at each screen edge. feGaussianBlur softens that band into a smooth fade.
+           feDisplacementMap frays the edge into organic smoke — same character as State A ring. -->
+      <filter id="state-b-filter" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
+        <feTurbulence id="state-b-turb" type="fractalNoise"
+          baseFrequency="0.10 0.07" numOctaves="6" seed="3"
+          result="noise"/>
+        <feMorphology id="state-b-erode" operator="erode" radius="50 35" in="SourceGraphic" result="eroded"/>
+        <feGaussianBlur id="state-b-blur" stdDeviation="35" in="eroded" result="blurred"/>
+        <feDisplacementMap in="blurred" in2="noise" scale="18"
+          xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
 
       <!-- Main video mask: displacement applied only to the edge ring -->
       <filter id="sub-filter" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
@@ -1025,9 +1032,9 @@
           xChannelSelector="R" yChannelSelector="G"/>
       </filter>
       <mask id="sub-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="1920" height="1080">
-        <!-- State B: solid fill with organic outer dissolve; invisible until crossfade -->
+        <!-- State B: full-viewport white rect with viewport-edge dissolve only -->
         <rect id="sub-rect-b" x="0" y="0" width="1920" height="1080"
-          fill="url(#col-fill-grad)" filter="url(#sub-filter)" opacity="0"/>
+          fill="white" filter="url(#state-b-filter)" opacity="0"/>
         <!-- State A: ring only — black centre (hollow interior) + white ring + black exterior -->
         <rect id="sub-rect" x="0" y="0" width="1920" height="1080"
           fill="url(#ring-grad)" filter="url(#sub-filter)"/>
@@ -1648,10 +1655,10 @@
       var radColStop2   = document.getElementById('rad-col-stop2');
       var radCm         = document.getElementById('rad-cm');
       var subTurb     = document.getElementById('sub-turb');
-      var subRectB    = document.getElementById('sub-rect-b');
-      var colFillGrad = document.getElementById('col-fill-grad');
-      var colFillStop1 = document.getElementById('col-fill-stop1');
-      var colFillStop2 = document.getElementById('col-fill-stop2');
+      var subRectB     = document.getElementById('sub-rect-b');
+      var stateBTurb   = document.getElementById('state-b-turb');
+      var stateBErode  = document.getElementById('state-b-erode');
+      var stateBBlur   = document.getElementById('state-b-blur');
       var coreRx      = 1;  // updated in resizeMasks
       var coreRy      = 1;
 
@@ -1690,8 +1697,9 @@
           'translate(' + cx + ',' + cy + ') scale(' + coreRx + ',' + coreRy + ')');
         radColGrad.setAttribute('gradientTransform',
           'translate(' + cx + ',' + cy + ') scale(' + coreRx + ',' + coreRy + ')');
-        colFillGrad.setAttribute('gradientTransform',
-          'translate(' + cx + ',' + cy + ') scale(' + coreRx + ',' + coreRy + ')');
+        // State B: scale erode radius and blur to viewport so edge band is ~4% of each dimension
+        stateBErode.setAttribute('radius', Math.round(w * 0.04) + ' ' + Math.round(h * 0.04));
+        stateBBlur.setAttribute('stdDeviation', Math.round(Math.min(w, h) * 0.03));
         ['sub-rect', 'sub-rect-b', 'rad-rect'].forEach(function (id) {
           var el = document.getElementById(id);
           el.setAttribute('width',  w);
@@ -1784,14 +1792,6 @@
         radColStop2.setAttribute('offset',  radOuter.toFixed(3));
       }
 
-      // ── State B coverage: solid fill with gently dissolving outer edge ────────
-      function setCoverageB (bias) {
-        var solidFrac = Math.max(0.60, Math.min(0.88, 0.90 + bias * 0.012));
-        var transFrac = Math.min(solidFrac + 0.08, 0.97);
-        colFillStop1.setAttribute('offset', solidFrac.toFixed(3));
-        colFillStop2.setAttribute('offset', transFrac.toFixed(3));
-      }
-
       // ── Transition factor: 0=State A, 1=State B, driven by #world viewport entry ──
       function getTransitionFactor () {
         var world = document.getElementById('world');
@@ -1827,14 +1827,15 @@
         if (frameCount % 2 === 0) {
           var effectiveBias = currentBias + loopDropBias;
           setCoverage(effectiveBias);
-          setCoverageB(effectiveBias);
           setMatrix(radCm, effectiveBias + RAD_OFFSET);
 
-          // Slow sinusoidal drift of baseFrequency
+          // Slow sinusoidal drift of baseFrequency — applied to both filters
           var elapsedSec = (now - tBase) * 0.001;
           var bfX = bfX0 + Math.sin(elapsedSec * 0.11) * 0.006;
           var bfY = bfY0 + Math.cos(elapsedSec * 0.07) * 0.004;
-          subTurb.setAttribute('baseFrequency', bfX.toFixed(5) + ' ' + bfY.toFixed(5));
+          var bfStr = bfX.toFixed(5) + ' ' + bfY.toFixed(5);
+          subTurb.setAttribute('baseFrequency', bfStr);
+          stateBTurb.setAttribute('baseFrequency', bfStr);
         }
       }
 
