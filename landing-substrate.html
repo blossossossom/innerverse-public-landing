@@ -665,6 +665,13 @@
       .w3-portal-wrap { justify-content: flex-start; }
       .cta-button     { width: clamp(220px, 75vw, 265px); height: clamp(72px, 20vw, 86px); }
       .cta-button span { letter-spacing: 0.16em; }
+
+      /* Section 2 mobile — stack Phase 2 lines vertically */
+      #aurora-scroll-track { height: 240vh; }
+      .aurora-frag { font-size: clamp(1.2rem, 5vw, 1.5rem); }
+      .p2-line { position: static; max-width: 88vw; text-align: center; font-size: clamp(1rem, 4.5vw, 1.2rem); }
+      #p2-left, #p2-right { left: auto; right: auto; top: auto; }
+      #aurora-frag-stage { top: 30%; }
     }
 
 
@@ -765,15 +772,23 @@
 
     .aurora-cta span { position: relative; }
 
-    /* ── Aurora Hero ─────────────────────────────────────── */
+    /* ── Section 2 — Cinematic fragment sequence ───────── */
     #aurora-hero {
       position: relative;
       width: 100%;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    }
+
+    #aurora-scroll-track {
+      position: relative;
+      height: 280vh;
+    }
+
+    #aurora-sticky {
+      position: sticky;
+      top: 0;
+      height: 100vh;
       overflow: hidden;
+      pointer-events: none;
     }
 
     #aurora-canvas {
@@ -786,70 +801,55 @@
       mix-blend-mode: screen;
     }
 
-    #aurora-content {
-      position: relative;
-      z-index: 1;
-      max-width: 800px;
-      width: 100%;
-      padding: 100px 32px;
-      text-align: left;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 4.5em;
+    /* Fragment stage — upper-centre, above fire ring */
+    #aurora-frag-stage {
+      position: absolute;
+      top: 22%;
+      left: 0;
+      right: 0;
+      height: 5rem;
+      z-index: 3;
+      pointer-events: none;
     }
 
-    .aurora-line {
+    .aurora-frag {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      width: min(660px, 88vw);
+      margin: 0 auto;
+      opacity: 0;
       font-family: 'Cormorant Garamond', serif;
       font-style: italic;
-      font-size: clamp(1.2rem, 2.6vw, 1.7rem);
       font-weight: 400;
+      font-size: clamp(1.5rem, 3.5vw, 2rem);
       color: #ffffff;
       letter-spacing: 0.04em;
-      line-height: 1.7;
+      line-height: 1.5;
+      text-align: center;
       text-shadow: 0 1px 12px rgba(0,0,0,0.5);
-      opacity: 0;
-      transform: translateY(22px);
-      transition: opacity 1.4s cubic-bezier(0.22, 1, 0.36, 1),
-                  transform 1.4s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
-    .aurora-line-highlight {
-      font-size: clamp(1.15rem, 2.6vw, 1.5rem);
+    /* Phase 2 — brand promise flanking the ring */
+    .p2-line {
+      position: absolute;
+      opacity: 0;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
       font-weight: 400;
-      color: rgba(255, 255, 255, 1);
+      font-size: clamp(1.1rem, 2.3vw, 1.55rem);
+      color: #ffffff;
+      letter-spacing: 0.04em;
+      line-height: 1.6;
+      text-shadow: 0 1px 12px rgba(0,0,0,0.5);
+      max-width: min(28vw, 260px);
+      z-index: 3;
+      pointer-events: none;
     }
 
-    .aurora-line.a-visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    #aurora-reveal {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 20px;
-      padding-top: 0.6em;
-    }
-
-    #aurora-wordmark {
-      opacity: 0;
-      transition: opacity 1.2s ease;
-    }
-
-    #aurora-subline {
-      font-size: clamp(0.95rem, 2vw, 1.1rem);
-      font-weight: 300;
-      color: rgba(255, 255, 255, 0.88);
-      opacity: 0;
-      transition: opacity 1s ease;
-    }
-
-    #aurora-cta {
-      opacity: 0;
-      transition: opacity 1s ease;
-    }
+    #p2-left  { left: 4%;  top: 42%; text-align: right; }
+    #p2-right { right: 4%; top: 52%; text-align: left;  }
 
     /* ── Proper noun — Genos, visual-size-compensated ───── */
     .pn {
@@ -1186,10 +1186,18 @@
 
   <!-- ── AURORA HERO ───────────────────────────────────── -->
   <section id="aurora-hero">
-    <canvas id="aurora-canvas" aria-hidden="true"></canvas>
-    <div id="aurora-content">
-      <p class="aurora-line reveal">Some rooms are meant for one person, some for five. Some for humanity, and some for no one but you.</p>
-      <p class="aurora-line reveal delay-1"><span class="pn">Innerverse</span> is where your galaxy of self-expression and human connection lives.</p>
+    <div id="aurora-scroll-track">
+      <div id="aurora-sticky">
+        <canvas id="aurora-canvas" aria-hidden="true"></canvas>
+        <div id="aurora-frag-stage">
+          <p class="aurora-frag">Some rooms are made for one person,</p>
+          <p class="aurora-frag">some for several</p>
+          <p class="aurora-frag">some for the public visitor,</p>
+          <p class="aurora-frag">and some for no one but you.</p>
+        </div>
+        <p id="p2-left"  class="p2-line">A home for unmonitored self-expression,</p>
+        <p id="p2-right" class="p2-line">and human connection.</p>
+      </div>
     </div>
   </section>
 
@@ -1628,7 +1636,7 @@
       // Size canvas to section
       function resize() {
         canvas.width  = section.offsetWidth  || window.innerWidth;
-        canvas.height = section.offsetHeight || window.innerHeight;
+        canvas.height = window.innerHeight;
       }
       resize();
       window.addEventListener('resize', resize);
@@ -1688,7 +1696,75 @@
 
       tick();
 
-      // Aurora-line text reveal handled by the main .reveal observer
+      // ── Scroll-driven fragment sequence ─────────────────────
+      var track  = document.getElementById('aurora-scroll-track');
+      var frags  = Array.from(document.querySelectorAll('.aurora-frag'));
+      var p2L    = document.getElementById('p2-left');
+      var p2R    = document.getElementById('p2-right');
+
+      // Each zone: [entryStart, fullStart, exitStart, goneEnd] as 0-1 progress
+      var ZONES = [
+        [0.00, 0.08, 0.22, 0.30],
+        [0.22, 0.30, 0.44, 0.52],
+        [0.44, 0.52, 0.66, 0.74],
+        [0.66, 0.74, 0.88, 0.96],
+      ];
+
+      var p2Active = false;
+
+      function getProgress() {
+        if (!track) return 0;
+        var r   = track.getBoundingClientRect();
+        var vis = -r.top;
+        var tot = r.height - window.innerHeight;
+        return Math.min(1, Math.max(0, vis / tot));
+      }
+
+      function lerp(a, b, t) { return a + (b - a) * t; }
+
+      function fragOpacity(zone, p) {
+        var e = zone[0], f = zone[1], x = zone[2], g = zone[3];
+        if (p < e) return 0;
+        if (p < f) return (p - e) / (f - e);
+        if (p < x) return 1;
+        if (p < g) return 1 - (p - x) / (g - x);
+        return 0;
+      }
+
+      function updateFrags() {
+        var p = getProgress();
+        frags.forEach(function (el, i) {
+          if (ZONES[i]) el.style.opacity = fragOpacity(ZONES[i], p);
+        });
+      }
+
+      // Phase 2 — flanking lines fade in when #world enters viewport
+      var worldEl = document.getElementById('world');
+      if (worldEl && p2L && p2R) {
+        var p2Observer = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            var op = entry.isIntersecting ? '1' : '0';
+            p2L.style.transition = 'opacity 1.4s ease';
+            p2R.style.transition = 'opacity 1.8s ease';
+            p2L.style.opacity = op;
+            p2R.style.opacity = op;
+          });
+        }, { threshold: 0.15 });
+        p2Observer.observe(worldEl);
+      }
+
+      var rafPending = false;
+      window.addEventListener('scroll', function () {
+        if (!rafPending) {
+          rafPending = true;
+          requestAnimationFrame(function () {
+            updateFrags();
+            rafPending = false;
+          });
+        }
+      }, { passive: true });
+
+      updateFrags();
     }());
 
     // ── Waitlist form ────────────────────────────────────────
