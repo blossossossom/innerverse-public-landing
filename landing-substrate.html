@@ -667,7 +667,7 @@
       .cta-button span { letter-spacing: 0.16em; }
 
       /* Section 2 mobile — tighter vertical positions, smaller type */
-      #aurora-scroll-track { height: 200vh; }
+      #aurora-scroll-track { height: 300vh; }
       .aurora-frag { font-size: clamp(1.2rem, 5vw, 1.5rem); }
       .aurora-frag:nth-child(1) { top: 28%; }
       .aurora-frag:nth-child(2) { top: 40%; }
@@ -784,7 +784,7 @@
 
     #aurora-scroll-track {
       position: relative;
-      height: 220vh;
+      height: 350vh;
     }
 
     #aurora-sticky {
@@ -829,7 +829,7 @@
       line-height: 1.5;
       text-align: center;
       text-shadow: 0 1px 12px rgba(0,0,0,0.5);
-      will-change: opacity, transform, filter;
+      will-change: opacity, transform;
     }
 
     /* Each fragment enters from a slightly lower position than the last */
@@ -1195,14 +1195,6 @@
   <section id="aurora-hero">
     <div id="aurora-scroll-track">
       <div id="aurora-sticky">
-        <svg aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden;pointer-events:none">
-          <defs>
-            <filter id="frag-dissolve" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="linearRGB">
-              <feTurbulence id="frag-turb" type="fractalNoise" baseFrequency="0.015 0.012" numOctaves="4" seed="11" result="noise"/>
-              <feDisplacementMap id="frag-disp" in="SourceGraphic" in2="noise" scale="0" xChannelSelector="R" yChannelSelector="G"/>
-            </filter>
-          </defs>
-        </svg>
         <canvas id="aurora-canvas" aria-hidden="true"></canvas>
         <div id="aurora-frag-stage">
           <p class="aurora-frag">Some rooms are made for one person,</p>
@@ -1717,15 +1709,21 @@
       var p2L    = document.getElementById('p2-left');
       var p2R    = document.getElementById('p2-right');
 
-      // Each zone: [entryStart, fullStart, exitStart, goneEnd] as 0-1 scroll progress.
-      // Adjacent zones overlap by ~40% so two fragments are briefly co-visible.
-      // Whole sequence completes by p≈0.55 (~one viewport of scrolling on a 280vh track).
+      // ── Scroll-driven per-letter animation ───────────────────
+      // Each zone: [entryStart, holdStart, dissolveStart, zoneEnd].
+      // dissolveStart[N] === entryStart[N+1] — simultaneous crossfade.
+      // Every letter's opacity/transform/filter is computed directly from scroll
+      // progress p on every rAF — fully bidirectional, no timers.
       var ZONES = [
-        [0.00, 0.06, 0.13, 0.19],
-        [0.12, 0.18, 0.25, 0.31],
-        [0.24, 0.30, 0.37, 0.43],
-        [0.36, 0.42, 0.49, 0.55],
+        [0.00, 0.13, 0.21, 0.34],
+        [0.21, 0.34, 0.42, 0.55],
+        [0.42, 0.55, 0.63, 0.76],
+        [0.63, 0.76, 0.84, 0.97],
       ];
+      // Within each entry/dissolve band, letters are staggered across STAGGER_FRAC
+      // of the band, each animating over DUR_FRAC. (STAGGER_FRAC + DUR_FRAC = 1)
+      var STAGGER_FRAC = 0.65;
+      var DUR_FRAC     = 0.35;
 
       var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -1737,64 +1735,99 @@
         return Math.min(1, Math.max(0, vis / tot));
       }
 
-      function fragOpacity(zone, p) {
-        var e = zone[0], f = zone[1], x = zone[2], g = zone[3];
-        if (p < e) return 0;
-        if (p < f) return (p - e) / (f - e);
-        if (p < x) return 1;
-        if (p < g) return 1 - (p - x) / (g - x);
-        return 0;
+      function smoothstep(t) {
+        return t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t);
       }
 
-      var fragTurb = document.getElementById('frag-turb');
-      var fragDisp = document.getElementById('frag-disp');
+      // Split each fragment into per-letter inline-block spans.
+      var letterGroups = [];
+      var fragMaxDelay = []; // max stagger delay per fragment, for normalising t
 
-      // Upward drift: 0px at rest, -50px by end of exit phase
-      function fragTY(zone, p) {
-        var x = zone[2], g = zone[3];
-        if (p <= x) return 0;
-        if (p < g)  return -50 * (p - x) / (g - x);
-        return -50;
-      }
-
-      // Returns exit progress 0→1 during dissolve phase, else null
-      function getExitT(zone, p) {
-        var x = zone[2], g = zone[3];
-        if (p <= x || p >= g) return null;
-        return (p - x) / (g - x);
-      }
+      frags.forEach(function (el) {
+        var text = el.textContent;
+        el.innerHTML = '';
+        el.style.opacity = '1'; // containers always visible; letters control opacity
+        var spans    = [];
+        var staggerMs = 0;
+        for (var j = 0; j < text.length; j++) {
+          var ch = text[j];
+          var sp = document.createElement('span');
+          sp.textContent = ch;
+          sp.style.display = 'inline-block';
+          if (ch === ' ') {
+            sp.style.whiteSpace = 'pre';
+            sp._skip = true;
+          } else {
+            sp._dy    = -(8  + Math.random() * 7);   // upward dissolve direction (negative)
+            sp._dx    = (Math.random() * 6 - 3);      // horizontal jitter
+            sp._blur  = 2 + Math.random() * 2;
+            sp._delay = staggerMs;
+            staggerMs += 50 + Math.floor(Math.random() * 40);
+            sp.style.opacity = '0';
+          }
+          el.appendChild(sp);
+          spans.push(sp);
+        }
+        var maxD = 0;
+        spans.forEach(function (sp) { if (!sp._skip && sp._delay > maxD) maxD = sp._delay; });
+        fragMaxDelay.push(maxD || 1);
+        letterGroups.push(spans);
+      });
 
       function updateFrags() {
         var p = getProgress();
-        var activeExitT = null;
 
         frags.forEach(function (el, i) {
-          if (!ZONES[i]) return;
-          el.style.opacity = fragOpacity(ZONES[i], p);
-          if (!prefersReducedMotion) {
-            el.style.transform = 'translateY(' + fragTY(ZONES[i], p).toFixed(1) + 'px)';
-            var t = getExitT(ZONES[i], p);
-            if (t !== null) {
-              el.style.filter = 'url(#frag-dissolve)';
-              activeExitT = t;
-            } else {
-              el.style.filter = 'none';
-            }
+          var zone = ZONES[i];
+          if (!zone) return;
+          var es = zone[0], hs = zone[1], ds = zone[2], ze = zone[3];
+          var entryW   = hs - es;
+          var dissolveW = ze - ds;
+          var maxD     = fragMaxDelay[i];
+
+          if (prefersReducedMotion) {
+            el.style.opacity = p < es ? 0 : p < hs ? (p-es)/entryW : p < ds ? 1 : p < ze ? 1-(p-ds)/dissolveW : 0;
+            return;
           }
+
+          letterGroups[i].forEach(function (sp) {
+            if (sp._skip) return;
+
+            var t  = sp._delay / maxD; // normalised stagger position [0, 1]
+
+            // Each letter's active scroll window within the entry band
+            var eS = es + t * entryW * STAGGER_FRAC;
+            var eE = eS + entryW * DUR_FRAC;
+            // …and within the dissolve band
+            var dS = ds + t * dissolveW * STAGGER_FRAC;
+            var dE = dS + dissolveW * DUR_FRAC;
+
+            var opacity, ty, tx, blur;
+
+            if (p <= eS) {
+              opacity = 0;  ty = -sp._dy; tx = sp._dx;  blur = sp._blur;
+            } else if (p <= eE) {
+              var f   = smoothstep((p - eS) / (eE - eS));
+              opacity = f;  ty = (-sp._dy) * (1-f); tx = sp._dx * (1-f); blur = sp._blur * (1-f);
+            } else if (p <= dS) {
+              opacity = 1;  ty = 0;        tx = 0;       blur = 0;
+            } else if (p <= dE) {
+              var f   = smoothstep((p - dS) / (dE - dS));
+              opacity = 1-f; ty = sp._dy * f; tx = sp._dx * f; blur = sp._blur * f;
+            } else {
+              opacity = 0;  ty = sp._dy;  tx = sp._dx;  blur = sp._blur;
+            }
+
+            sp.style.opacity   = opacity.toFixed(3);
+            sp.style.transform = 'translateY(' + ty.toFixed(1) + 'px) translateX(' + tx.toFixed(1) + 'px)';
+            sp.style.filter    = blur > 0.01 ? 'blur(' + blur.toFixed(2) + 'px)' : 'none';
+          });
         });
 
-        // Ramp SVG turbulence during dissolve: baseFreq 0.015→0.09, scale 0→35px
-        if (!prefersReducedMotion && fragTurb && fragDisp && activeExitT !== null) {
-          var bf = 0.015 + activeExitT * 0.075;
-          fragTurb.setAttribute('baseFrequency', bf.toFixed(3) + ' ' + (bf * 0.8).toFixed(3));
-          fragDisp.setAttribute('scale', (activeExitT * 35).toFixed(1));
-        }
-
-        // Phase 2 — scroll-progress reveal, bidirectional (replaces IntersectionObserver)
-        if (p2L && p2R) {
-          p2L.style.opacity = p < 0.62 ? 0 : p < 0.72 ? (p - 0.62) / 0.10 : 1;
-          p2R.style.opacity = p < 0.70 ? 0 : p < 0.80 ? (p - 0.70) / 0.10 : 1;
-        }
+        // Phase 2 — scroll-driven fade in after last fragment dissolves
+        var p2s = 0.95, p2w = 0.04;
+        if (p2L) p2L.style.opacity = smoothstep((p - p2s) / p2w);
+        if (p2R) p2R.style.opacity = smoothstep((p - p2s - 0.03) / p2w);
       }
 
       var rafPending = false;
