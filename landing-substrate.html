@@ -661,6 +661,14 @@
       .benefit-item { padding: 28px 0 0; }
       .benefit-item:nth-child(2),
       .benefit-item:nth-child(3) { margin-top: 32px; }
+
+      /* Section 3 mobile overrides */
+      #world { padding: 80px 0 100px; }
+      .w3-l1, .w3-l6 { font-size: clamp(1.85rem, 7vw, 2.3rem); }
+      .w3-sub         { font-size: clamp(1.1rem, 4.5vw, 1.5rem); }
+      .w3-l5          { text-align: left; }
+      .w3-frames-row  { flex-wrap: wrap; gap: 0.65em; }
+      .w3-portal-wrap { justify-content: flex-start; }
     }
 
 
@@ -857,29 +865,109 @@
       line-height: 1;
     }
 
-    /* ── Section 3 — The World ──────────────────────────── */
-    .world-prose-line {
-      font-size: clamp(1.05rem, 2.2vw, 1.32rem);
-      font-weight: 300;
+    /* ── Section 3 — The World (redesigned) ────────────── */
+    #world { padding: 128px 0 160px; }
+
+    /* Declarative lines: L1 "Your World…" and L6 "and ENTER." */
+    .w3-decl {
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      line-height: 1.1;
+      color: #ffffff;
+      text-align: center;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.36);
+      margin: 0;
+    }
+    .w3-l1 {
+      font-size: clamp(2.2rem, 5.5vw, 4.4rem);
+      padding-bottom: 3.2rem;
+    }
+    .w3-l6 {
+      font-size: clamp(2.2rem, 5.5vw, 4.4rem);
+      padding-bottom: 3rem;
+    }
+    .w3-enter {
+      font-size: 1.18em;
+      font-weight: 800;
+      letter-spacing: 0.10em;
+    }
+
+    /* Sub-declarative lines: L2 "You architect…" and L5 "connect Rooms…" */
+    .w3-sub {
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: clamp(1.3rem, 3.1vw, 2.3rem);
+      line-height: 1.2;
+      color: #ffffff;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.36);
+      margin: 0;
+    }
+    .w3-l2 { text-align: left;   padding-top: 3.5rem; padding-bottom: 2rem; }
+    .w3-l3 { text-align: center; padding-bottom: 1.2rem; }
+    .w3-l5 { text-align: right;  padding-top: 3.5rem; padding-bottom: 1.2rem; }
+
+    /* .pn inside large headings: keep Genos character but don't inflate size */
+    .w3-decl .pn,
+    .w3-sub .pn { font-size: 1em; }
+
+    /* Inventory frames — L4 words in gold rectangular outlines */
+    .w3-frames-row {
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: center;
+      align-items: center;
+      gap: 0.75em;
+      padding-bottom: 3.5rem;
+    }
+    .w3-frame {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.42em 0.85em;
+      border: 1.5px solid rgba(253,207,124,0.55);
+      border-radius: 2px;
+      font-size: clamp(0.72rem, 1.45vw, 0.92rem);
+      font-weight: 400;
+      color: #ffffff;
+      white-space: nowrap;
+      animation: w3FrameBreath 5s ease-in-out infinite;
+      animation-delay: calc(var(--fi) * 0.85s);
+    }
+    @keyframes w3FrameBreath {
+      0%, 100% { border-color: rgba(253,207,124,0.38); }
+      50%       { border-color: rgba(253,207,124,0.72); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .w3-frame { animation: none; border-color: rgba(253,207,124,0.55); }
+    }
+
+    /* Portal connection visual — right-aligned SVG below L5 */
+    .w3-portal-wrap {
+      display: flex;
+      justify-content: flex-end;
+      padding-bottom: 3.2rem;
+    }
+    .w3-portal-svg {
+      display: block;
+      width: min(440px, 100%);
+      height: auto;
+    }
+
+    /* Closing prose — L7 "There has never been…" and L8 "Yours alone…" */
+    .w3-prose {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(1.0rem, 2.1vw, 1.28rem);
+      font-weight: 400;
       line-height: 1.9;
-      color: rgba(255,255,255,0.88);
-      margin-bottom: 2em;
+      color: rgba(255,255,255,0.85);
+      text-align: center;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+      margin: 0 auto;
+      max-width: 640px;
+      padding-top: 1.8rem;
+      padding-bottom: 1.4rem;
     }
-
-    .world-prose-line:last-child { margin-bottom: 0; }
-
-    .world-breath {
-      padding-left: 2.4em;
-      letter-spacing: 0.06em;
-      color: rgba(255,255,255,0.62) !important;
-    }
-
-    /* Structural slot for future video backdrop */
-    .world-video-slot {
-      position: relative;
-      padding-bottom: 4em;
-      margin-bottom: 1.6em;
-    }
+    .w3-prose:last-child { padding-bottom: 0; }
 
     /* ── Section 4 — The Key ─────────────────────────────── */
     #key-section {
@@ -1110,14 +1198,77 @@
   <!-- ── THE WORLD ─────────────────────────────────────── -->
   <section id="world">
     <div class="container">
-      <div class="world-video-slot">
-        <p class="world-prose-line reveal">Your <span class="pn">World</span> is manifest of you.</p>
-        <p class="world-prose-line reveal delay-1">You architect and imprint</p>
-        <p class="world-prose-line world-breath reveal delay-2">with your … writing, art, photographs, memory …</p>
-        <p class="world-prose-line reveal delay-3">connect <span class="pn">Rooms</span> by <span class="pn">Portals</span>, and enter.</p>
+
+      <!-- L1: "Your World is manifest of you." — centred mic-drop declaration -->
+      <p class="w3-decl w3-l1 reveal">Your <span class="pn">World</span> is manifest of you.</p>
+
+      <!-- L2: "You architect and imprint" — asymmetric left, breaks centred symmetry -->
+      <p class="w3-sub w3-l2 reveal delay-1">You architect and imprint</p>
+
+      <!-- L3: "with your" — centred, introduces inventory below -->
+      <p class="w3-sub w3-l3 reveal delay-2">with your</p>
+
+      <!-- L4: Inventory words in gold-framed outlines, breathing opacity -->
+      <div class="w3-frames-row reveal delay-3" role="list" aria-label="content types">
+        <span class="w3-frame" style="--fi:0" role="listitem">writing</span>
+        <span class="w3-frame" style="--fi:1" role="listitem">art</span>
+        <span class="w3-frame" style="--fi:2" role="listitem">photographs</span>
+        <span class="w3-frame" style="--fi:3" role="listitem">notes</span>
+        <span class="w3-frame" style="--fi:4" role="listitem">memories</span>
       </div>
-      <p class="world-prose-line reveal delay-1">There has never been, and never will be, a repeat of your <span class="pn">Innerverse</span>.</p>
-      <p class="world-prose-line reveal delay-2">Yours alone, unseen and untouched by anyone other than those you grant access to.</p>
+
+      <!-- L5: "connect Rooms by Portals," — asymmetric right, mirrors L2 -->
+      <p class="w3-sub w3-l5 reveal delay-1">connect <span class="pn">Rooms</span> by <span class="pn">Portals</span>,</p>
+
+      <!-- Portal connection visual: gold dot constellation, right-aligned, static -->
+      <div class="w3-portal-wrap reveal delay-2" aria-hidden="true">
+        <svg class="w3-portal-svg" viewBox="0 0 440 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <filter id="w3gl" x="-120%" y="-120%" width="340%" height="340%">
+              <feGaussianBlur stdDeviation="2.5" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <filter id="w3gd" x="-250%" y="-250%" width="600%" height="600%">
+              <feGaussianBlur stdDeviation="4" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <!-- Curved arcs connecting nodes — selective network, not all-to-all -->
+          <g stroke="#FDCF7C" fill="none" filter="url(#w3gl)">
+            <path d="M14,92 Q34,40 78,46"    stroke-width="1" stroke-opacity="0.44"/>
+            <path d="M78,46 Q118,16 158,26"  stroke-width="1" stroke-opacity="0.40"/>
+            <path d="M78,46 Q150,22 230,66"  stroke-width="1" stroke-opacity="0.33"/>
+            <path d="M158,26 Q244,6 304,20"  stroke-width="1" stroke-opacity="0.40"/>
+            <path d="M230,66 Q264,28 304,20" stroke-width="1" stroke-opacity="0.36"/>
+            <path d="M230,66 Q298,38 366,54" stroke-width="1" stroke-opacity="0.38"/>
+            <path d="M304,20 Q336,24 366,54" stroke-width="1" stroke-opacity="0.32"/>
+            <path d="M366,54 Q404,58 424,90" stroke-width="1" stroke-opacity="0.42"/>
+          </g>
+          <!-- Peripheral secondary dots -->
+          <g fill="#FDCF7C" filter="url(#w3gd)">
+            <circle cx="126" cy="74" r="1.8" fill-opacity="0.42"/>
+            <circle cx="272" cy="40" r="1.8" fill-opacity="0.38"/>
+          </g>
+          <!-- Primary node dots — vary in size by prominence -->
+          <g fill="#FDCF7C" filter="url(#w3gd)">
+            <circle cx="14"  cy="92" r="2.8" fill-opacity="0.52"/>
+            <circle cx="78"  cy="46" r="4.2" fill-opacity="0.80"/>
+            <circle cx="158" cy="26" r="3.4" fill-opacity="0.70"/>
+            <circle cx="230" cy="66" r="5.2" fill-opacity="0.90"/>
+            <circle cx="304" cy="20" r="3.8" fill-opacity="0.72"/>
+            <circle cx="366" cy="54" r="4.2" fill-opacity="0.78"/>
+            <circle cx="424" cy="90" r="2.8" fill-opacity="0.52"/>
+          </g>
+        </svg>
+      </div>
+
+      <!-- L6: "and ENTER." — centred, second mic-drop moment -->
+      <p class="w3-decl w3-l6 reveal delay-1">and <span class="w3-enter">ENTER.</span></p>
+
+      <!-- L7–8: Closing intimate prose -->
+      <p class="w3-prose reveal delay-2">There has never been, and never will be, a repeat of your <span class="pn">Innerverse</span>.</p>
+      <p class="w3-prose reveal delay-3">Yours alone, unseen and untouched by anyone other than those you grant access to.</p>
+
     </div>
   </section>
 
