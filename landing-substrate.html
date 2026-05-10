@@ -665,9 +665,13 @@
       /* Section 3 mobile overrides */
       #world { padding: 80px 0 100px; }
       .w3-l1, .w3-l6 { font-size: clamp(1.85rem, 7vw, 2.3rem); }
+      .w3-l1 { padding-bottom: 3.5rem; letter-spacing: 0.08em; }
+      .w3-l6 { padding-bottom: 3rem; }
       .w3-sub         { font-size: clamp(1.1rem, 4.5vw, 1.5rem); }
-      .w3-l5          { text-align: left; }
-      .w3-frames-row  { flex-wrap: wrap; gap: 0.65em; }
+      .w3-l2          { padding-top: 3rem; padding-bottom: 2rem; }
+      .w3-l5          { text-align: left; padding-top: 3rem; }
+      .w3-frames-row  { flex-wrap: wrap; align-items: center; gap: 0.65em; min-height: 0; }
+      .w3-frame       { margin-top: 0 !important; }
       .w3-portal-wrap { justify-content: flex-start; }
     }
 
@@ -866,73 +870,83 @@
     }
 
     /* ── Section 3 — The World (redesigned) ────────────── */
-    #world { padding: 128px 0 160px; }
+    #world { padding: 160px 0 200px; }
 
-    /* Declarative lines: L1 "Your World…" and L6 "and ENTER." */
+    /* Declarative lines: L1 "Your World…" and L6 "and ENTER."
+       Genos 300 — matches title card energy. Open, breathing, deliberate. */
     .w3-decl {
-      font-family: 'Inter', sans-serif;
-      font-weight: 700;
-      line-height: 1.1;
+      font-family: 'Genos', sans-serif;
+      font-weight: 300;
+      line-height: 1.45;
       color: #ffffff;
       text-align: center;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.36);
+      text-shadow: 0 1px 3px rgba(0,0,0,0.30);
       margin: 0;
     }
     .w3-l1 {
       font-size: clamp(2.2rem, 5.5vw, 4.4rem);
-      padding-bottom: 3.2rem;
+      letter-spacing: 0.10em;
+      padding-bottom: 6.5rem;
     }
     .w3-l6 {
       font-size: clamp(2.2rem, 5.5vw, 4.4rem);
-      padding-bottom: 3rem;
+      letter-spacing: 0.08em;
+      padding-bottom: 5.5rem;
     }
     .w3-enter {
-      font-size: 1.18em;
-      font-weight: 800;
-      letter-spacing: 0.10em;
+      font-size: 1.15em;
+      font-weight: 400;
+      letter-spacing: 0.25em;
     }
 
-    /* Sub-declarative lines: L2 "You architect…" and L5 "connect Rooms…" */
+    /* Sub-declarative lines: L2 "You architect…", L3 "with your", L5 "connect…" */
     .w3-sub {
       font-family: 'Inter', sans-serif;
-      font-weight: 600;
+      font-weight: 400;
       font-size: clamp(1.3rem, 3.1vw, 2.3rem);
-      line-height: 1.2;
+      line-height: 1.45;
+      letter-spacing: 0.06em;
       color: #ffffff;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.36);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.30);
       margin: 0;
     }
-    .w3-l2 { text-align: left;   padding-top: 3.5rem; padding-bottom: 2rem; }
-    .w3-l3 { text-align: center; padding-bottom: 1.2rem; }
-    .w3-l5 { text-align: right;  padding-top: 3.5rem; padding-bottom: 1.2rem; }
+    .w3-l2 { text-align: left;   padding-top: 5rem;   padding-bottom: 3rem;   }
+    .w3-l3 { text-align: center; padding-bottom: 1.8rem; }
+    .w3-l5 { text-align: right;  padding-top: 5rem;   padding-bottom: 1.8rem; }
 
     /* .pn inside large headings: keep Genos character but don't inflate size */
     .w3-decl .pn,
     .w3-sub .pn { font-size: 1em; }
 
-    /* Inventory frames — L4 words in gold rectangular outlines */
+    /* Inventory frames — 2D gallery composition, varied sizes + vertical offsets */
     .w3-frames-row {
       display: flex;
       flex-wrap: nowrap;
       justify-content: center;
-      align-items: center;
-      gap: 0.75em;
-      padding-bottom: 3.5rem;
+      align-items: flex-start;
+      gap: 1.1em;
+      padding-bottom: 4.5rem;
+      min-height: 7rem;
     }
+    /* Base frame — border, animation, colour only; size set by variant class */
     .w3-frame {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding: 0.42em 0.85em;
       border: 1.5px solid rgba(253,207,124,0.55);
       border-radius: 2px;
-      font-size: clamp(0.72rem, 1.45vw, 0.92rem);
       font-weight: 400;
       color: #ffffff;
       white-space: nowrap;
       animation: w3FrameBreath 5s ease-in-out infinite;
       animation-delay: calc(var(--fi) * 0.85s);
     }
+    /* Frame size variants — text size and padding scale together */
+    .w3-f-sm { font-size: clamp(0.64rem, 1.22vw, 0.80rem); padding: 0.38em 0.75em; }
+    .w3-f-md { font-size: clamp(0.78rem, 1.58vw, 1.00rem); padding: 0.45em 1.00em; }
+    .w3-f-lg { font-size: clamp(0.88rem, 1.85vw, 1.15rem); padding: 0.52em 1.15em; }
+    .w3-f-xl { font-size: clamp(0.96rem, 2.00vw, 1.28rem); padding: 0.58em 1.30em; }
+
     @keyframes w3FrameBreath {
       0%, 100% { border-color: rgba(253,207,124,0.38); }
       50%       { border-color: rgba(253,207,124,0.72); }
@@ -945,7 +959,7 @@
     .w3-portal-wrap {
       display: flex;
       justify-content: flex-end;
-      padding-bottom: 3.2rem;
+      padding-bottom: 4rem;
     }
     .w3-portal-svg {
       display: block;
@@ -964,8 +978,8 @@
       text-shadow: 0 1px 2px rgba(0,0,0,0.25);
       margin: 0 auto;
       max-width: 640px;
-      padding-top: 1.8rem;
-      padding-bottom: 1.4rem;
+      padding-top: 2.5rem;
+      padding-bottom: 1.6rem;
     }
     .w3-prose:last-child { padding-bottom: 0; }
 
@@ -1208,13 +1222,13 @@
       <!-- L3: "with your" — centred, introduces inventory below -->
       <p class="w3-sub w3-l3 reveal delay-2">with your</p>
 
-      <!-- L4: Inventory words in gold-framed outlines, breathing opacity -->
+      <!-- L4: Inventory words — 2D gallery, varied frame sizes + vertical offsets -->
       <div class="w3-frames-row reveal delay-3" role="list" aria-label="content types">
-        <span class="w3-frame" style="--fi:0" role="listitem">writing</span>
-        <span class="w3-frame" style="--fi:1" role="listitem">art</span>
-        <span class="w3-frame" style="--fi:2" role="listitem">photographs</span>
-        <span class="w3-frame" style="--fi:3" role="listitem">notes</span>
-        <span class="w3-frame" style="--fi:4" role="listitem">memories</span>
+        <span class="w3-frame w3-f-md" style="--fi:0;margin-top:0.8rem"  role="listitem">writing</span>
+        <span class="w3-frame w3-f-sm" style="--fi:1;margin-top:1.7rem"  role="listitem">art</span>
+        <span class="w3-frame w3-f-lg" style="--fi:2;margin-top:0.2rem"  role="listitem">photographs</span>
+        <span class="w3-frame w3-f-sm" style="--fi:3;margin-top:2.1rem"  role="listitem">notes</span>
+        <span class="w3-frame w3-f-xl" style="--fi:4;margin-top:0"       role="listitem">memories</span>
       </div>
 
       <!-- L5: "connect Rooms by Portals," — asymmetric right, mirrors L2 -->
