@@ -670,8 +670,9 @@
       .w3-sub         { font-size: clamp(1.4rem, 5.5vw, 2.0rem); line-height: 1.6; }
       .w3-l2          { padding-top: 3rem; padding-bottom: 2rem; }
       .w3-l5          { text-align: left; padding-top: 3rem; }
-      .w3-frames-row  { flex-wrap: wrap; align-items: center; gap: 0.65em; min-height: 0; }
-      .w3-frame       { margin-top: 0 !important; }
+      .w3-frames-wall { height: auto; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0.65em; }
+      .w3-frame       { position: static !important; transform: none !important; }
+      .w3-f-portrait  { padding: 0.45em 1.00em; }
       .w3-portal-wrap { justify-content: flex-start; }
     }
 
@@ -928,16 +929,13 @@
       color: #fff8eb;
     }
 
-    /* Inventory frames — 2D gallery composition, varied sizes + vertical offsets
-       Cormorant Garamond Italic for words inside frames. */
-    .w3-frames-row {
-      display: flex;
-      flex-wrap: nowrap;
-      justify-content: center;
-      align-items: flex-start;
-      gap: 1.1em;
-      padding-bottom: 4.5rem;
-      min-height: 7rem;
+    /* Inventory frames — gallery wall, absolute-positioned cluster */
+    .w3-frames-wall {
+      position: relative;
+      width: min(440px, 90vw);
+      height: clamp(250px, 30vw, 280px);
+      margin: 0 auto;
+      margin-bottom: 4.5rem;
     }
     /* Base frame — border, animation, font; size set by variant class */
     .w3-frame {
@@ -959,6 +957,8 @@
     .w3-f-md { font-size: clamp(0.95rem, 1.90vw, 1.20rem); padding: 0.45em 1.00em; }
     .w3-f-lg { font-size: clamp(1.05rem, 2.20vw, 1.40rem); padding: 0.52em 1.15em; }
     .w3-f-xl { font-size: clamp(1.15rem, 2.45vw, 1.58rem); padding: 0.58em 1.30em; }
+    /* Portrait orientation — tall top/bottom padding makes frame taller than wide; text stays horizontal */
+    .w3-f-portrait { padding: 2.5em 0.6em; }
 
     @keyframes w3FrameBreath {
       0%, 100% { border-color: rgba(253,207,124,0.38); }
@@ -1238,13 +1238,13 @@
       <!-- L3: "with your" — centred, introduces inventory below -->
       <p class="w3-sub w3-l3 reveal delay-2">with your</p>
 
-      <!-- L4: Inventory words — 2D gallery, varied frame sizes + vertical offsets -->
-      <div class="w3-frames-row reveal delay-3" role="list" aria-label="content types">
-        <span class="w3-frame w3-f-md" style="--fi:0;margin-top:0.8rem"  role="listitem">writing</span>
-        <span class="w3-frame w3-f-sm" style="--fi:1;margin-top:1.7rem"  role="listitem">art</span>
-        <span class="w3-frame w3-f-lg" style="--fi:2;margin-top:0.2rem"  role="listitem">photographs</span>
-        <span class="w3-frame w3-f-sm" style="--fi:3;margin-top:2.1rem"  role="listitem">notes</span>
-        <span class="w3-frame w3-f-xl" style="--fi:4;margin-top:0"       role="listitem">memories</span>
+      <!-- L4: Inventory words — gallery wall, huddled portrait + landscape cluster -->
+      <div class="w3-frames-wall reveal delay-3" role="list" aria-label="content types">
+        <span class="w3-frame w3-f-xl"               style="--fi:0; position:absolute; top:5%;  left:8%;  transform:rotate(-1.5deg);" role="listitem">photographs</span>
+        <span class="w3-frame w3-f-lg w3-f-portrait" style="--fi:1; position:absolute; top:6%;  left:62%; transform:rotate(2.5deg);"  role="listitem">art</span>
+        <span class="w3-frame w3-f-sm"               style="--fi:2; position:absolute; top:62%; left:10%; transform:rotate(1.5deg);"  role="listitem">writing</span>
+        <span class="w3-frame w3-f-md"               style="--fi:3; position:absolute; top:58%; left:35%; transform:rotate(-1deg);"   role="listitem">memories</span>
+        <span class="w3-frame w3-f-sm w3-f-portrait" style="--fi:4; position:absolute; top:52%; left:77%; transform:rotate(-2.5deg);" role="listitem">notes</span>
       </div>
 
       <!-- L5: "connect Rooms by Portals," — asymmetric right, mirrors L2 -->
