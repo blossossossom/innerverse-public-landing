@@ -978,17 +978,20 @@
     }
 
     /* Closing prose — L7 "There has never been…" and L8 "Yours alone…"
-       Cormorant Garamond Italic 400, slightly smaller display size. */
+       Cormorant Garamond Italic 500, multi-layer shadow for legibility
+       against the warm reel substrate. */
     .w3-prose {
       font-family: 'Cormorant Garamond', serif;
       font-style: italic;
-      font-weight: 400;
+      font-weight: 500;
       font-size: clamp(1.2rem, 2.6vw, 1.7rem);
       line-height: 1.7;
       letter-spacing: 0.04em;
       color: rgba(255,255,255,0.85);
       text-align: center;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+      text-shadow:
+        0 0 3px rgba(0,0,0,0.50),
+        0 0 6px rgba(0,0,0,0.35);
       margin: 0 auto;
       max-width: 640px;
       padding-top: 2.5rem;
