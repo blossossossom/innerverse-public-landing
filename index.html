@@ -440,65 +440,79 @@
       width: 100%;
       max-width: 380px;
       padding: 18px 24px;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(0,194,255,0.18);
-      border-radius: 4px;
-      color: rgba(255,255,255,0.88);
-      font-family: 'Inter', sans-serif;
-      font-size: 1rem;
-      font-weight: 300;
-      letter-spacing: 0.05em;
+      background: transparent;
+      border: 1.5px solid rgba(253,207,124,0.60);
+      border-radius: 2px;
+      color: rgba(255,255,255,1.0);
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 400;
+      font-size: clamp(1.0rem, 1.8vw, 1.15rem);
+      letter-spacing: 0.04em;
       text-align: center;
       outline: none;
       box-sizing: border-box;
+      animation: ctaBreath 5s ease-in-out infinite;
       transition:
         border-color 0.4s ease,
-        box-shadow   0.4s ease,
-        background   0.4s ease;
+        box-shadow   0.4s ease;
     }
 
     #waitlist-email::placeholder {
-      color: rgba(255,255,255,0.22);
-      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.42);
+      font-style: italic;
+      font-family: 'Cormorant Garamond', serif;
     }
 
     #waitlist-email:focus {
-      border-color: rgba(0,194,255,0.50);
-      background: rgba(0,194,255,0.04);
+      animation: none;
+      border-color: rgba(253,207,124,0.85);
       box-shadow:
-        0 0 28px rgba(0,194,255,0.15),
-        0 0 70px rgba(0,194,255,0.06);
+        0 0 20px rgba(253,207,124,0.12),
+        0 0 50px rgba(253,207,124,0.05);
     }
 
     .waitlist-submit {
-      display: inline-block;
-      padding: 15px 48px;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.82rem;
-      font-weight: 400;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: #00010A;
-      background: rgba(0,194,255,0.88);
-      border: none;
-      border-radius: 3px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: clamp(260px, 40vw, 360px);
+      height: clamp(72px, 9.5vw, 96px);
+      background: transparent;
+      border: 1.5px solid rgba(253,207,124,0.60);
+      border-radius: 2px;
       cursor: pointer;
-      transition:
-        background  0.4s ease,
-        box-shadow  0.4s ease,
-        opacity     0.3s ease;
+      animation: ctaBreath 5s ease-in-out infinite;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .waitlist-submit span {
+      font-family: 'Genos', sans-serif;
+      font-weight: 200;
+      font-style: normal;
+      font-size: clamp(1.0rem, 1.7vw, 1.2rem);
+      color: rgba(253,207,124,0.85);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      transition: color 0.3s ease;
     }
 
     .waitlist-submit:hover:not(:disabled) {
-      background: #00C2FF;
+      animation: none;
+      border-color: rgba(253,207,124,0.90);
       box-shadow:
-        0 0 32px rgba(0,194,255,0.50),
-        0 0 80px rgba(0,194,255,0.20);
+        0 0 20px rgba(253,207,124,0.22),
+        0 0 50px rgba(253,207,124,0.08);
+    }
+
+    .waitlist-submit:hover:not(:disabled) span {
+      color: rgba(253,207,124,1.0);
     }
 
     .waitlist-submit:disabled {
       opacity: 0.50;
       cursor: default;
+      animation: none;
     }
 
     .waitlist-note {
@@ -517,7 +531,7 @@
 
     #waitlist-success p {
       font-size: 0.95rem;
-      color: rgba(0,194,255,0.95);
+      color: rgba(253,207,124,0.85);
       letter-spacing: 0.08em;
       font-style: italic;
       line-height: 1.7;
