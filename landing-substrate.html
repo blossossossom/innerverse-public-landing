@@ -1826,10 +1826,18 @@
           });
         });
 
-        // Phase 2 — scroll-driven fade in after last fragment dissolves
+        // Phase 2 — scroll-driven fade in + rise from below
         var p2s = 0.92, p2w = 0.05;
-        if (p2L) p2L.style.opacity = smoothstep((p - p2s) / p2w);
-        if (p2R) p2R.style.opacity = smoothstep((p - p2s - 0.01) / p2w);
+        var p2fL = smoothstep((p - p2s) / p2w);
+        var p2fR = smoothstep((p - p2s - 0.01) / p2w);
+        if (p2L) {
+          p2L.style.opacity   = p2fL;
+          p2L.style.transform = 'translateY(' + ((1 - p2fL) * 70).toFixed(1) + 'px)';
+        }
+        if (p2R) {
+          p2R.style.opacity   = p2fR;
+          p2R.style.transform = 'translateY(' + ((1 - p2fR) * 70).toFixed(1) + 'px)';
+        }
       }
 
       var rafPending = false;
