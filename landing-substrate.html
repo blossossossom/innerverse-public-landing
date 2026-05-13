@@ -978,24 +978,42 @@
     }
 
     /* Closing prose — L7 "There has never been…" and L8 "Yours alone…"
-       Cormorant Garamond Italic 500, multi-layer shadow for legibility
-       against the warm reel substrate. */
+       Cormorant Garamond Italic 400. Warm radial vignette via ::before
+       grounds the text against the substrate's amber glow without a
+       visible overlay — looks like a darker zone within the atmosphere. */
     .w3-prose {
+      position: relative;
+      isolation: isolate;
       font-family: 'Cormorant Garamond', serif;
       font-style: italic;
-      font-weight: 500;
+      font-weight: 400;
       font-size: clamp(1.2rem, 2.6vw, 1.7rem);
       line-height: 1.7;
       letter-spacing: 0.04em;
       color: rgba(255,255,255,0.85);
       text-align: center;
-      text-shadow:
-        0 0 3px rgba(0,0,0,0.50),
-        0 0 6px rgba(0,0,0,0.35);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.30);
       margin: 0 auto;
       max-width: 640px;
       padding-top: 2.5rem;
       padding-bottom: 1.6rem;
+    }
+    /* Warm-dark elliptical vignette behind each prose line.
+       inset: -50% -28% extends the pseudo-element well beyond the text
+       on all sides; the radial gradient fades from warm-dark centre to
+       fully transparent, so no edge is ever visible. */
+    .w3-prose::before {
+      content: '';
+      position: absolute;
+      inset: -50% -28%;
+      background: radial-gradient(
+        ellipse 58% 52% at 50% 50%,
+        rgba(28, 10, 0, 0.36) 0%,
+        rgba(28, 10, 0, 0.12) 58%,
+        transparent 100%
+      );
+      pointer-events: none;
+      z-index: -1;
     }
     .w3-prose:last-child { padding-bottom: 0; }
 
