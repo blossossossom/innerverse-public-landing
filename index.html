@@ -678,11 +678,12 @@
       /* Section 3 inventory cuts — compressed cascade on mobile, gentler stagger */
       .w3-cuts-wall   { width: 96vw; height: clamp(400px, 118vw, 450px); }
       .w3-cut         { width: clamp(155px, 54vw, 185px); height: clamp(52px, 13.5vw, 62px); font-size: clamp(1.1rem, 4vw, 1.5rem); }
-      #cut-memories    { top:  2%; left:  3%; }
-      #cut-writing     { top: 21%; left: 13%; }
-      #cut-photographs { top: 40%; left: 23%; }
-      #cut-notes       { top: 59%; left: 33%; }
-      #cut-art         { top: 78%; left: 43%; }
+      #cut-ideas       { top:  2%; left:  3%; }
+      #cut-memories    { top: 18%; left: 11%; }
+      #cut-writing     { top: 34%; left: 19%; }
+      #cut-photographs { top: 50%; left: 27%; }
+      #cut-notes       { top: 66%; left: 35%; }
+      #cut-art         { top: 82%; left: 43%; }
       .w3-portal-wrap { justify-content: flex-start; }
       .cta-button     { width: clamp(220px, 75vw, 265px); height: clamp(72px, 20vw, 86px); }
       .cta-button span { letter-spacing: 0.16em; }
@@ -973,11 +974,12 @@
       z-index: 2;
     }
     /* Diagonal cascade — 14% horizontal step, 19% vertical step per row */
-    #cut-memories    { top:  2%; left:  3%; }
-    #cut-writing     { top: 21%; left: 17%; }
-    #cut-photographs { top: 40%; left: 31%; }
-    #cut-notes       { top: 59%; left: 45%; }
-    #cut-art         { top: 78%; left: 59%; }
+    #cut-ideas       { top:  2%; left:  3%; }
+    #cut-memories    { top: 18%; left: 15%; }
+    #cut-writing     { top: 34%; left: 27%; }
+    #cut-photographs { top: 50%; left: 39%; }
+    #cut-notes       { top: 66%; left: 51%; }
+    #cut-art         { top: 82%; left: 63%; }
 
     @media (prefers-reduced-motion: reduce) {
       .cta-button  { animation: none; border-color: rgba(253,207,124,0.65); }
@@ -1264,6 +1266,7 @@
            Positions tracked by JS to drive SVG mask black rects (cut-rect-0…4).
            Text floats centred inside each cut, against the dark-blue revealed depth. -->
       <div class="w3-cuts-wall reveal delay-3" role="list" aria-label="content types">
+        <div id="cut-ideas"       class="w3-cut" role="listitem">ideas,</div>
         <div id="cut-memories"    class="w3-cut" role="listitem">memories,</div>
         <div id="cut-writing"     class="w3-cut" role="listitem">writing,</div>
         <div id="cut-photographs" class="w3-cut" role="listitem">photographs,</div>
@@ -2033,6 +2036,7 @@
       var cutBlur   = document.getElementById('cut-blur');
       // DOM cut elements (position anchors + text containers)
       var cutEls = [
+        document.getElementById('cut-ideas'),
         document.getElementById('cut-memories'),
         document.getElementById('cut-photographs'),
         document.getElementById('cut-art'),
