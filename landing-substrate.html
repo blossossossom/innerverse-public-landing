@@ -1710,6 +1710,11 @@
       var frags  = Array.from(document.querySelectorAll('.aurora-frag'));
       var p2L    = document.getElementById('p2-left');
       var p2R    = document.getElementById('p2-right');
+      // Travel distance for Phase 2 lines: puts them near the bottom viewport edge
+      // when invisible (f=0) so they rise the full height to their ring positions.
+      // p2-left sits at top 42%, p2-right at top 52% — 55vh offset places both
+      // below or at the very bottom of the viewport on entry.
+      var p2TravelY = Math.round(window.innerHeight * 0.55);
 
       // ── Scroll-driven per-letter animation ───────────────────
       // Each zone: [entryStart, holdStart, dissolveStart, zoneEnd].
@@ -1826,17 +1831,18 @@
           });
         });
 
-        // Phase 2 — scroll-driven fade in + rise from below
-        var p2s = 0.92, p2w = 0.05;
+        // Phase 2 — rise from bottom viewport edge to ring positions
+        // p2w=0.07 gives ~24.5vh of scroll travel so lines are on-screen longer.
+        var p2s = 0.92, p2w = 0.07;
         var p2fL = smoothstep((p - p2s) / p2w);
         var p2fR = smoothstep((p - p2s - 0.01) / p2w);
         if (p2L) {
           p2L.style.opacity   = p2fL;
-          p2L.style.transform = 'translateY(' + ((1 - p2fL) * 70).toFixed(1) + 'px)';
+          p2L.style.transform = 'translateY(' + ((1 - p2fL) * p2TravelY).toFixed(0) + 'px)';
         }
         if (p2R) {
           p2R.style.opacity   = p2fR;
-          p2R.style.transform = 'translateY(' + ((1 - p2fR) * 70).toFixed(1) + 'px)';
+          p2R.style.transform = 'translateY(' + ((1 - p2fR) * p2TravelY).toFixed(0) + 'px)';
         }
       }
 
