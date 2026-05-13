@@ -668,13 +668,11 @@
       .cta-button     { width: clamp(220px, 75vw, 265px); height: clamp(72px, 20vw, 86px); }
       .cta-button span { letter-spacing: 0.16em; }
 
-      /* Section 2 mobile — tighter vertical positions, smaller type */
+      /* Section 2 mobile — stacked pairs, smaller type */
       #aurora-scroll-track { height: 300vh; }
-      .aurora-frag { font-size: clamp(1.2rem, 5vw, 1.5rem); }
-      .aurora-frag:nth-child(1) { top: 28%; }
-      .aurora-frag:nth-child(2) { top: 40%; }
-      .aurora-frag:nth-child(3) { top: 52%; }
-      .aurora-frag:nth-child(4) { top: 62%; }
+      .frag-pair { font-size: clamp(1.2rem, 5vw, 1.5rem); max-width: 44vw; }
+      .frag-left  { left: 2%;  top: 30%; }
+      .frag-right { right: 2%; top: 48%; }
       .p2-line { position: static; max-width: 88vw; text-align: center; font-size: clamp(1rem, 4.5vw, 1.2rem); }
       #p2-left, #p2-right { left: auto; right: auto; top: auto; }
     }
@@ -815,30 +813,25 @@
       pointer-events: none;
     }
 
-    .aurora-frag {
+    /* Fragment pairs — left and right halves wrapping the ring */
+    .frag-pair {
       position: absolute;
-      left: 0;
-      right: 0;
-      width: min(660px, 88vw);
-      margin: 0 auto;
       opacity: 0;
       font-family: 'Cormorant Garamond', serif;
       font-style: italic;
       font-weight: 400;
-      font-size: clamp(1.5rem, 3.5vw, 2rem);
+      font-size: clamp(1.9rem, 3.8vw, 2.6rem);
       color: #ffffff;
       letter-spacing: 0.04em;
       line-height: 1.5;
-      text-align: center;
       text-shadow: 0 1px 12px rgba(0,0,0,0.5);
-      will-change: opacity, transform;
+      max-width: min(340px, 34vw);
+      z-index: 3;
+      pointer-events: none;
     }
 
-    /* Each fragment enters from a slightly lower position than the last */
-    .aurora-frag:nth-child(1) { top: 34%; }
-    .aurora-frag:nth-child(2) { top: 44%; }
-    .aurora-frag:nth-child(3) { top: 54%; }
-    .aurora-frag:nth-child(4) { top: 62%; }
+    .frag-left  { left: 4%;  top: 40%; text-align: right; }
+    .frag-right { right: 9%; top: 52%; text-align: left;  }
 
     /* Phase 2 — brand promise flanking the ring */
     .p2-line {
@@ -1199,10 +1192,10 @@
       <div id="aurora-sticky">
         <canvas id="aurora-canvas" aria-hidden="true"></canvas>
         <div id="aurora-frag-stage">
-          <p class="aurora-frag">Some rooms are made for one person,</p>
-          <p class="aurora-frag">some for several</p>
-          <p class="aurora-frag">some for the public visitor,</p>
-          <p class="aurora-frag">and some for no one but you.</p>
+          <p id="fp1l" class="frag-pair frag-left">Some rooms are made for one person,</p>
+          <p id="fp1r" class="frag-pair frag-right">some for several</p>
+          <p id="fp2l" class="frag-pair frag-left">some for the public visitor,</p>
+          <p id="fp2r" class="frag-pair frag-right">and some for no one but you.</p>
         </div>
         <p id="p2-left"  class="p2-line">A home for unmonitored self-expression,</p>
         <p id="p2-right" class="p2-line">and human connection.</p>
@@ -1705,30 +1698,24 @@
 
       tick();
 
-      // ── Scroll-driven fragment sequence ─────────────────────
+      // ── Section 2 — Scroll-driven pair sequence ──────────────
       var track  = document.getElementById('aurora-scroll-track');
-      var frags  = Array.from(document.querySelectorAll('.aurora-frag'));
       var p2L    = document.getElementById('p2-left');
       var p2R    = document.getElementById('p2-right');
-      // Travel distance for Phase 2 lines: puts them near the bottom viewport edge
-      // when invisible (f=0) so they rise the full height to their ring positions.
-      // p2-left sits at top 42%, p2-right at top 52% — 55vh offset places both
-      // below or at the very bottom of the viewport on entry.
+      // Travel distance: puts elements near the bottom viewport edge when invisible,
+      // so they rise the full height into position.
       var p2TravelY = Math.round(window.innerHeight * 0.55);
 
-      // ── Scroll-driven per-letter animation ───────────────────
-      // Each zone: [entryStart, holdStart, dissolveStart, zoneEnd].
-      // dissolveStart[N] === entryStart[N+1] — simultaneous crossfade.
-      // Every letter's opacity/transform/filter is computed directly from scroll
-      // progress p on every rAF — fully bidirectional, no timers.
-      var ZONES = [
-        [0.00, 0.13, 0.21, 0.34],
-        [0.21, 0.34, 0.42, 0.55],
-        [0.42, 0.55, 0.63, 0.76],
-        [0.63, 0.76, 0.84, 0.97],
+      // Each pair zone: [entryStart, holdStart, dissolveStart, dissolveEnd]
+      // Pair 1 holds 0.14–0.44 (≈105vh at 350vh track), dissolve 0.26–0.44 (≈63vh)
+      // Pair 2 holds 0.44–0.88 (≈154vh), dissolve 0.70–0.88 (≈63vh)
+      // Gap 0.88–0.92 = ~14vh contemplative pause before Phase 2
+      var PAIR_ZONES = [
+        [0.00, 0.14, 0.26, 0.44],
+        [0.44, 0.58, 0.70, 0.88],
       ];
-      // Within each entry/dissolve band, letters are staggered across STAGGER_FRAC
-      // of the band, each animating over DUR_FRAC. (STAGGER_FRAC + DUR_FRAC = 1)
+      // Within each dissolve band, letters stagger across STAGGER_FRAC,
+      // each animating over DUR_FRAC of the band.
       var STAGGER_FRAC = 0.65;
       var DUR_FRAC     = 0.35;
 
@@ -1746,93 +1733,106 @@
         return t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t);
       }
 
-      // Split each fragment into per-letter inline-block spans.
-      var letterGroups = [];
-      var fragMaxDelay = []; // max stagger delay per fragment, for normalising t
+      // Build pair structure — two pairs, each with a left and right element.
+      var pairs = [
+        [document.getElementById('fp1l'), document.getElementById('fp1r')],
+        [document.getElementById('fp2l'), document.getElementById('fp2r')],
+      ];
 
-      frags.forEach(function (el) {
-        var text = el.textContent;
-        el.innerHTML = '';
-        el.style.opacity = '1'; // containers always visible; letters control opacity
-        var spans    = [];
-        var staggerMs = 0;
-        for (var j = 0; j < text.length; j++) {
-          var ch = text[j];
-          var sp = document.createElement('span');
-          sp.textContent = ch;
-          sp.style.display = 'inline-block';
-          if (ch === ' ') {
-            sp.style.whiteSpace = 'pre';
-            sp._skip = true;
-          } else {
-            sp._dy    = -(8  + Math.random() * 7);   // upward dissolve direction (negative)
-            sp._dx    = (Math.random() * 6 - 3);      // horizontal jitter
-            sp._blur  = 2 + Math.random() * 2;
-            sp._delay = staggerMs;
-            staggerMs += 50 + Math.floor(Math.random() * 40);
-            sp.style.opacity = '0';
+      // Split letters for dissolve-only per-letter animation.
+      // Entry is container-level (opacity + translateY); letters start fully visible
+      // within the container so only dissolve needs per-letter spans.
+      var pairLetters  = [];
+      var pairMaxDelay = [];
+
+      pairs.forEach(function (pair) {
+        var pLetters = [], pMaxD = [];
+        pair.forEach(function (el) {
+          var text = el.textContent;
+          el.innerHTML = '';
+          var spans = [], staggerMs = 0;
+          for (var j = 0; j < text.length; j++) {
+            var ch = text[j];
+            var sp = document.createElement('span');
+            sp.textContent = ch;
+            sp.style.display = 'inline-block';
+            if (ch === ' ') {
+              sp.style.whiteSpace = 'pre';
+              sp._skip = true;
+            } else {
+              sp._dy    = -(8 + Math.random() * 7);
+              sp._dx    = (Math.random() * 6 - 3);
+              sp._blur  = 2 + Math.random() * 2;
+              sp._delay = staggerMs;
+              staggerMs += 50 + Math.floor(Math.random() * 40);
+            }
+            el.appendChild(sp);
+            spans.push(sp);
           }
-          el.appendChild(sp);
-          spans.push(sp);
-        }
-        var maxD = 0;
-        spans.forEach(function (sp) { if (!sp._skip && sp._delay > maxD) maxD = sp._delay; });
-        fragMaxDelay.push(maxD || 1);
-        letterGroups.push(spans);
+          var maxD = 0;
+          spans.forEach(function (sp) { if (!sp._skip && sp._delay > maxD) maxD = sp._delay; });
+          pLetters.push(spans);
+          pMaxD.push(maxD || 1);
+        });
+        pairLetters.push(pLetters);
+        pairMaxDelay.push(pMaxD);
       });
 
       function updateFrags() {
         var p = getProgress();
 
-        frags.forEach(function (el, i) {
-          var zone = ZONES[i];
-          if (!zone) return;
+        // ── Pairs ──────────────────────────────────────────────
+        pairs.forEach(function (pair, i) {
+          var zone = PAIR_ZONES[i];
           var es = zone[0], hs = zone[1], ds = zone[2], ze = zone[3];
-          var entryW   = hs - es;
+          var entryW    = hs - es;
           var dissolveW = ze - ds;
-          var maxD     = fragMaxDelay[i];
 
-          if (prefersReducedMotion) {
-            el.style.opacity = p < es ? 0 : p < hs ? (p-es)/entryW : p < ds ? 1 : p < ze ? 1-(p-ds)/dissolveW : 0;
-            return;
-          }
+          // Container-level: rise from bottom viewport during entry band
+          var entryF = smoothstep((p - es) / entryW);
+          var cOp    = p < hs ? entryF : 1;
+          var cTY    = (1 - entryF) * p2TravelY;
 
-          letterGroups[i].forEach(function (sp) {
-            if (sp._skip) return;
+          pair.forEach(function (el, side) {
+            if (!el) return;
 
-            var t  = sp._delay / maxD; // normalised stagger position [0, 1]
-
-            // Each letter's active scroll window within the entry band
-            var eS = es + t * entryW * STAGGER_FRAC;
-            var eE = eS + entryW * DUR_FRAC;
-            // …and within the dissolve band
-            var dS = ds + t * dissolveW * STAGGER_FRAC;
-            var dE = dS + dissolveW * DUR_FRAC;
-
-            var opacity, ty, tx, blur;
-
-            if (p <= eS) {
-              opacity = 0;  ty = -sp._dy; tx = sp._dx;  blur = sp._blur;
-            } else if (p <= eE) {
-              var f   = smoothstep((p - eS) / (eE - eS));
-              opacity = f;  ty = (-sp._dy) * (1-f); tx = sp._dx * (1-f); blur = sp._blur * (1-f);
-            } else if (p <= dS) {
-              opacity = 1;  ty = 0;        tx = 0;       blur = 0;
-            } else if (p <= dE) {
-              var f   = smoothstep((p - dS) / (dE - dS));
-              opacity = 1-f; ty = sp._dy * f; tx = sp._dx * f; blur = sp._blur * f;
-            } else {
-              opacity = 0;  ty = sp._dy;  tx = sp._dx;  blur = sp._blur;
+            if (prefersReducedMotion) {
+              el.style.opacity   = p < es ? 0 : p < hs ? (p-es)/entryW : p < ds ? 1 : p < ze ? 1-(p-ds)/dissolveW : 0;
+              el.style.transform = 'none';
+              return;
             }
 
-            sp.style.opacity   = opacity.toFixed(3);
-            sp.style.transform = 'translateY(' + ty.toFixed(1) + 'px) translateX(' + tx.toFixed(1) + 'px)';
-            sp.style.filter    = blur > 0.01 ? 'blur(' + blur.toFixed(2) + 'px)' : 'none';
+            el.style.opacity   = cOp;
+            el.style.transform = 'translateY(' + cTY.toFixed(0) + 'px)';
+
+            // Per-letter dissolve only
+            var spans = pairLetters[i][side];
+            var maxD  = pairMaxDelay[i][side];
+
+            spans.forEach(function (sp) {
+              if (sp._skip) return;
+              var t  = sp._delay / maxD;
+              var dS = ds + t * dissolveW * STAGGER_FRAC;
+              var dE = dS + dissolveW * DUR_FRAC;
+
+              var spOp, ty, tx, blur;
+              if (p <= dS) {
+                spOp = 1; ty = 0; tx = 0; blur = 0;
+              } else if (p <= dE) {
+                var f = smoothstep((p - dS) / (dE - dS));
+                spOp = 1-f; ty = sp._dy * f; tx = sp._dx * f; blur = sp._blur * f;
+              } else {
+                spOp = 0; ty = sp._dy; tx = sp._dx; blur = sp._blur;
+              }
+              sp.style.opacity   = spOp.toFixed(3);
+              sp.style.transform = (ty || tx) ? 'translateY('+ty.toFixed(1)+'px) translateX('+tx.toFixed(1)+'px)' : 'none';
+              sp.style.filter    = blur > 0.01 ? 'blur(' + blur.toFixed(2) + 'px)' : 'none';
+            });
           });
         });
 
-        // Phase 2 — rise from bottom viewport edge to ring positions
-        // p2w=0.07 gives ~24.5vh of scroll travel so lines are on-screen longer.
+        // ── Phase 2 — rise from bottom viewport edge ──────────
+        // p2s=0.92, p2w=0.07: p2L full at p=0.99, p2R full at p=1.00
         var p2s = 0.92, p2w = 0.07;
         var p2fL = smoothstep((p - p2s) / p2w);
         var p2fR = smoothstep((p - p2s - 0.01) / p2w);
