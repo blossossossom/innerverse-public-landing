@@ -1995,6 +1995,7 @@
       var RAD_OFFSET    =  8.0;   // radiation bias = main bias + offset (less visible)
       var PLAYBACK_RATE =  0.85;
       var STATE_B_MAX   =  0.62;  // State B peak opacity cap — calms reel brightness ~38%
+      var STATE_B_RAD   =  0.30;  // Radiation overlay opacity at full State B (0=none, 1=full)
 
       // ── State ─────────────────────────────────────────────
       var currentBias = -11.0;
@@ -2142,6 +2143,9 @@
         tFactor += (getTransitionFactor() - tFactor) * 0.04;
         subRect.setAttribute('opacity',  (1 - tFactor).toFixed(3));
         subRectB.setAttribute('opacity', (tFactor * STATE_B_MAX).toFixed(3));
+        // Radiation overlay: fade to STATE_B_RAD as State B becomes active,
+        // preventing the warm overlay from adding back intensity the reel cap removed.
+        radiation.style.opacity = (1 - tFactor * (1 - STATE_B_RAD)).toFixed(3);
 
         // Apply every 2 frames to reduce SVG filter thrash
         if (frameCount % 2 === 0) {
