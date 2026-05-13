@@ -831,7 +831,7 @@
     }
 
     .frag-left  { left: 4%;  top: 40%; text-align: right; }
-    .frag-right { right: 9%; top: 52%; text-align: left;  }
+    .frag-right { right: 3%; top: 52%; text-align: left;  }
 
     /* Phase 2 — brand promise flanking the ring */
     .p2-line {
@@ -1751,26 +1751,39 @@
           var text = el.textContent;
           el.innerHTML = '';
           var spans = [], staggerMs = 0;
-          for (var j = 0; j < text.length; j++) {
-            var ch = text[j];
-            var sp = document.createElement('span');
-            sp.textContent = ch;
-            sp.style.display = 'inline-block';
-            if (ch === ' ') {
-              sp.style.whiteSpace = 'pre';
-              sp._skip = true;
-            } else {
+          // Split by word so no word ever breaks mid-character across lines.
+          // Each word's letters live inside a white-space:nowrap inline-block wrapper;
+          // spaces go directly into el so the browser can only break at word boundaries.
+          var words = text.split(' ');
+          words.forEach(function (word, wi) {
+            if (wi > 0) {
+              // inter-word space — not animated, just structure
+              var gap = document.createElement('span');
+              gap.textContent = ' ';
+              gap.style.display = 'inline-block';
+              gap.style.whiteSpace = 'pre';
+              el.appendChild(gap);
+            }
+            // word wrapper: prevents mid-word line break
+            var ww = document.createElement('span');
+            ww.style.display = 'inline-block';
+            ww.style.whiteSpace = 'nowrap';
+            el.appendChild(ww);
+            for (var k = 0; k < word.length; k++) {
+              var sp = document.createElement('span');
+              sp.textContent = word[k];
+              sp.style.display = 'inline-block';
               sp._dy    = -(8 + Math.random() * 7);
               sp._dx    = (Math.random() * 6 - 3);
               sp._blur  = 2 + Math.random() * 2;
               sp._delay = staggerMs;
               staggerMs += 50 + Math.floor(Math.random() * 40);
+              ww.appendChild(sp);
+              spans.push(sp);
             }
-            el.appendChild(sp);
-            spans.push(sp);
-          }
+          });
           var maxD = 0;
-          spans.forEach(function (sp) { if (!sp._skip && sp._delay > maxD) maxD = sp._delay; });
+          spans.forEach(function (sp) { if (sp._delay > maxD) maxD = sp._delay; });
           pLetters.push(spans);
           pMaxD.push(maxD || 1);
         });
