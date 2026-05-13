@@ -661,13 +661,14 @@
       .w3-sub         { font-size: clamp(1.4rem, 5.5vw, 2.0rem); line-height: 1.6; }
       .w3-l2          { padding-top: 3rem; padding-bottom: 2rem; }
       .w3-l5          { text-align: left; padding-top: 3rem; }
-      /* Section 3 inventory cuts — collapse to tight vertical cluster on mobile */
-      .w3-cuts-wall   { width: 96vw; height: clamp(480px, 135vw, 560px); }
-      #cut-memories    { top:2%;  left:6%;  width:clamp(130px,52vw,175px); height:clamp(54px,14vw,72px);  font-size:clamp(0.90rem,4vw,1.1rem); }
-      #cut-photographs { top:17%; left:4%;  width:clamp(152px,62vw,196px); height:clamp(60px,16vw,80px);  font-size:clamp(0.96rem,4.2vw,1.18rem); }
-      #cut-art         { top:36%; left:58%; width:clamp(70px,26vw,96px);   height:clamp(90px,24vw,118px); font-size:clamp(0.82rem,3.5vw,0.98rem); }
-      #cut-notes       { top:52%; left:22%; width:clamp(112px,44vw,150px); height:clamp(50px,13vw,66px);  font-size:clamp(0.80rem,3.4vw,0.96rem); }
-      #cut-writing     { top:66%; left:16%; width:clamp(124px,48vw,165px); height:clamp(52px,14vw,68px);  font-size:clamp(0.85rem,3.7vw,1.04rem); }
+      /* Section 3 inventory cuts — compressed cascade on mobile, gentler stagger */
+      .w3-cuts-wall   { width: 96vw; height: clamp(400px, 118vw, 450px); }
+      .w3-cut         { width: clamp(155px, 54vw, 185px); height: clamp(52px, 13.5vw, 62px); font-size: clamp(1.1rem, 4vw, 1.5rem); }
+      #cut-memories    { top:  2%; left:  5%; }
+      #cut-writing     { top: 21%; left: 10%; }
+      #cut-photographs { top: 40%; left: 15%; }
+      #cut-notes       { top: 59%; left: 20%; }
+      #cut-art         { top: 78%; left: 25%; }
       .w3-portal-wrap { justify-content: flex-start; }
       .cta-button     { width: clamp(220px, 75vw, 265px); height: clamp(72px, 20vw, 86px); }
       .cta-button span { letter-spacing: 0.16em; }
@@ -929,26 +930,27 @@
       color: #fff8eb;
     }
 
-    /* ── Inventory cuts — rectangular windows cut into the State B substrate ── */
+    /* ── Inventory cuts — diagonal cascade in State B substrate ─────────────── */
     /* Container: positioned block that JS reads to track cut positions          */
     .w3-cuts-wall {
       position: relative;
       width: min(780px, 90vw);
-      /* Taller to give upper/lower satellites room without clipping             */
-      height: clamp(368px, 54vw, 424px);
+      height: clamp(430px, 62vw, 472px);
       margin: 0 auto;
       margin-bottom: 4.5rem;
     }
-    /* Each cut: transparent container — SVG mask handles the visible cutout,
-       this div is the text holder and position anchor for the JS tracker.     */
+    /* All five cuts identical — landscape ~3:1, diagonal cascade top-left → bottom-right */
     .w3-cut {
       position: absolute;
+      width: clamp(185px, 24vw, 215px);
+      height: clamp(62px, 8vw, 72px);
       display: flex;
       align-items: center;
       justify-content: center;
       font-family: 'Cormorant Garamond', serif;
       font-style: italic;
       font-weight: 400;
+      font-size: clamp(1.4rem, 2.8vw, 2.1rem);
       color: rgba(255,255,255,0.90);
       /* Cool-toned shadow reads against the dark-blue revealed atmosphere */
       text-shadow: 0 1px 6px rgba(0,8,32,0.70), 0 0 20px rgba(0,8,32,0.40);
@@ -956,17 +958,12 @@
       pointer-events: none;
       z-index: 2;
     }
-    /* ── Constellation composition — photographs as focal anchor ────────────── */
-    /* Central anchor: near-square, ~1.7× satellite size, sits in heart of comp */
-    #cut-photographs { top:26%; left:37.7%; width:clamp(152px,24.6vw,192px); height:clamp(158px,25.9vw,202px); font-size:clamp(1.12rem,2.15vw,1.42rem); }
-    /* Upper-left satellite: landscape, offset from photographs top-left corner  */
-    #cut-memories    { top:6%;  left:18.7%; width:clamp(102px,16.7vw,130px); height:clamp(52px,8.5vw,66px);   font-size:clamp(0.88rem,1.68vw,1.06rem); }
-    /* Upper-right satellite: portrait, offset from photographs top-right corner */
-    #cut-art         { top:5%;  left:65%;   width:clamp(62px,10.3vw,80px);   height:clamp(86px,14.4vw,112px); font-size:clamp(0.80rem,1.48vw,0.96rem); }
-    /* Lower-right satellite: landscape, offset from photographs bottom-right    */
-    #cut-notes       { top:78%; left:64.5%; width:clamp(100px,16.4vw,128px); height:clamp(48px,8vw,62px);     font-size:clamp(0.80rem,1.48vw,0.96rem); }
-    /* Lower-left satellite: landscape, offset from photographs bottom-left      */
-    #cut-writing     { top:79%; left:19%;   width:clamp(100px,16.4vw,128px); height:clamp(48px,8vw,62px);     font-size:clamp(0.84rem,1.58vw,1.0rem);  }
+    /* Diagonal cascade — 9% horizontal step, 19% vertical step per row */
+    #cut-memories    { top:  2%; left:  6%; }
+    #cut-writing     { top: 21%; left: 15%; }
+    #cut-photographs { top: 40%; left: 24%; }
+    #cut-notes       { top: 59%; left: 33%; }
+    #cut-art         { top: 78%; left: 42%; }
 
     @media (prefers-reduced-motion: reduce) {
       .cta-button  { animation: none; border-color: rgba(253,207,124,0.65); }
@@ -1253,11 +1250,11 @@
            Positions tracked by JS to drive SVG mask black rects (cut-rect-0…4).
            Text floats centred inside each cut, against the dark-blue revealed depth. -->
       <div class="w3-cuts-wall reveal delay-3" role="list" aria-label="content types">
-        <div id="cut-memories"    class="w3-cut" role="listitem">memories</div>
-        <div id="cut-photographs" class="w3-cut" role="listitem">photographs</div>
+        <div id="cut-memories"    class="w3-cut" role="listitem">memories,</div>
+        <div id="cut-writing"     class="w3-cut" role="listitem">writing,</div>
+        <div id="cut-photographs" class="w3-cut" role="listitem">photographs,</div>
+        <div id="cut-notes"       class="w3-cut" role="listitem">notes,</div>
         <div id="cut-art"         class="w3-cut" role="listitem">art</div>
-        <div id="cut-notes"       class="w3-cut" role="listitem">notes</div>
-        <div id="cut-writing"     class="w3-cut" role="listitem">writing</div>
       </div>
 
       <!-- L5: "connect Rooms by Portals," — asymmetric right, mirrors L2 -->
