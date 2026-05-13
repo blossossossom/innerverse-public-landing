@@ -661,9 +661,13 @@
       .w3-sub         { font-size: clamp(1.4rem, 5.5vw, 2.0rem); line-height: 1.6; }
       .w3-l2          { padding-top: 3rem; padding-bottom: 2rem; }
       .w3-l5          { text-align: left; padding-top: 3rem; }
-      .w3-frames-wall { height: auto; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0.65em; }
-      .w3-frame       { position: static !important; transform: none !important; }
-      .w3-f-portrait  { padding: 0.45em 1.00em; }
+      /* Section 3 inventory cuts — collapse to tight vertical cluster on mobile */
+      .w3-cuts-wall   { width: 96vw; height: clamp(480px, 135vw, 560px); }
+      #cut-memories    { top:2%;  left:6%;  width:clamp(130px,52vw,175px); height:clamp(54px,14vw,72px);  font-size:clamp(0.90rem,4vw,1.1rem); }
+      #cut-photographs { top:17%; left:4%;  width:clamp(152px,62vw,196px); height:clamp(60px,16vw,80px);  font-size:clamp(0.96rem,4.2vw,1.18rem); }
+      #cut-art         { top:36%; left:58%; width:clamp(70px,26vw,96px);   height:clamp(90px,24vw,118px); font-size:clamp(0.82rem,3.5vw,0.98rem); }
+      #cut-notes       { top:52%; left:22%; width:clamp(112px,44vw,150px); height:clamp(50px,13vw,66px);  font-size:clamp(0.80rem,3.4vw,0.96rem); }
+      #cut-writing     { top:66%; left:16%; width:clamp(124px,48vw,165px); height:clamp(52px,14vw,68px);  font-size:clamp(0.85rem,3.7vw,1.04rem); }
       .w3-portal-wrap { justify-content: flex-start; }
       .cta-button     { width: clamp(220px, 75vw, 265px); height: clamp(72px, 20vw, 86px); }
       .cta-button span { letter-spacing: 0.16em; }
@@ -925,43 +929,43 @@
       color: #fff8eb;
     }
 
-    /* Inventory frames — gallery wall, absolute-positioned cluster */
-    .w3-frames-wall {
+    /* ── Inventory cuts — rectangular windows cut into the State B substrate ── */
+    /* Container: positioned block that JS reads to track cut positions          */
+    .w3-cuts-wall {
       position: relative;
-      width: min(680px, 92vw);
-      height: clamp(340px, 46vw, 370px);
+      width: min(780px, 90vw);
+      height: clamp(310px, 44vw, 368px);
       margin: 0 auto;
       margin-bottom: 4.5rem;
     }
-    /* Base frame — border, animation, font; size set by variant class */
-    .w3-frame {
-      display: inline-flex;
+    /* Each cut: transparent container — SVG mask handles the visible cutout,
+       this div is the text holder and position anchor for the JS tracker.     */
+    .w3-cut {
+      position: absolute;
+      display: flex;
       align-items: center;
       justify-content: center;
-      border: 1.5px solid rgba(253,207,124,0.55);
-      border-radius: 2px;
       font-family: 'Cormorant Garamond', serif;
       font-style: italic;
       font-weight: 400;
-      color: #ffffff;
+      color: rgba(255,255,255,0.90);
+      /* Cool-toned shadow reads against the dark-blue revealed atmosphere */
+      text-shadow: 0 1px 6px rgba(0,8,32,0.70), 0 0 20px rgba(0,8,32,0.40);
       white-space: nowrap;
-      animation: w3FrameBreath 5s ease-in-out infinite;
-      animation-delay: calc(var(--fi) * 0.85s);
+      pointer-events: none;
+      z-index: 2;
     }
-    /* Frame size variants — text size and padding scale together */
-    .w3-f-sm { font-size: clamp(0.80rem, 1.52vw, 1.00rem); padding: 0.38em 0.75em; }
-    .w3-f-md { font-size: clamp(0.95rem, 1.90vw, 1.20rem); padding: 0.45em 1.00em; }
-    .w3-f-lg { font-size: clamp(1.05rem, 2.20vw, 1.40rem); padding: 0.52em 1.15em; }
-    .w3-f-xl { font-size: clamp(1.15rem, 2.45vw, 1.58rem); padding: 0.58em 1.30em; }
-    /* Portrait orientation — tall top/bottom padding makes frame taller than wide; text stays horizontal */
-    .w3-f-portrait { padding: 2.5em 0.6em; }
+    /* ── Cinematic asymmetric composition ──────────────────────────────────── */
+    /* Left cluster: two landscape windows anchoring the left-centre.           */
+    #cut-memories    { top:6%;  left:3%;  width:clamp(145px,21.5vw,194px); height:clamp(60px,8.8vw,80px);   font-size:clamp(0.95rem,1.85vw,1.20rem); }
+    #cut-photographs { top:50%; left:3%;  width:clamp(178px,26vw,238px);   height:clamp(68px,10vw,90px);    font-size:clamp(1.05rem,2.1vw,1.36rem);  }
+    /* Right cluster: portrait + landscape at a different vertical rhythm.       */
+    #cut-art         { top:3%;  left:57%; width:clamp(82px,11vw,112px);    height:clamp(106px,15vw,140px);  font-size:clamp(0.86rem,1.6vw,1.08rem);  }
+    #cut-notes       { top:52%; left:60%; width:clamp(118px,17.5vw,160px); height:clamp(54px,7.8vw,70px);   font-size:clamp(0.82rem,1.5vw,1.00rem);  }
+    /* Centre bridge: sits below both clusters, provides compositional rhythm.  */
+    #cut-writing     { top:76%; left:32%; width:clamp(138px,20vw,182px);   height:clamp(57px,8.3vw,75px);   font-size:clamp(0.90rem,1.7vw,1.14rem);  }
 
-    @keyframes w3FrameBreath {
-      0%, 100% { border-color: rgba(253,207,124,0.38); }
-      50%       { border-color: rgba(253,207,124,0.72); }
-    }
     @media (prefers-reduced-motion: reduce) {
-      .w3-frame    { animation: none; border-color: rgba(253,207,124,0.55); }
       .cta-button  { animation: none; border-color: rgba(253,207,124,0.65); }
     }
 
@@ -1098,6 +1102,20 @@
         <stop id="ring-stop2"  offset="0.75" stop-color="black"/>
       </radialGradient>
 
+      <!-- Cut filter: dissolves the edges of the rectangular substrate openings.
+           feTurbulence generates noise (same frequency as main sub-filter, seed=7 for variation).
+           feGaussianBlur spreads each black rect outward into a soft grey falloff.
+           feDisplacementMap frays the blur edge with organic noise — matching fire ring character.
+           filterUnits=userSpaceOnUse so x/y/width/height are in viewport pixels, updated by JS. -->
+      <filter id="cut-filter" filterUnits="userSpaceOnUse" x="-30" y="-30" width="1980" height="1140" color-interpolation-filters="sRGB">
+        <feTurbulence id="cut-turb" type="fractalNoise"
+          baseFrequency="0.10 0.07" numOctaves="4" seed="7"
+          result="noise"/>
+        <feGaussianBlur id="cut-blur" in="SourceGraphic" stdDeviation="10" result="blurred"/>
+        <feDisplacementMap in="blurred" in2="noise" scale="14"
+          xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+
       <!-- State B filter: full-viewport white rect eroded at screen edges, then blurred + displaced.
            feMorphology erode shrinks the white rect inward on all sides → creates a black band
            at each screen edge. feGaussianBlur softens that band into a smooth fade.
@@ -1127,6 +1145,17 @@
         <!-- State A: ring only — black centre (hollow interior) + white ring + black exterior -->
         <rect id="sub-rect" x="0" y="0" width="1920" height="1080"
           fill="url(#ring-grad)" filter="url(#sub-filter)"/>
+        <!-- Inventory cuts: black rects composited last → subtract from white sub-rect-b.
+             Positions tracked to DOM element viewport coords by JS on every rAF frame.
+             cut-filter blurs and displaces edges for organic atmospheric dissolve.
+             width=0 when State B inactive or element off-screen (no-op in mask). -->
+        <g id="cut-group" filter="url(#cut-filter)">
+          <rect id="cut-rect-0" fill="black" x="0" y="0" width="0" height="0"/>
+          <rect id="cut-rect-1" fill="black" x="0" y="0" width="0" height="0"/>
+          <rect id="cut-rect-2" fill="black" x="0" y="0" width="0" height="0"/>
+          <rect id="cut-rect-3" fill="black" x="0" y="0" width="0" height="0"/>
+          <rect id="cut-rect-4" fill="black" x="0" y="0" width="0" height="0"/>
+        </g>
       </mask>
 
       <!-- Radiation ring gradient: black centre + black exterior, white only at ring edge.
@@ -1217,13 +1246,15 @@
       <!-- L3: "with your" — centred, introduces inventory below -->
       <p class="w3-sub w3-l3 reveal delay-2">with your</p>
 
-      <!-- L4: Inventory words — gallery wall, huddled portrait + landscape cluster -->
-      <div class="w3-frames-wall reveal delay-3" role="list" aria-label="content types">
-        <span class="w3-frame w3-f-md"               style="--fi:0; position:absolute; top:15%; left:6%;"  role="listitem">memories</span>
-        <span class="w3-frame w3-f-sm w3-f-portrait" style="--fi:1; position:absolute; top:42%; left:5%;"  role="listitem">notes</span>
-        <span class="w3-frame w3-f-xl"               style="--fi:2; position:absolute; top:42%; left:33%;" role="listitem">photographs</span>
-        <span class="w3-frame w3-f-lg w3-f-portrait" style="--fi:3; position:absolute; top:11%; left:86%;" role="listitem">art</span>
-        <span class="w3-frame w3-f-sm"               style="--fi:4; position:absolute; top:86%; left:42%;" role="listitem">writing</span>
+      <!-- L4: Inventory cuts — substrate windows revealing the cool page atmosphere.
+           Positions tracked by JS to drive SVG mask black rects (cut-rect-0…4).
+           Text floats centred inside each cut, against the dark-blue revealed depth. -->
+      <div class="w3-cuts-wall reveal delay-3" role="list" aria-label="content types">
+        <div id="cut-memories"    class="w3-cut" role="listitem">memories</div>
+        <div id="cut-photographs" class="w3-cut" role="listitem">photographs</div>
+        <div id="cut-art"         class="w3-cut" role="listitem">art</div>
+        <div id="cut-notes"       class="w3-cut" role="listitem">notes</div>
+        <div id="cut-writing"     class="w3-cut" role="listitem">writing</div>
       </div>
 
       <!-- L5: "connect Rooms by Portals," — asymmetric right, mirrors L2 -->
@@ -1982,6 +2013,23 @@
       var coreRx      = 1;  // updated in resizeMasks
       var coreRy      = 1;
 
+      // ── Inventory cuts ────────────────────────────────────
+      var cutFilter = document.getElementById('cut-filter');
+      var cutTurb   = document.getElementById('cut-turb');
+      var cutBlur   = document.getElementById('cut-blur');
+      // DOM cut elements (position anchors + text containers)
+      var cutEls = [
+        document.getElementById('cut-memories'),
+        document.getElementById('cut-photographs'),
+        document.getElementById('cut-art'),
+        document.getElementById('cut-notes'),
+        document.getElementById('cut-writing'),
+      ];
+      // SVG black rects inside sub-mask (one per cut)
+      var cutRects = [0,1,2,3,4].map(function(i) {
+        return document.getElementById('cut-rect-' + i);
+      });
+
       // ── Bias targets per section ──────────────────────────
       var SECTION_BIASES = {
         'hero':        -11.0,
@@ -2037,8 +2085,36 @@
         radFilter.setAttribute('y', 0);
         radFilter.setAttribute('width',  w);
         radFilter.setAttribute('height', h);
+        // cut-filter: viewport-sized with 30px padding for displacement bleed at edges
+        if (cutFilter) {
+          cutFilter.setAttribute('x', -30);
+          cutFilter.setAttribute('y', -30);
+          cutFilter.setAttribute('width',  w + 60);
+          cutFilter.setAttribute('height', h + 60);
+        }
         // Refresh core ellipse size for new viewport
         setCoverage(currentBias);
+      }
+
+      // ── Update SVG cut rects to match DOM cut element viewport positions ──
+      function updateCuts () {
+        // Cuts only shown when State B substantially active
+        var active = tFactor > 0.25;
+        cutRects.forEach(function (cr, i) {
+          if (!cr) return;
+          if (!active) { cr.setAttribute('width', 0); return; }
+          var el = cutEls[i];
+          if (!el) { cr.setAttribute('width', 0); return; }
+          var r = el.getBoundingClientRect();
+          // Hide cut if element is off-screen
+          if (r.bottom < -50 || r.top > window.innerHeight + 50) {
+            cr.setAttribute('width', 0); return;
+          }
+          cr.setAttribute('x',      Math.round(r.left));
+          cr.setAttribute('y',      Math.round(r.top));
+          cr.setAttribute('width',  Math.round(r.width));
+          cr.setAttribute('height', Math.round(r.height));
+        });
       }
 
       resizeMasks();
@@ -2160,6 +2236,14 @@
           var bfStr = bfX.toFixed(5) + ' ' + bfY.toFixed(5);
           subTurb.setAttribute('baseFrequency', bfStr);
           stateBTurb.setAttribute('baseFrequency', bfStr);
+          // Cuts: sync noise + breathing blur + position update
+          if (cutTurb) cutTurb.setAttribute('baseFrequency', bfStr);
+          if (cutBlur) {
+            // Slow stdDeviation breath: 7–13px over ~27s cycle
+            var cutStd = 10 + Math.sin(elapsedSec * 0.23) * 3;
+            cutBlur.setAttribute('stdDeviation', cutStd.toFixed(1));
+          }
+          updateCuts();
         }
       }
 
