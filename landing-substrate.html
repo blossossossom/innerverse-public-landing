@@ -934,7 +934,8 @@
     .w3-cuts-wall {
       position: relative;
       width: min(780px, 90vw);
-      height: clamp(310px, 44vw, 368px);
+      /* Taller to give upper/lower satellites room without clipping             */
+      height: clamp(368px, 54vw, 424px);
       margin: 0 auto;
       margin-bottom: 4.5rem;
     }
@@ -955,15 +956,17 @@
       pointer-events: none;
       z-index: 2;
     }
-    /* ── Cinematic asymmetric composition ──────────────────────────────────── */
-    /* Left cluster: two landscape windows anchoring the left-centre.           */
-    #cut-memories    { top:6%;  left:3%;  width:clamp(145px,21.5vw,194px); height:clamp(60px,8.8vw,80px);   font-size:clamp(0.95rem,1.85vw,1.20rem); }
-    #cut-photographs { top:50%; left:3%;  width:clamp(178px,26vw,238px);   height:clamp(68px,10vw,90px);    font-size:clamp(1.05rem,2.1vw,1.36rem);  }
-    /* Right cluster: portrait + landscape at a different vertical rhythm.       */
-    #cut-art         { top:3%;  left:57%; width:clamp(82px,11vw,112px);    height:clamp(106px,15vw,140px);  font-size:clamp(0.86rem,1.6vw,1.08rem);  }
-    #cut-notes       { top:52%; left:60%; width:clamp(118px,17.5vw,160px); height:clamp(54px,7.8vw,70px);   font-size:clamp(0.82rem,1.5vw,1.00rem);  }
-    /* Centre bridge: sits below both clusters, provides compositional rhythm.  */
-    #cut-writing     { top:76%; left:32%; width:clamp(138px,20vw,182px);   height:clamp(57px,8.3vw,75px);   font-size:clamp(0.90rem,1.7vw,1.14rem);  }
+    /* ── Constellation composition — photographs as focal anchor ────────────── */
+    /* Central anchor: near-square, ~1.7× satellite size, sits in heart of comp */
+    #cut-photographs { top:26%; left:37.7%; width:clamp(152px,24.6vw,192px); height:clamp(158px,25.9vw,202px); font-size:clamp(1.12rem,2.15vw,1.42rem); }
+    /* Upper-left satellite: landscape, offset from photographs top-left corner  */
+    #cut-memories    { top:6%;  left:18.7%; width:clamp(102px,16.7vw,130px); height:clamp(52px,8.5vw,66px);   font-size:clamp(0.88rem,1.68vw,1.06rem); }
+    /* Upper-right satellite: portrait, offset from photographs top-right corner */
+    #cut-art         { top:5%;  left:65%;   width:clamp(62px,10.3vw,80px);   height:clamp(86px,14.4vw,112px); font-size:clamp(0.80rem,1.48vw,0.96rem); }
+    /* Lower-right satellite: landscape, offset from photographs bottom-right    */
+    #cut-notes       { top:78%; left:64.5%; width:clamp(100px,16.4vw,128px); height:clamp(48px,8vw,62px);     font-size:clamp(0.80rem,1.48vw,0.96rem); }
+    /* Lower-left satellite: landscape, offset from photographs bottom-left      */
+    #cut-writing     { top:79%; left:19%;   width:clamp(100px,16.4vw,128px); height:clamp(48px,8vw,62px);     font-size:clamp(0.84rem,1.58vw,1.0rem);  }
 
     @media (prefers-reduced-motion: reduce) {
       .cta-button  { animation: none; border-color: rgba(253,207,124,0.65); }
