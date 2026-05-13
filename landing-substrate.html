@@ -2217,14 +2217,15 @@
 
         // State A→B crossfade: lerp tFactor toward scroll target (~1.5s at 60fps)
         tFactor += (getTransitionFactor() - tFactor) * 0.04;
-        // Loop-point: loopDropBias drives existing bias/ring logic; also reduce reel
-        // mask opacity by up to 40% so the video restart is invisible behind a close-off.
+        // Loop-point: loopDropBias drives existing bias/ring logic; also fade reel
+        // mask and radiation to near-zero so the video restart is invisible.
+        // The figure fully dissolves (~29s) then re-manifests — intentional cinematic beat.
         var loopStrength = LOOP_DROP_AMT > 0 ? loopDropBias / LOOP_DROP_AMT : 0;
+        var loopFade = 1 - loopStrength * 0.97;  // 0.03 at peak → near-complete fade
         subRect.setAttribute('opacity',  (1 - tFactor).toFixed(3));
-        subRectB.setAttribute('opacity', (tFactor * STATE_B_MAX * (1 - loopStrength * 0.40)).toFixed(3));
-        // Radiation overlay: fade to STATE_B_RAD as State B becomes active,
-        // preventing the warm overlay from adding back intensity the reel cap removed.
-        radiation.style.opacity = (1 - tFactor * (1 - STATE_B_RAD)).toFixed(3);
+        subRectB.setAttribute('opacity', (tFactor * STATE_B_MAX * loopFade).toFixed(3));
+        // Radiation overlay: fades to STATE_B_RAD in State B, then near-zero at loop point.
+        radiation.style.opacity = ((1 - tFactor * (1 - STATE_B_RAD)) * loopFade).toFixed(3);
 
         // Apply every 2 frames to reduce SVG filter thrash
         if (frameCount % 2 === 0) {
