@@ -6,7 +6,7 @@
   <title>Innerverse — Early Access</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400;500&family=Genos:wght@200&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,400;1,500;1,600&family=Inter:wght@300;400;500&family=Genos:ital,wght@0,200;1,200&display=swap" rel="stylesheet" />
   <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet" />
   <script src="https://assets.calendly.com/assets/external/widget.js" async></script>
 
@@ -135,20 +135,15 @@
       min-height: 100svh;
       display: flex;
       flex-direction: column;
-      justify-content: flex-start;
-      padding-top: 80px;
-      padding-bottom: 100px;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding-top: 160px;
+      padding-bottom: 160px;
+      position: relative; /* contain room-canvas backdrop */
     }
 
-    #hero-cta-wrap {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-top: 120px;   /* breathing room below the text block */
-      padding: 60px 0;
-      min-height: 220px;
-    }
+    #hero .container { text-align: center; }
 
     .hero-eyebrow {
       font-size: 16px;
@@ -156,34 +151,40 @@
       text-transform: uppercase;
       color: var(--blue);
       margin-bottom: 28px;
+      text-align: center;
       opacity: 0;
       animation: heroFadeIn 2s cubic-bezier(0.22, 1, 0.36, 1) 0.3s forwards;
     }
 
     .hero-headline {
-      font-family: 'Cormorant Garamond', Georgia, serif;
-      font-size: clamp(2.8rem, 6.8vw, 4.4rem);
-      font-weight: 300;
-      line-height: 1.12;
-      letter-spacing: 0.02em;
+      font-family: 'Genos', sans-serif;
+      font-weight: 200;
+      font-size: clamp(3.6rem, 9.5vw, 7.2rem);
+      line-height: 1.02;
+      letter-spacing: 0.07em;
       color: var(--white);
-      margin-bottom: 48px;
+      margin-bottom: 40px;
+      text-align: center;
       opacity: 0;
       animation: heroFadeIn 2s cubic-bezier(0.22, 1, 0.36, 1) 0.55s forwards;
     }
 
     .hero-headline em {
-      font-style: normal;
-      font-weight: 400;
+      font-style: italic;
+      font-weight: 200;
       color: var(--gold);
+      letter-spacing: 0.09em;
     }
 
     .hero-subheadline {
-      font-size: clamp(1rem, 2.5vw, 1.2rem);
-      font-weight: 300;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 400;
+      font-size: clamp(1.1rem, 2.5vw, 1.35rem);
       color: rgba(255,255,255,0.95);
       max-width: 560px;
-      margin-bottom: 0;
+      margin: 0 auto;
+      text-align: center;
       opacity: 0;
       animation: heroFadeIn 2s cubic-bezier(0.22, 1, 0.36, 1) 0.85s forwards;
     }
@@ -324,8 +325,14 @@
     }
 
     .connect-subtitle {
-      font-size: 1rem;
-      color: rgba(255,255,255,0.95);
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: clamp(1.2rem, 2.6vw, 1.7rem);
+      font-weight: 400;
+      color: #ffffff;
+      letter-spacing: 0.04em;
+      line-height: 1.7;
+      text-shadow: 0 1px 12px rgba(0,0,0,0.5);
       max-width: 440px;
       margin: 0 auto 48px;
     }
@@ -365,61 +372,44 @@
       letter-spacing: 0.02em;
     }
 
-    /* CTA Button */
+    /* CTA Button — threshold letterbox */
     .cta-button {
-      display: inline-block;
-      padding: 16px 40px;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.9rem;
-      font-weight: 400;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      text-decoration: none;
-      color: var(--void);
-      background: var(--blue);
-      border-radius: 3px;
-      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: clamp(240px, 35vw, 320px);
+      height: clamp(78px, 10.5vw, 104px);
+      background: transparent;
+      border: 1.5px solid rgba(253,207,124,0.60);
+      border-radius: 2px;
       cursor: pointer;
-      transition:
-        box-shadow 0.5s ease,
-        transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
-        color 0.5s ease;
-      position: relative;
-      overflow: hidden;
-      transform: scale(1);
-      will-change: transform;
+      animation: ctaBreath 5s ease-in-out infinite;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
     }
 
-    .cta-button::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: var(--gold);
-      opacity: 0;
-      transition: opacity 0.55s ease;
+    .cta-button span {
+      font-family: 'Genos', sans-serif;
+      font-weight: 200;
+      font-style: normal;
+      font-size: clamp(1.2rem, 2vw, 1.4rem);
+      color: rgba(253,207,124,0.85);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      transition: color 0.3s ease;
     }
 
-    .cta-button span { position: relative; z-index: 1; }
-
-    .cta-button:hover::before { opacity: 1; }
+    @keyframes ctaBreath {
+      0%, 100% { border-color: rgba(253,207,124,0.50); }
+      50%       { border-color: rgba(253,207,124,0.75); }
+    }
 
     .cta-button:hover {
-      transform: scale(1.04);
-      box-shadow:
-        0 0 28px rgba(253,207,124,0.45),
-        0 0 70px rgba(253,207,124,0.15),
-        0 4px 24px rgba(0,0,0,0.3);
-      color: var(--void);
+      animation: none;
+      border-color: rgba(253,207,124,0.90);
+      box-shadow: 0 0 20px rgba(253,207,124,0.22), 0 0 50px rgba(253,207,124,0.08);
     }
 
-    /* Soft glow pulse at rest */
-    @keyframes glowPulse {
-      0%, 100% { box-shadow: 0 0 12px rgba(0,194,255,0.2); }
-      50%       { box-shadow: 0 0 22px rgba(0,194,255,0.38); }
-    }
-
-    .cta-button { animation: glowPulse 3.5s ease-in-out infinite; }
-    .cta-button:hover { animation: none; }
+    .cta-button:hover span { color: rgba(253,207,124,1.0); }
 
     /* ── Waitlist signup form ───────────────────────────── */
     #waitlist-form-wrap {
@@ -662,6 +652,34 @@
       .benefit-item { padding: 28px 0 0; }
       .benefit-item:nth-child(2),
       .benefit-item:nth-child(3) { margin-top: 32px; }
+
+      /* Section 3 mobile overrides */
+      #world { padding: 80px 0 100px; }
+      .w3-l1, .w3-l6 { font-size: clamp(2.2rem, 8vw, 3.0rem); line-height: 1.35; }
+      .w3-l1 { padding-bottom: 3.5rem; letter-spacing: 0.06em; }
+      .w3-l6 { padding-bottom: 3rem; }
+      .w3-sub         { font-size: clamp(1.4rem, 5.5vw, 2.0rem); line-height: 1.6; }
+      .w3-l2          { padding-top: 3rem; padding-bottom: 2rem; }
+      .w3-l5          { text-align: left; padding-top: 3rem; }
+      /* Section 3 inventory cuts — compressed cascade on mobile, gentler stagger */
+      .w3-cuts-wall   { width: 96vw; height: clamp(400px, 118vw, 450px); }
+      .w3-cut         { width: clamp(155px, 54vw, 185px); height: clamp(52px, 13.5vw, 62px); font-size: clamp(1.1rem, 4vw, 1.5rem); }
+      #cut-memories    { top:  2%; left:  3%; }
+      #cut-writing     { top: 21%; left: 13%; }
+      #cut-photographs { top: 40%; left: 23%; }
+      #cut-notes       { top: 59%; left: 33%; }
+      #cut-art         { top: 78%; left: 43%; }
+      .w3-portal-wrap { justify-content: flex-start; }
+      .cta-button     { width: clamp(220px, 75vw, 265px); height: clamp(72px, 20vw, 86px); }
+      .cta-button span { letter-spacing: 0.16em; }
+
+      /* Section 2 mobile — stacked pairs, smaller type */
+      #aurora-scroll-track { height: 300vh; }
+      .frag-pair { font-size: clamp(1.2rem, 5vw, 1.5rem); max-width: 44vw; }
+      .frag-left  { left: 2%;  top: 30%; }
+      .frag-right { right: 2%; top: 48%; }
+      .p2-line { position: static; max-width: 88vw; text-align: center; font-size: clamp(1rem, 4.5vw, 1.2rem); }
+      #p2-left, #p2-right { left: auto; right: auto; top: auto; }
     }
 
 
@@ -762,15 +780,24 @@
 
     .aurora-cta span { position: relative; }
 
-    /* ── Aurora Hero ─────────────────────────────────────── */
+    /* ── Section 2 — Cinematic fragment sequence ───────── */
     #aurora-hero {
       position: relative;
       width: 100%;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      padding: 0;
+    }
+
+    #aurora-scroll-track {
+      position: relative;
+      height: 350vh;
+    }
+
+    #aurora-sticky {
+      position: sticky;
+      top: 0;
+      height: 100vh;
       overflow: hidden;
+      pointer-events: none;
     }
 
     #aurora-canvas {
@@ -783,67 +810,53 @@
       mix-blend-mode: screen;
     }
 
-    #aurora-content {
-      position: relative;
-      z-index: 1;
-      max-width: 800px;
-      width: 100%;
-      padding: 100px 32px;
-      text-align: left;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 4.5em;
+    /* Fragment stage — full sticky area so fragments can sit at different heights */
+    #aurora-frag-stage {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
     }
 
-    .aurora-line {
-      font-family: 'Inter', sans-serif;
-      font-size: clamp(1.05rem, 2.2vw, 1.32rem);
-      font-weight: 300;
-      color: rgba(255, 255, 255, 0.88);
-      line-height: 1.8;
+    /* Fragment pairs — left and right halves wrapping the ring */
+    .frag-pair {
+      position: absolute;
       opacity: 0;
-      transform: translateY(22px);
-      transition: opacity 1.4s cubic-bezier(0.22, 1, 0.36, 1),
-                  transform 1.4s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-
-    .aurora-line-highlight {
-      font-size: clamp(1.15rem, 2.6vw, 1.5rem);
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
       font-weight: 400;
-      color: rgba(255, 255, 255, 1);
+      font-size: clamp(1.9rem, 3.8vw, 2.6rem);
+      color: #ffffff;
+      letter-spacing: 0.04em;
+      line-height: 1.5;
+      text-shadow: 0 1px 12px rgba(0,0,0,0.5);
+      max-width: min(340px, 34vw);
+      z-index: 3;
+      pointer-events: none;
     }
 
-    .aurora-line.a-visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    .frag-left  { left: 4%;  top: 40%; text-align: right; }
+    .frag-right { right: 3%; top: 52%; text-align: left;  }
 
-    #aurora-reveal {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 20px;
-      padding-top: 0.6em;
-    }
-
-    #aurora-wordmark {
+    /* Phase 2 — brand promise flanking the ring */
+    .p2-line {
+      position: absolute;
       opacity: 0;
-      transition: opacity 1.2s ease;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 400;
+      font-size: clamp(1.1rem, 2.3vw, 1.55rem);
+      color: #ffffff;
+      letter-spacing: 0.04em;
+      line-height: 1.6;
+      text-shadow: 0 1px 12px rgba(0,0,0,0.5);
+      max-width: min(28vw, 260px);
+      z-index: 3;
+      pointer-events: none;
     }
 
-    #aurora-subline {
-      font-size: clamp(0.95rem, 2vw, 1.1rem);
-      font-weight: 300;
-      color: rgba(255, 255, 255, 0.88);
-      opacity: 0;
-      transition: opacity 1s ease;
-    }
-
-    #aurora-cta {
-      opacity: 0;
-      transition: opacity 1s ease;
-    }
+    #p2-left  { left: 4%;  top: 42%; text-align: right; }
+    #p2-right { right: 9%; top: 52%; text-align: left;  }
 
     /* ── Proper noun — Genos, visual-size-compensated ───── */
     .pn {
@@ -858,29 +871,134 @@
       line-height: 1;
     }
 
-    /* ── Section 3 — The World ──────────────────────────── */
-    .world-prose-line {
-      font-size: clamp(1.05rem, 2.2vw, 1.32rem);
-      font-weight: 300;
-      line-height: 1.9;
-      color: rgba(255,255,255,0.88);
-      margin-bottom: 2em;
+    /* ── Section 3 — The World (redesigned) ────────────── */
+    #world { padding: 160px 0 200px; }
+
+    /* Declarative lines: L1 "Your World…" and L6 "and ENTER."
+       Cormorant Garamond Italic 500 — true italic serif, display weight. */
+    .w3-decl {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 500;
+      line-height: 1.3;
+      color: #ffffff;
+      text-align: center;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.30);
+      margin: 0;
     }
-
-    .world-prose-line:last-child { margin-bottom: 0; }
-
-    .world-breath {
-      padding-left: 2.4em;
+    .w3-l1 {
+      font-size: clamp(3.0rem, 7.0vw, 5.5rem);
+      letter-spacing: 0.08em;
+      padding-bottom: 6.5rem;
+    }
+    .w3-l6 {
+      font-size: clamp(3.0rem, 7.0vw, 5.5rem);
       letter-spacing: 0.06em;
-      color: rgba(255,255,255,0.62) !important;
+      padding-top: 1.5rem;
+      padding-bottom: 5.5rem;
+    }
+    .w3-enter {
+      font-size: 1.2em;
+      font-weight: 600;
+      letter-spacing: 0.26em;
     }
 
-    /* Structural slot for future video backdrop */
-    .world-video-slot {
-      position: relative;
-      padding-bottom: 4em;
-      margin-bottom: 1.6em;
+    /* Sub-declarative lines: L2 "You architect…", L3 "with your", L5 "connect…"
+       Cormorant Garamond Italic 400 — flowing, deliberate. */
+    .w3-sub {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 400;
+      font-size: clamp(1.8rem, 4.2vw, 3.0rem);
+      line-height: 1.5;
+      letter-spacing: 0.05em;
+      color: #ffffff;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.30);
+      margin: 0;
     }
+    .w3-l2 { text-align: left;   padding-top: 5rem;   padding-bottom: 3rem;   }
+    .w3-l3 { text-align: center; padding-bottom: 1.8rem; }
+    .w3-l5 { text-align: right;  padding-top: 5rem;   padding-bottom: 1.8rem; }
+
+    /* Proper nouns: Genos upright geometric — contrast against italic serif body.
+       Warm cream tint links visually to the gold frames system. */
+    .w3-decl .pn,
+    .w3-sub .pn,
+    .w3-prose .pn {
+      font-size: 1em;
+      font-style: normal;
+      color: #fff8eb;
+    }
+
+    /* ── Inventory cuts — diagonal cascade in State B substrate ─────────────── */
+    /* Container: positioned block that JS reads to track cut positions          */
+    .w3-cuts-wall {
+      position: relative;
+      width: min(780px, 90vw);
+      height: clamp(430px, 62vw, 472px);
+      margin: 0 auto;
+      margin-bottom: 4.5rem;
+    }
+    /* All five cuts identical — landscape ~3:1, diagonal cascade top-left → bottom-right */
+    .w3-cut {
+      position: absolute;
+      width: clamp(185px, 24vw, 215px);
+      height: clamp(62px, 8vw, 72px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 400;
+      font-size: clamp(1.4rem, 2.8vw, 2.1rem);
+      color: rgba(255,255,255,0.90);
+      /* Cool-toned shadow reads against the dark-blue revealed atmosphere */
+      text-shadow: 0 1px 6px rgba(0,8,32,0.70), 0 0 20px rgba(0,8,32,0.40);
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 2;
+    }
+    /* Diagonal cascade — 14% horizontal step, 19% vertical step per row */
+    #cut-memories    { top:  2%; left:  3%; }
+    #cut-writing     { top: 21%; left: 17%; }
+    #cut-photographs { top: 40%; left: 31%; }
+    #cut-notes       { top: 59%; left: 45%; }
+    #cut-art         { top: 78%; left: 59%; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .cta-button  { animation: none; border-color: rgba(253,207,124,0.65); }
+    }
+
+    /* Portal connection visual — right-aligned SVG below L5 */
+    .w3-portal-wrap {
+      display: flex;
+      justify-content: flex-end;
+      padding-bottom: 4rem;
+    }
+    .w3-portal-svg {
+      display: block;
+      width: min(440px, 100%);
+      height: auto;
+    }
+
+    /* Closing prose — L7 "There has never been…" and L8 "Yours alone…"
+       Cormorant Garamond Italic 400 — same baseline as other S3 body text. */
+    .w3-prose {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 400;
+      font-size: clamp(1.2rem, 2.6vw, 1.7rem);
+      line-height: 1.7;
+      letter-spacing: 0.04em;
+      color: rgba(255,255,255,0.85);
+      text-align: center;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+      margin: 0 auto;
+      max-width: 640px;
+      padding-top: 2.5rem;
+      padding-bottom: 1.6rem;
+    }
+    .w3-prose:last-child { padding-bottom: 0; }
 
     /* ── Section 4 — The Key ─────────────────────────────── */
     #key-section {
@@ -889,45 +1007,69 @@
     }
 
     .key-block p {
-      font-size: clamp(1.05rem, 2.2vw, 1.32rem);
-      font-weight: 300;
-      line-height: 2.4;
-      color: rgba(255,255,255,0.88);
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: clamp(1.2rem, 2.6vw, 1.7rem);
+      font-weight: 400;
+      color: #ffffff;
+      letter-spacing: 0.04em;
+      line-height: 1.7;
+      text-shadow: 0 1px 12px rgba(0,0,0,0.5);
       max-width: 620px;
       margin: 0 auto 3.6em;
     }
 
     .key-block p:last-child { margin-bottom: 0; }
 
-    /* ── Section 5 — The Principles ─────────────────────── */
-    #principles {
-      padding: 120px 0;
-      text-align: center;
-      border-top: 1px solid rgba(255,255,255,0.05);
+
+
+    /* ── Substrate video layer ───────────────────────────── */
+    #substrate-video-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+      mask: url(#sub-mask);
+      -webkit-mask: url(#sub-mask);
     }
 
-    .principles-inner {
-      display: inline-flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.15em;
+    #substrate-reel {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      /* Cover viewport while preserving 9:16 portrait ratio */
+      width: auto;
+      height: 100%;
+      min-width: 56.25vh; /* 100vh * 9/16 */
+      min-height: 177.78vw; /* 100vw * 16/9 */
+      object-fit: cover;
     }
 
-    .principle-line {
-      font-size: clamp(1.3rem, 2.8vw, 1.85rem);
-      font-weight: 300;
-      line-height: 1.7;
-      color: rgba(255,255,255,0.88);
-      letter-spacing: 0.03em;
+    /* When video fails / reduced motion: hide layer entirely */
+    #substrate-video-layer.substrate-hidden {
+      display: none;
     }
 
-    .principle-entirely {
-      font-size: clamp(1.3rem, 2.8vw, 1.85rem);
-      font-weight: 300;
-      line-height: 1.7;
-      color: rgba(255,255,255,0.88);
-      letter-spacing: 0.03em;
-      margin-top: 2.8em;
+    #substrate-radiation {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      /* Warm amber radial gradient — softened glow */
+      background: radial-gradient(
+        ellipse 70% 55% at 50% 45%,
+        rgba(210, 140, 40, 0.18) 0%,
+        rgba(180, 100, 20, 0.08) 50%,
+        transparent 100%
+      );
+      mask: url(#rad-mask);
+      -webkit-mask: url(#rad-mask);
+    }
+
+    #substrate-radiation.substrate-hidden {
+      display: none;
     }
 
   </style>
@@ -948,48 +1090,225 @@
   <!-- Stage bokeh canvas -->
   <canvas id="stage-canvas" aria-hidden="true"></canvas>
 
+  <!-- Substrate SVG filter + mask definitions (hidden) -->
+  <svg id="substrate-svg" width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true">
+    <defs>
+      <!-- Ring gradient: black centre + black exterior, white ONLY in transition band.
+           Displacement filter applied to this ring — noise affects only the edge band,
+           never the solid centre or the far exterior. -->
+      <radialGradient id="ring-grad" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="1">
+        <stop id="ring-stop1"  offset="0.63" stop-color="black"/>
+        <stop id="ring-stop1b" offset="0.63" stop-color="white"/>
+        <stop id="ring-stop2"  offset="0.75" stop-color="black"/>
+      </radialGradient>
+
+      <!-- Cut filter: dissolves the edges of the rectangular substrate openings.
+           feTurbulence generates noise (same frequency as main sub-filter, seed=7 for variation).
+           feGaussianBlur spreads each black rect outward into a soft grey falloff.
+           feDisplacementMap frays the blur edge with organic noise — matching fire ring character.
+           filterUnits=userSpaceOnUse so x/y/width/height are in viewport pixels, updated by JS. -->
+      <filter id="cut-filter" filterUnits="userSpaceOnUse" x="-30" y="-30" width="1980" height="1140" color-interpolation-filters="sRGB">
+        <feTurbulence id="cut-turb" type="fractalNoise"
+          baseFrequency="0.10 0.07" numOctaves="4" seed="7"
+          result="noise"/>
+        <feGaussianBlur id="cut-blur" in="SourceGraphic" stdDeviation="10" result="blurred"/>
+        <feDisplacementMap in="blurred" in2="noise" scale="14"
+          xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+
+      <!-- State B filter: full-viewport white rect eroded at screen edges, then blurred + displaced.
+           feMorphology erode shrinks the white rect inward on all sides → creates a black band
+           at each screen edge. feGaussianBlur softens that band into a smooth fade.
+           feDisplacementMap frays the edge into organic smoke — same character as State A ring. -->
+      <filter id="state-b-filter" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
+        <feTurbulence id="state-b-turb" type="fractalNoise"
+          baseFrequency="0.10 0.07" numOctaves="6" seed="3"
+          result="noise"/>
+        <feMorphology id="state-b-erode" operator="erode" radius="50 35" in="SourceGraphic" result="eroded"/>
+        <feGaussianBlur id="state-b-blur" stdDeviation="35" in="eroded" result="blurred"/>
+        <feDisplacementMap in="blurred" in2="noise" scale="18"
+          xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+
+      <!-- Main video mask: displacement applied only to the edge ring -->
+      <filter id="sub-filter" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
+        <feTurbulence id="sub-turb" type="fractalNoise"
+          baseFrequency="0.10 0.07" numOctaves="6" seed="3"
+          result="noise"/>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="18"
+          xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+      <mask id="sub-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="1920" height="1080">
+        <!-- State B: full-viewport white rect with viewport-edge dissolve only -->
+        <rect id="sub-rect-b" x="0" y="0" width="1920" height="1080"
+          fill="white" filter="url(#state-b-filter)" opacity="0"/>
+        <!-- State A: ring only — black centre (hollow interior) + white ring + black exterior -->
+        <rect id="sub-rect" x="0" y="0" width="1920" height="1080"
+          fill="url(#ring-grad)" filter="url(#sub-filter)"/>
+        <!-- Inventory cuts: black rects composited last → subtract from white sub-rect-b.
+             Positions tracked to DOM element viewport coords by JS on every rAF frame.
+             cut-filter blurs and displaces edges for organic atmospheric dissolve.
+             width=0 when State B inactive or element off-screen (no-op in mask). -->
+        <g id="cut-group" filter="url(#cut-filter)">
+          <rect id="cut-rect-0" fill="black" x="0" y="0" width="0" height="0"/>
+          <rect id="cut-rect-1" fill="black" x="0" y="0" width="0" height="0"/>
+          <rect id="cut-rect-2" fill="black" x="0" y="0" width="0" height="0"/>
+          <rect id="cut-rect-3" fill="black" x="0" y="0" width="0" height="0"/>
+          <rect id="cut-rect-4" fill="black" x="0" y="0" width="0" height="0"/>
+        </g>
+      </mask>
+
+      <!-- Radiation ring gradient: black centre + black exterior, white only at ring edge.
+           Stops tracked to solidFrac in setCoverage — radiation follows the ring. -->
+      <radialGradient id="rad-col-grad" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="1">
+        <stop id="rad-col-stop1"  offset="0.35" stop-color="black"/>
+        <stop id="rad-col-stop1b" offset="0.45" stop-color="white"/>
+        <stop id="rad-col-stop2"  offset="0.62" stop-color="black"/>
+      </radialGradient>
+
+      <!-- Radiation overlay mask: binary noise × column shape.
+           feBlend multiply keeps noise=0 wherever the column gradient=0,
+           so radiation patches can only ever appear within the reel column. -->
+      <filter id="rad-filter" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+        <feTurbulence id="rad-turb" type="fractalNoise"
+          baseFrequency="0.18 0.12" numOctaves="5" seed="11"
+          result="noise"/>
+        <feColorMatrix id="rad-cm" type="matrix"
+          values="20 0 0 0 -3  20 0 0 0 -3  20 0 0 0 -3  0 0 0 0 1"
+          result="thresh"/>
+        <feBlend in="thresh" in2="SourceGraphic" mode="multiply"/>
+      </filter>
+      <mask id="rad-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="1920" height="1080">
+        <rect id="rad-rect" x="0" y="0" width="1920" height="1080"
+          fill="url(#rad-col-grad)" filter="url(#rad-filter)"/>
+      </mask>
+    </defs>
+  </svg>
+
+  <!-- Substrate atmospheric video layer -->
+  <div id="substrate-video-layer" aria-hidden="true">
+    <video id="substrate-reel"
+      src="https://pub-6593f7eee3e74184ba6a626b9ee39961.r2.dev/reel.webm"
+      poster="https://pub-6593f7eee3e74184ba6a626b9ee39961.r2.dev/reel-poster.jpg"
+      autoplay muted loop playsinline
+      preload="auto">
+      <source src="https://pub-6593f7eee3e74184ba6a626b9ee39961.r2.dev/reel.webm" type="video/webm">
+      <source src="https://pub-6593f7eee3e74184ba6a626b9ee39961.r2.dev/reel.mp4" type="video/mp4">
+    </video>
+  </div>
+
+  <!-- Substrate warm radiation overlay -->
+  <div id="substrate-radiation" aria-hidden="true"></div>
+
   <!-- ── HERO ──────────────────────────────────────────── -->
   <section id="hero">
+    <!-- Aurora band — atmospheric backdrop behind title card -->
+    <canvas id="room-canvas" aria-hidden="true"></canvas>
     <div class="container">
       <p class="hero-eyebrow">founding members</p>
       <h1 class="hero-headline">
-        Human experience & memory,<br><em>made spatial</em>
+        Human experience &amp; memory,<br><em>made spatial</em>
       </h1>
       <p class="hero-subheadline">
         Imprint your world, for yourself and those you let in.
       </p>
     </div>
-    <div id="hero-cta-wrap">
-      <a class="aurora-cta" href="#connect"><span>I'm in</span></a>
-    </div>
   </section>
 
   <!-- ── AURORA HERO ───────────────────────────────────── -->
   <section id="aurora-hero">
-    <canvas id="aurora-canvas" aria-hidden="true"></canvas>
-    <div id="aurora-content">
-      <p class="aurora-line">Some rooms are meant for one person, some for five. Some for humanity, and some for no one but you.</p>
-      <p class="aurora-line"><span class="pn">Innerverse</span> is where your galaxy of self-expression and human connection lives.</p>
+    <div id="aurora-scroll-track">
+      <div id="aurora-sticky">
+        <canvas id="aurora-canvas" aria-hidden="true"></canvas>
+        <div id="aurora-frag-stage">
+          <p id="fp1l" class="frag-pair frag-left">Some rooms are made for one person,</p>
+          <p id="fp1r" class="frag-pair frag-right">some for several</p>
+          <p id="fp2l" class="frag-pair frag-left">some for the public visitor,</p>
+          <p id="fp2r" class="frag-pair frag-right">and some for no one but you.</p>
+        </div>
+        <p id="p2-left"  class="p2-line">A home for unmonitored self-expression,</p>
+        <p id="p2-right" class="p2-line">and human connection.</p>
+      </div>
     </div>
-  </section>
-
-  <!-- ── CIRCULAR ROOM ───────────────────────────────── -->
-  <section id="circular-room">
-    <canvas id="room-canvas" aria-hidden="true"></canvas>
   </section>
 
 
   <!-- ── THE WORLD ─────────────────────────────────────── -->
   <section id="world">
     <div class="container">
-      <div class="world-video-slot">
-        <p class="world-prose-line reveal">Your <span class="pn">World</span> is manifest of you.</p>
-        <p class="world-prose-line reveal delay-1">You architect and imprint</p>
-        <p class="world-prose-line world-breath reveal delay-2">with your … writing, art, photographs, memory …</p>
-        <p class="world-prose-line reveal delay-3">connect <span class="pn">Rooms</span> by <span class="pn">Portals</span>, and enter.</p>
+
+      <!-- L1: "Your World is manifest of you." — centred mic-drop declaration -->
+      <p class="w3-decl w3-l1 reveal">Your <span class="pn">World</span> is manifest of you.</p>
+
+      <!-- L2: "You architect and imprint" — asymmetric left, breaks centred symmetry -->
+      <p class="w3-sub w3-l2 reveal delay-1">You architect and imprint</p>
+
+      <!-- L3: "with your" — centred, introduces inventory below -->
+      <p class="w3-sub w3-l3 reveal delay-2">with your</p>
+
+      <!-- L4: Inventory cuts — substrate windows revealing the cool page atmosphere.
+           Positions tracked by JS to drive SVG mask black rects (cut-rect-0…4).
+           Text floats centred inside each cut, against the dark-blue revealed depth. -->
+      <div class="w3-cuts-wall reveal delay-3" role="list" aria-label="content types">
+        <div id="cut-memories"    class="w3-cut" role="listitem">memories,</div>
+        <div id="cut-writing"     class="w3-cut" role="listitem">writing,</div>
+        <div id="cut-photographs" class="w3-cut" role="listitem">photographs,</div>
+        <div id="cut-notes"       class="w3-cut" role="listitem">notes,</div>
+        <div id="cut-art"         class="w3-cut" role="listitem">art</div>
       </div>
-      <p class="world-prose-line reveal delay-1">There has never been, and never will be, a repeat of your <span class="pn">Innerverse</span>.</p>
-      <p class="world-prose-line reveal delay-2">Yours alone, unseen and untouched by anyone other than those you grant access to.</p>
+
+      <!-- L5: "connect Rooms by Portals," — asymmetric right, mirrors L2 -->
+      <p class="w3-sub w3-l5 reveal delay-1">connect <span class="pn">Rooms</span> by <span class="pn">Portals</span>,</p>
+
+      <!-- Portal connection visual: gold dot constellation, right-aligned, static -->
+      <div class="w3-portal-wrap reveal delay-2" aria-hidden="true">
+        <svg class="w3-portal-svg" viewBox="0 0 440 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <filter id="w3gl" x="-120%" y="-120%" width="340%" height="340%">
+              <feGaussianBlur stdDeviation="2.5" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <filter id="w3gd" x="-250%" y="-250%" width="600%" height="600%">
+              <feGaussianBlur stdDeviation="4" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <!-- Curved arcs connecting nodes — selective network, not all-to-all -->
+          <g stroke="#FDCF7C" fill="none" filter="url(#w3gl)">
+            <path d="M14,92 Q34,40 78,46"    stroke-width="1" stroke-opacity="0.44"/>
+            <path d="M78,46 Q118,16 158,26"  stroke-width="1" stroke-opacity="0.40"/>
+            <path d="M78,46 Q150,22 230,66"  stroke-width="1" stroke-opacity="0.33"/>
+            <path d="M158,26 Q244,6 304,20"  stroke-width="1" stroke-opacity="0.40"/>
+            <path d="M230,66 Q264,28 304,20" stroke-width="1" stroke-opacity="0.36"/>
+            <path d="M230,66 Q298,38 366,54" stroke-width="1" stroke-opacity="0.38"/>
+            <path d="M304,20 Q336,24 366,54" stroke-width="1" stroke-opacity="0.32"/>
+            <path d="M366,54 Q404,58 424,90" stroke-width="1" stroke-opacity="0.42"/>
+          </g>
+          <!-- Peripheral secondary dots -->
+          <g fill="#FDCF7C" filter="url(#w3gd)">
+            <circle cx="126" cy="74" r="1.8" fill-opacity="0.42"/>
+            <circle cx="272" cy="40" r="1.8" fill-opacity="0.38"/>
+          </g>
+          <!-- Primary node dots — vary in size by prominence -->
+          <g fill="#FDCF7C" filter="url(#w3gd)">
+            <circle cx="14"  cy="92" r="2.8" fill-opacity="0.52"/>
+            <circle cx="78"  cy="46" r="4.2" fill-opacity="0.80"/>
+            <circle cx="158" cy="26" r="3.4" fill-opacity="0.70"/>
+            <circle cx="230" cy="66" r="5.2" fill-opacity="0.90"/>
+            <circle cx="304" cy="20" r="3.8" fill-opacity="0.72"/>
+            <circle cx="366" cy="54" r="4.2" fill-opacity="0.78"/>
+            <circle cx="424" cy="90" r="2.8" fill-opacity="0.52"/>
+          </g>
+        </svg>
+      </div>
+
+      <!-- L6: "and enter." — centred, second mic-drop moment -->
+      <p class="w3-decl w3-l6 reveal delay-1">and enter.</p>
+
+      <!-- L7–8: Closing intimate prose -->
+      <p class="w3-prose reveal delay-2">There has never been, and never will be, a repeat of your <span class="pn">Innerverse</span>.</p>
+      <p class="w3-prose reveal delay-3">Yours alone, unseen and untouched by anyone other than those you grant access to.</p>
+
     </div>
   </section>
 
@@ -999,19 +1318,7 @@
     <div class="container">
       <div class="key-block">
         <p class="reveal">A <span class="pn">Room</span> is opened by <span class="pn">Key</span>.</p>
-        <p class="reveal delay-1">A <span class="pn">Key</span> is given, not requested. To hold someone&#8217;s <span class="pn">Key</span> is to be trusted with a part of them.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── THE PRINCIPLES ────────────────────────────────── -->
-  <section id="principles">
-    <div class="container">
-      <div class="principles-inner reveal">
-        <p class="principle-line" aria-label="Trust over broadcast">Trust &gt; broadcast</p>
-        <p class="principle-line" aria-label="Connection over performance">Connection &gt; performance</p>
-        <p class="principle-line" aria-label="Architecture over algorithm">Architecture &gt; algorithm</p>
-        <p class="principle-entirely">Entirely human.</p>
+        <p class="reveal delay-1">A <span class="pn">Key</span> is given, not requested. To hold someone&#8217;s <span class="pn">Key</span> is to be trusted to enter.</p>
       </div>
     </div>
   </section>
@@ -1275,63 +1582,20 @@
     tick();
 
 
-    // ── Circular Room — cylinder interior with orbiting text ─
+    // ── Aurora band — atmospheric backdrop behind hero title card ─
     (function () {
-      var section = document.getElementById('circular-room');
-      var canvas  = document.getElementById('room-canvas');
-      var ctx     = canvas.getContext('2d');
+      var heroEl = document.getElementById('hero');
+      var canvas = document.getElementById('room-canvas');
+      var ctx    = canvas.getContext('2d');
 
-      // Cylinder geometry & rendering constants
-      var R_CYL  = 320;    // virtual cylinder radius
-      var FOCAL  = 700;    // perspective focal length
-      var BASE_F = 26;     // base font size (px)
-      var ROT_SPD = 0.00085; // radians per frame (~3 deg/sec)
-      var GAP    = Math.PI / 2; // 90 deg between phrase centers
-
-      var phrases = [
-        'Your inner world.',
-        'Orchestrated by you.',
-        'Entered by you.',
-        'Yours to return to.'
-      ];
-
-      var W = 0, H = 0, t = 0, rotation = 0;
-
-      // Offscreen canvas for text measurement
-      var mc   = document.createElement('canvas');
-      var mctx = mc.getContext('2d');
-      var phraseData = [];
-
-      function setFont(c) {
-        c.font = '300 ' + BASE_F + "px 'Inter', sans-serif";
-      }
+      var W = 0, H = 0, t = 0;
 
       function resize() {
-        W = canvas.width  = section.offsetWidth  || window.innerWidth;
-        H = canvas.height = section.offsetHeight || window.innerHeight;
+        W = canvas.width  = heroEl.offsetWidth  || window.innerWidth;
+        H = canvas.height = heroEl.offsetHeight || window.innerHeight;
       }
       resize();
       window.addEventListener('resize', resize);
-
-      // Build per-character angle offsets from each phrase's center
-      function buildPhrases() {
-        setFont(mctx);
-        phraseData = phrases.map(function (phrase) {
-          var chars  = phrase.split('');
-          var widths = chars.map(function (ch) { return mctx.measureText(ch).width; });
-          var total  = widths.reduce(function (a, b) { return a + b; }, 0);
-          var x = -total / 2;
-          return chars.map(function (ch, i) {
-            var cx = x + widths[i] / 2;
-            x += widths[i];
-            // atan2 maps wall-arc position → angle from phrase center
-            return { ch: ch, ao: Math.atan2(cx, R_CYL) };
-          });
-        });
-      }
-
-      document.fonts.ready.then(buildPhrases);
-      buildPhrases(); // immediate fallback before fonts event
 
       // ── Aurora blobs — wispy horizontal curtains, screen-blended ─
       // Each blob: cx/cy (fraction of W/H), rx/ry (fraction of W/H),
@@ -1380,55 +1644,13 @@
 
       // ── Room background ──────────────────────────────────
       function drawRoom() {
-        // Fully transparent base — canvas is invisible where no blobs exist,
-        // so the section has no visible edge against the page background.
-        // mix-blend-mode: screen on the canvas element handles compositing.
         ctx.clearRect(0, 0, W, H);
         roomBlobs.forEach(drawRoomBlob);
       }
 
-      // ── Orbiting text ────────────────────────────────────
-      function drawText() {
-        if (!phraseData.length) return;
-        setFont(ctx);
-        ctx.textAlign    = 'center';
-        ctx.textBaseline = 'middle';
-        // Canvas extends 120px above the section, so visual center = H/2 (canvas mid)
-        var midY = H / 2;
-
-        phraseData.forEach(function (chars, pi) {
-          // Base angle for this phrase, advancing left-to-right
-          var base = pi * GAP - rotation;
-
-          chars.forEach(function (item) {
-            var theta = base + item.ao;
-            var cosT  = Math.cos(theta);
-            // Cull anything behind or at extreme sides
-            if (cosT <= 0.06) return;
-
-            // Perspective projection onto screen
-            var sx = W / 2 + (R_CYL * Math.sin(theta) / (R_CYL * cosT)) * FOCAL;
-            if (sx < -80 || sx > W + 80) return;
-
-            // Smooth fade as characters round the cylinder edge
-            var edgeFade = Math.min(1, (cosT - 0.06) / 0.40);
-
-            ctx.save();
-            ctx.translate(sx, midY);
-            ctx.scale(cosT, 1);   // horizontal foreshortening — curved wall effect
-            ctx.globalAlpha = 0.88 * edgeFade;
-            ctx.fillStyle   = '#ffffff';
-            ctx.fillText(item.ch, 0, 0);
-            ctx.restore();
-          });
-        });
-      }
-
       function tick() {
         t++;
-        rotation += ROT_SPD;
         drawRoom();
-        drawText();
         requestAnimationFrame(tick);
       }
 
@@ -1447,7 +1669,7 @@
       // Size canvas to section
       function resize() {
         canvas.width  = section.offsetWidth  || window.innerWidth;
-        canvas.height = section.offsetHeight || window.innerHeight;
+        canvas.height = window.innerHeight;
       }
       resize();
       window.addEventListener('resize', resize);
@@ -1507,20 +1729,179 @@
 
       tick();
 
-      // ── Scroll-triggered text entrance ──
-      const lines = section.querySelectorAll('.aurora-line');
-      let triggered = false;
+      // ── Section 2 — Scroll-driven pair sequence ──────────────
+      var track  = document.getElementById('aurora-scroll-track');
+      var p2L    = document.getElementById('p2-left');
+      var p2R    = document.getElementById('p2-right');
+      // Travel distance: puts elements near the bottom viewport edge when invisible,
+      // so they rise the full height into position.
+      var p2TravelY = Math.round(window.innerHeight * 0.55);
 
-      const io = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting && !triggered) {
-            triggered = true;
-            lines.forEach(function (l) { l.classList.add('a-visible'); });
-          }
+      // Each pair zone: [entryStart, holdStart, dissolveStart, dissolveEnd]
+      // Pair 1 holds 0.14–0.44 (≈105vh at 350vh track), dissolve 0.26–0.44 (≈63vh)
+      // Pair 2 holds 0.44–0.88 (≈154vh), dissolve 0.70–0.88 (≈63vh)
+      // Gap 0.88–0.92 = ~14vh contemplative pause before Phase 2
+      var PAIR_ZONES = [
+        [0.00, 0.14, 0.26, 0.44],
+        [0.44, 0.58, 0.70, 0.88],
+      ];
+      // Within each dissolve band, letters stagger across STAGGER_FRAC,
+      // each animating over DUR_FRAC of the band.
+      var STAGGER_FRAC = 0.65;
+      var DUR_FRAC     = 0.35;
+
+      var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      function getProgress() {
+        if (!track) return 0;
+        var r   = track.getBoundingClientRect();
+        var vis = -r.top;
+        var tot = r.height - window.innerHeight;
+        return Math.min(1, Math.max(0, vis / tot));
+      }
+
+      function smoothstep(t) {
+        return t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t);
+      }
+
+      // Build pair structure — two pairs, each with a left and right element.
+      var pairs = [
+        [document.getElementById('fp1l'), document.getElementById('fp1r')],
+        [document.getElementById('fp2l'), document.getElementById('fp2r')],
+      ];
+
+      // Split letters for dissolve-only per-letter animation.
+      // Entry is container-level (opacity + translateY); letters start fully visible
+      // within the container so only dissolve needs per-letter spans.
+      var pairLetters  = [];
+      var pairMaxDelay = [];
+
+      pairs.forEach(function (pair) {
+        var pLetters = [], pMaxD = [];
+        pair.forEach(function (el) {
+          var text = el.textContent;
+          el.innerHTML = '';
+          var spans = [], staggerMs = 0;
+          // Split by word so no word ever breaks mid-character across lines.
+          // Each word's letters live inside a white-space:nowrap inline-block wrapper;
+          // spaces go directly into el so the browser can only break at word boundaries.
+          var words = text.split(' ');
+          words.forEach(function (word, wi) {
+            if (wi > 0) {
+              // inter-word space — not animated, just structure
+              var gap = document.createElement('span');
+              gap.textContent = ' ';
+              gap.style.display = 'inline-block';
+              gap.style.whiteSpace = 'pre';
+              el.appendChild(gap);
+            }
+            // word wrapper: prevents mid-word line break
+            var ww = document.createElement('span');
+            ww.style.display = 'inline-block';
+            ww.style.whiteSpace = 'nowrap';
+            el.appendChild(ww);
+            for (var k = 0; k < word.length; k++) {
+              var sp = document.createElement('span');
+              sp.textContent = word[k];
+              sp.style.display = 'inline-block';
+              sp._dy    = -(8 + Math.random() * 7);
+              sp._dx    = (Math.random() * 6 - 3);
+              sp._blur  = 2 + Math.random() * 2;
+              sp._delay = staggerMs;
+              staggerMs += 50 + Math.floor(Math.random() * 40);
+              ww.appendChild(sp);
+              spans.push(sp);
+            }
+          });
+          var maxD = 0;
+          spans.forEach(function (sp) { if (sp._delay > maxD) maxD = sp._delay; });
+          pLetters.push(spans);
+          pMaxD.push(maxD || 1);
         });
-      }, { threshold: 0.20 });
+        pairLetters.push(pLetters);
+        pairMaxDelay.push(pMaxD);
+      });
 
-      io.observe(section);
+      function updateFrags() {
+        var p = getProgress();
+
+        // ── Pairs ──────────────────────────────────────────────
+        pairs.forEach(function (pair, i) {
+          var zone = PAIR_ZONES[i];
+          var es = zone[0], hs = zone[1], ds = zone[2], ze = zone[3];
+          var entryW    = hs - es;
+          var dissolveW = ze - ds;
+
+          // Container-level: rise from bottom viewport during entry band
+          var entryF = smoothstep((p - es) / entryW);
+          var cOp    = p < hs ? entryF : 1;
+          var cTY    = (1 - entryF) * p2TravelY;
+
+          pair.forEach(function (el, side) {
+            if (!el) return;
+
+            if (prefersReducedMotion) {
+              el.style.opacity   = p < es ? 0 : p < hs ? (p-es)/entryW : p < ds ? 1 : p < ze ? 1-(p-ds)/dissolveW : 0;
+              el.style.transform = 'none';
+              return;
+            }
+
+            el.style.opacity   = cOp;
+            el.style.transform = 'translateY(' + cTY.toFixed(0) + 'px)';
+
+            // Per-letter dissolve only
+            var spans = pairLetters[i][side];
+            var maxD  = pairMaxDelay[i][side];
+
+            spans.forEach(function (sp) {
+              if (sp._skip) return;
+              var t  = sp._delay / maxD;
+              var dS = ds + t * dissolveW * STAGGER_FRAC;
+              var dE = dS + dissolveW * DUR_FRAC;
+
+              var spOp, ty, tx, blur;
+              if (p <= dS) {
+                spOp = 1; ty = 0; tx = 0; blur = 0;
+              } else if (p <= dE) {
+                var f = smoothstep((p - dS) / (dE - dS));
+                spOp = 1-f; ty = sp._dy * f; tx = sp._dx * f; blur = sp._blur * f;
+              } else {
+                spOp = 0; ty = sp._dy; tx = sp._dx; blur = sp._blur;
+              }
+              sp.style.opacity   = spOp.toFixed(3);
+              sp.style.transform = (ty || tx) ? 'translateY('+ty.toFixed(1)+'px) translateX('+tx.toFixed(1)+'px)' : 'none';
+              sp.style.filter    = blur > 0.01 ? 'blur(' + blur.toFixed(2) + 'px)' : 'none';
+            });
+          });
+        });
+
+        // ── Phase 2 — rise from bottom viewport edge ──────────
+        // p2s=0.92, p2w=0.07: p2L full at p=0.99, p2R full at p=1.00
+        var p2s = 0.92, p2w = 0.07;
+        var p2fL = smoothstep((p - p2s) / p2w);
+        var p2fR = smoothstep((p - p2s - 0.01) / p2w);
+        if (p2L) {
+          p2L.style.opacity   = p2fL;
+          p2L.style.transform = 'translateY(' + ((1 - p2fL) * p2TravelY).toFixed(0) + 'px)';
+        }
+        if (p2R) {
+          p2R.style.opacity   = p2fR;
+          p2R.style.transform = 'translateY(' + ((1 - p2fR) * p2TravelY).toFixed(0) + 'px)';
+        }
+      }
+
+      var rafPending = false;
+      window.addEventListener('scroll', function () {
+        if (!rafPending) {
+          rafPending = true;
+          requestAnimationFrame(function () {
+            updateFrags();
+            rafPending = false;
+          });
+        }
+      }, { passive: true });
+
+      updateFrags();
     }());
 
     // ── Waitlist form ────────────────────────────────────────
@@ -1601,6 +1982,298 @@
           }
         });
       }
+    }());
+  </script>
+
+  <!-- ── Atmospheric Substrate (Pass 2) ─────────────────── -->
+  <script>
+    (function () {
+      'use strict';
+
+      // ── Elements ──────────────────────────────────────────
+      var videoLayer  = document.getElementById('substrate-video-layer');
+      var reel        = document.getElementById('substrate-reel');
+      var radiation   = document.getElementById('substrate-radiation');
+      var subRect     = document.getElementById('sub-rect');
+      var radRect     = document.getElementById('rad-rect');
+      var ringGrad    = document.getElementById('ring-grad');
+      var ringStop1   = document.getElementById('ring-stop1');
+      var ringStop1b  = document.getElementById('ring-stop1b');
+      var ringStop2   = document.getElementById('ring-stop2');
+      var radColGrad    = document.getElementById('rad-col-grad');
+      var radColStop1   = document.getElementById('rad-col-stop1');
+      var radColStop1b  = document.getElementById('rad-col-stop1b');
+      var radColStop2   = document.getElementById('rad-col-stop2');
+      var radCm         = document.getElementById('rad-cm');
+      var subTurb     = document.getElementById('sub-turb');
+      var subRectB     = document.getElementById('sub-rect-b');
+      var stateBTurb   = document.getElementById('state-b-turb');
+      var stateBErode  = document.getElementById('state-b-erode');
+      var stateBBlur   = document.getElementById('state-b-blur');
+      var coreRx      = 1;  // updated in resizeMasks
+      var coreRy      = 1;
+
+      // ── Inventory cuts ────────────────────────────────────
+      var cutFilter = document.getElementById('cut-filter');
+      var cutTurb   = document.getElementById('cut-turb');
+      var cutBlur   = document.getElementById('cut-blur');
+      // DOM cut elements (position anchors + text containers)
+      var cutEls = [
+        document.getElementById('cut-memories'),
+        document.getElementById('cut-photographs'),
+        document.getElementById('cut-art'),
+        document.getElementById('cut-notes'),
+        document.getElementById('cut-writing'),
+      ];
+      // SVG black rects inside sub-mask (one per cut)
+      var cutRects = [0,1,2,3,4].map(function(i) {
+        return document.getElementById('cut-rect-' + i);
+      });
+
+      // ── Bias targets per section ──────────────────────────
+      var SECTION_BIASES = {
+        'hero':        -11.0,
+        'aurora-hero': -18.0,
+        'world':        -7.0,
+        'key-section': -19.0,
+        'connect':     -11.0
+      };
+      var FOOTER_BIAS   = -14.0;
+      var LOOP_DROP_AMT =  9.0;   // bias boost during loop transition (less visible)
+      var RAD_OFFSET    =  8.0;   // radiation bias = main bias + offset (less visible)
+      var PLAYBACK_RATE =  0.85;
+      var STATE_B_MAX   =  0.62;  // State B peak opacity cap — calms reel brightness ~38%
+      var STATE_B_RAD   =  0.30;  // Radiation overlay opacity at full State B (0=none, 1=full)
+
+      // ── State ─────────────────────────────────────────────
+      var currentBias = -11.0;
+      var targetBias  = -11.0;
+      var loopDropBias = 0.0;
+      var tFactor      = 0;       // 0=State A (fire ring), 1=State B (filled figure)
+      var frameCount   = 0;
+      var tBase        = performance.now();
+      var bfX0 = 0.10, bfY0 = 0.07;
+
+      // ── Resize masks to viewport ──────────────────────────
+      function resizeMasks () {
+        var w  = window.innerWidth;
+        var h  = window.innerHeight;
+        var cx = w / 2;
+        var cy = h / 2;
+        coreRx = h * 0.28125;  // half of 56.25vh (9:16 portrait column half-width)
+        coreRy = h * 0.5;      // half viewport height
+        ringGrad.setAttribute('gradientTransform',
+          'translate(' + cx + ',' + cy + ') scale(' + coreRx + ',' + coreRy + ')');
+        radColGrad.setAttribute('gradientTransform',
+          'translate(' + cx + ',' + cy + ') scale(' + coreRx + ',' + coreRy + ')');
+        // State B: scale erode radius and blur to viewport so edge band is ~4% of each dimension
+        stateBErode.setAttribute('radius', Math.round(w * 0.04) + ' ' + Math.round(h * 0.04));
+        stateBBlur.setAttribute('stdDeviation', Math.round(Math.min(w, h) * 0.03));
+        ['sub-rect', 'sub-rect-b', 'rad-rect'].forEach(function (id) {
+          var el = document.getElementById(id);
+          el.setAttribute('width',  w);
+          el.setAttribute('height', h);
+        });
+        ['sub-mask', 'rad-mask'].forEach(function (id) {
+          var el = document.getElementById(id);
+          el.setAttribute('width',  w);
+          el.setAttribute('height', h);
+        });
+        // sub-filter uses %-based margins for displacement bleed — only update rad-filter
+        var radFilter = document.getElementById('rad-filter');
+        radFilter.setAttribute('x', 0);
+        radFilter.setAttribute('y', 0);
+        radFilter.setAttribute('width',  w);
+        radFilter.setAttribute('height', h);
+        // cut-filter: viewport-sized with 30px padding for displacement bleed at edges
+        if (cutFilter) {
+          cutFilter.setAttribute('x', -30);
+          cutFilter.setAttribute('y', -30);
+          cutFilter.setAttribute('width',  w + 60);
+          cutFilter.setAttribute('height', h + 60);
+        }
+        // Refresh core ellipse size for new viewport
+        setCoverage(currentBias);
+      }
+
+      // ── Update SVG cut rects to match DOM cut element viewport positions ──
+      function updateCuts () {
+        // Cuts only shown when State B substantially active
+        var active = tFactor > 0.25;
+        cutRects.forEach(function (cr, i) {
+          if (!cr) return;
+          if (!active) { cr.setAttribute('width', 0); return; }
+          var el = cutEls[i];
+          if (!el) { cr.setAttribute('width', 0); return; }
+          var r = el.getBoundingClientRect();
+          // Hide cut if element is off-screen
+          if (r.bottom < -50 || r.top > window.innerHeight + 50) {
+            cr.setAttribute('width', 0); return;
+          }
+          cr.setAttribute('x',      Math.round(r.left));
+          cr.setAttribute('y',      Math.round(r.top));
+          cr.setAttribute('width',  Math.round(r.width));
+          cr.setAttribute('height', Math.round(r.height));
+        });
+      }
+
+      resizeMasks();
+      window.addEventListener('resize', resizeMasks, { passive: true });
+
+      // ── Section bias from scroll ───────────────────────────
+      function getScrollBias () {
+        var vh = window.innerHeight;
+        var sections = Object.keys(SECTION_BIASES);
+        var totalWeight = 0;
+        var weightedBias = 0;
+
+        sections.forEach(function (id) {
+          var el = document.getElementById(id);
+          if (!el) return;
+          var rect = el.getBoundingClientRect();
+          var visible = Math.max(0, Math.min(rect.bottom, vh) - Math.max(rect.top, 0));
+          var fraction = visible / vh;
+          if (fraction > 0) {
+            weightedBias += SECTION_BIASES[id] * fraction;
+            totalWeight  += fraction;
+          }
+        });
+
+        // Footer
+        var footer = document.querySelector('footer') || document.getElementById('site-footer');
+        if (footer) {
+          var rect = footer.getBoundingClientRect();
+          var visible = Math.max(0, Math.min(rect.bottom, vh) - Math.max(rect.top, 0));
+          var fraction = visible / vh;
+          if (fraction > 0) {
+            weightedBias += FOOTER_BIAS * fraction;
+            totalWeight  += fraction;
+          }
+        }
+
+        if (totalWeight < 0.001) return currentBias;
+        return weightedBias / totalWeight;
+      }
+
+      // ── Loop-point drop ───────────────────────────────────
+      function getLoopDrop () {
+        if (!reel || reel.paused || !reel.duration) return 0;
+        var t   = reel.currentTime;
+        var dur = reel.duration;
+        var nearEnd   = dur - t < 2.0;
+        var nearStart = t < 1.5;
+        if (nearEnd || nearStart) {
+          var distEnd   = nearEnd   ? (2.0 - (dur - t)) / 2.0 : 0;
+          var distStart = nearStart ? (1.5 - t) / 1.5          : 0;
+          var strength  = Math.max(distEnd, distStart);
+          return strength * LOOP_DROP_AMT;
+        }
+        return 0;
+      }
+
+      // ── Coverage: solid core ellipse + ring gradient stops ───────────────────────
+      // Formula keeps figure visible across all sections (min ~40% of column radius).
+      // Animation cycle only shifts the noise pattern; core size changes only with bias.
+      function setCoverage (bias) {
+        var solidFrac = Math.max(0.40, Math.min(0.92, 0.90 + bias * 0.025));
+        var transFrac = Math.min(solidFrac + 0.12, 0.97);
+        // Ring gradient: white only in [solidFrac, transFrac]
+        ringStop1.setAttribute('offset',  solidFrac.toFixed(3));
+        ringStop1b.setAttribute('offset', solidFrac.toFixed(3));
+        ringStop2.setAttribute('offset',  transFrac.toFixed(3));
+        // Radiation ring stops track the main ring — warm glow at edge only, never inside
+        var radInner = Math.max(0.30, solidFrac - 0.10);
+        var radOuter = Math.min(transFrac + 0.06, 0.97);
+        radColStop1.setAttribute('offset',  radInner.toFixed(3));
+        radColStop1b.setAttribute('offset', solidFrac.toFixed(3));
+        radColStop2.setAttribute('offset',  radOuter.toFixed(3));
+      }
+
+      // ── Transition factor: 0=State A, 1=State B, driven by #world viewport entry ──
+      function getTransitionFactor () {
+        var world = document.getElementById('world');
+        if (!world) return 0;
+        var rect = world.getBoundingClientRect();
+        var vh   = window.innerHeight;
+        var t    = (vh - rect.top) / (vh * 0.4);
+        return Math.max(0, Math.min(1, t));
+      }
+
+      // ── Set feColorMatrix values (radiation overlay only) ─────────────────────
+      function setMatrix (el, bias) {
+        var v = '20 0 0 0 ' + bias.toFixed(3);
+        el.setAttribute('values', v + '  ' + v + '  ' + v + '  0 0 0 0 1');
+      }
+
+      // ── Animation RAF ─────────────────────────────────────
+      function tick (now) {
+        requestAnimationFrame(tick);
+        frameCount++;
+
+        // Scroll-driven bias
+        targetBias   = getScrollBias();
+        loopDropBias = getLoopDrop();
+        currentBias  += (targetBias - currentBias) * 0.06;
+
+        // State A→B crossfade: lerp tFactor toward scroll target (~1.5s at 60fps)
+        tFactor += (getTransitionFactor() - tFactor) * 0.04;
+        // Loop-point: loopDropBias drives existing bias/ring logic; also fade reel
+        // mask and radiation to near-zero so the video restart is invisible.
+        // The figure fully dissolves (~29s) then re-manifests — intentional cinematic beat.
+        var loopStrength = LOOP_DROP_AMT > 0 ? loopDropBias / LOOP_DROP_AMT : 0;
+        var loopFade = 1 - loopStrength * 0.97;  // 0.03 at peak → near-complete fade
+        subRect.setAttribute('opacity',  (1 - tFactor).toFixed(3));
+        subRectB.setAttribute('opacity', (tFactor * STATE_B_MAX * loopFade).toFixed(3));
+        // Radiation overlay: fades to STATE_B_RAD in State B, then near-zero at loop point.
+        radiation.style.opacity = ((1 - tFactor * (1 - STATE_B_RAD)) * loopFade).toFixed(3);
+
+        // Apply every 2 frames to reduce SVG filter thrash
+        if (frameCount % 2 === 0) {
+          var effectiveBias = currentBias + loopDropBias;
+          setCoverage(effectiveBias);
+          setMatrix(radCm, effectiveBias + RAD_OFFSET);
+
+          // Slow sinusoidal drift of baseFrequency — applied to both filters
+          var elapsedSec = (now - tBase) * 0.001;
+          var bfX = bfX0 + Math.sin(elapsedSec * 0.11) * 0.006;
+          var bfY = bfY0 + Math.cos(elapsedSec * 0.07) * 0.004;
+          var bfStr = bfX.toFixed(5) + ' ' + bfY.toFixed(5);
+          subTurb.setAttribute('baseFrequency', bfStr);
+          stateBTurb.setAttribute('baseFrequency', bfStr);
+          // Cuts: sync noise + breathing blur + position update
+          if (cutTurb) cutTurb.setAttribute('baseFrequency', bfStr);
+          if (cutBlur) {
+            // Slow stdDeviation breath: 7–13px over ~27s cycle
+            var cutStd = 10 + Math.sin(elapsedSec * 0.23) * 3;
+            cutBlur.setAttribute('stdDeviation', cutStd.toFixed(1));
+          }
+          updateCuts();
+        }
+      }
+
+      // ── Autoplay / reduced-motion fallback ───────────────
+      function hideSubstrate () {
+        videoLayer.classList.add('substrate-hidden');
+        radiation.classList.add('substrate-hidden');
+      }
+
+      var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReduced) {
+        hideSubstrate();
+        return;
+      }
+
+      if (reel) {
+        reel.playbackRate = PLAYBACK_RATE;
+        var playPromise = reel.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(function () {
+            hideSubstrate();
+          });
+        }
+      }
+
+      requestAnimationFrame(tick);
     }());
   </script>
 
